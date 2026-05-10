@@ -79,9 +79,9 @@ struct TriggersStruct{
     Int_t L1T[nL1T];
 
     // HLT object variables
-    std::vector<Float_t>* HLT_JetObj_pt[nHLT];
-    std::vector<Float_t>* HLT_JetObj_eta[nHLT];
-    std::vector<Float_t>* HLT_JetObj_phi[nHLT];
+    std::vector<Double_t>* HLT_JetObj_pt[nHLT];
+    std::vector<Double_t>* HLT_JetObj_eta[nHLT];
+    std::vector<Double_t>* HLT_JetObj_phi[nHLT];
 
     // constructor
     TriggersStruct(){
