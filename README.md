@@ -29,7 +29,7 @@ Below is a generic example of how to execute batch_hadd.sh in a terminal.
 ```
 ./batch_hadd.sh path/to/output.root "path/to/inputs/*.root" INT(number per bunch) INT(number of cores)
 ```
-Below is a working example of using batch_hadd.sh to add all the ROOT files from /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/ into a single output file in the same directory. n this example, the script groups ROOT files into batches of 10 and runs up to 4 simultaneous hadd processes across 4 CPU cores.
+Below is a working example of using batch_hadd.sh to add all the ROOT files from /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/ into a single output file in the same directory. In this example, the script groups ROOT files into batches of 10 and runs up to 4 simultaneous hadd processes across 4 CPU cores.
 ```
 ./hadd_tree.sh /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/output_jra_production_ak6pf_2025OO_all.root "/eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/*.root" 10 4
 ```
