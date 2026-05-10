@@ -1,6 +1,8 @@
 ## How to Use Executable Scripts
 <details>
-  <summary>Finding Maximum nref in files</summary>
+  <summary> Find_maxnref.C </summary>
+
+### Finding Maximum nref in files
   
 ```
 root 'executable/Find_maxnref.C("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
@@ -14,8 +16,9 @@ root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/f
 </details>
 
 <details>
-  <summary>Generating Jet HLT Efficiencies</summary>
-
+  <summary> JetTurnOn_PbPb_MC_lxplus.C </summary>
+  
+### Generating Jet HLT Efficiencies
 #### IN PROGRESS
 
 ```
@@ -30,8 +33,9 @@ root 'executable/JetTurnOn_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public
 </details>
 
 <details>
-  <summary>Combining Many Files</summary>
+  <summary> batch_hadd.sh </summary>
 
+### Combining Many Files
 hadd is a ROOT command that will essentially add ttrees and histograms for multiple files, iff these files have matching names for histograms, ttrees, branchs, etc. 
 hadd can be executed like this 'hadd output.root path/to/inputs/*.root'
 When using hadd on very many files the process becomes slow and more likely to fail. This issue can be avoided by making bunches of files, using hadd on these bunches to get outputs, then using hadd on the ouputs. When needed this bunching process can be repeated until there is only one output file. The bash script batch_hadd.sh does exactly this, but multiple times simultaneously based on the specified number of cores provided when executing.
