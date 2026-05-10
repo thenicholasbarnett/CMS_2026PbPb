@@ -49,6 +49,21 @@ Below is a working example of using batch_hadd.sh to add all the ROOT files from
 NOTE: When using this script you should change the working directory to your own directory.
 </details>
 
+<details>
+  <summary> MakeCondor.sh </summary>
+
+### Submitting Condor Jobs
+HTCondor or Condor is a batch job scheduler or execution system. Condor can be used with CMSSW, and this script can make this a smooth procedure. There setup consists of one driver, one run wrapper, and one submit generator. By changing the paths specified in cmssw_dir inside run_job.sh, template inside MakeCondor.sh, and condor_base inside MakeCondor_template.sh you can also use these bash scripts to run Condor jobs with ease. The MakeCondor_template.sh and run_job.sh should be moved to the condor_base
+Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
+```
+
+```
+Below is a working example of how to submit some condor jobs using my files and writing to my directory. 
+```
+./MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt /eos/cms/store/group/phys_heavyions/nbarnett/JetCalibrations/2024/smeared_dijet_asymmetries
+```
+</details>
+
 #### Footnotes
 
 <details>
@@ -57,3 +72,6 @@ NOTE: When using this script you should change the working directory to your own
 #### [1] Forests or HiForest
 Forests are something used in the Heavy Ion Physics Analysis Group (HIN PAG) at CMS, when making ROOT files of TTrees. From a shared [CMSSW repository](https://github.com/CmsHI/cmssw/tree/forest_CMSSW_16_1_X) someone is able to use code already written to make forests out of a primary dataset stored as miniAOD files. This essentially only shows up in these scripts as a specific TDirectory and TTree labeling within the .root files being processed.
 </details>
+
+##### Author
+The author of this repository is Nicholas Shawn Barnett (that's me 🙂). I am happy to take any and all suggestions and feedback. If there's anything not working or you would like to see in this repository then please write to nbarne21@uic.edu about any actionable tasks.
