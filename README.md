@@ -19,17 +19,17 @@ root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/f
 </details>
 
 <details>
-  <summary> JetTurnOn_PbPb_MC_lxplus.C </summary>
+  <summary> JetSpectraGenerator_PbPb_MC_lxplus.C </summary>
   
 ### Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies
 ```
-root 'executable/JetTurnOn_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
+root 'executable/JetSpectraGenerator_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
 ```
-Above is a generic terminal command to execute the script JetTurnOn_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
+Above is a generic terminal command to execute the script JetSpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
 
 Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
 ```
-root 'executable/JetTurnOn_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTEff_MC.root")'
+root 'executable/JetSpectraGenerator_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTEff_MC.root")'
 ```
 </details>
 
