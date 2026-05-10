@@ -1,5 +1,6 @@
 ### Finding Maximum nref in files
 <details>
+  <summary>Click to expand</summary>
 ```
 root 'executable/Find_maxnref.C("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
 ```
@@ -10,6 +11,7 @@ Below is a working example of using Find_maxnref.C that will produce maxnref.roo
 root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","maxnref.root","akCs4PF",true)'
 ```
 </details>
+
 ### Generating Jet HLT Efficiencies
 #### IN PROGRESS
 ```
