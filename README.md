@@ -35,7 +35,7 @@ root 'executable/JetTurnOn_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public
 <details>
   <summary> batch_hadd.sh </summary>
 
-### Combining Many Files
+### Combining Many ROOT Files
 hadd is a ROOT command that will essentially add ttrees and histograms for multiple files, iff these files have matching names for histograms, ttrees, branchs, etc. 
 hadd can be executed like this 'hadd output.root path/to/inputs/*.root'
 When using hadd on very many files the process becomes slow and more likely to fail. This issue can be avoided by making bunches of files, using hadd on these bunches to get outputs, then using hadd on the ouputs. When needed this bunching process can be repeated until there is only one output file. The bash script batch_hadd.sh does exactly this, but multiple times simultaneously based on the specified number of cores provided when executing.
@@ -50,6 +50,8 @@ Below is a working example of using batch_hadd.sh to add all the ROOT files from
 ```
 NOTE: When using this script you should change the working directory to your own directory.
 </details>
+
+#### Footnotes
 
 <details>
   <summary> HiForest </summary>
