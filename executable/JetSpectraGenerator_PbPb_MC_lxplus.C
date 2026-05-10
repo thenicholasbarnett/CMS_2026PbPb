@@ -16,7 +16,7 @@
 #include "../header/HistogramMap.h"
 #include "../header/JetSelection_PbPb.h"
 
-void JetTurnOn_PbPb_MC_lxplus(const TString& input_file_list, const TString& output){
+void JetSpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, const TString& output){
 
     // minimum pt of jets to include
     static constexpr Float_t ptcut = 20.0;
