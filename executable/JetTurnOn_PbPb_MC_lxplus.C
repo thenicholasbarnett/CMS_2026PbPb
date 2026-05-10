@@ -22,7 +22,7 @@ void JetTurnOn_PbPb_MC_lxplus(const TString& input_file_list, const TString& out
     static constexpr Float_t ptcut = 20.0;
 
     // more than number of jets in any event being processed
-    static constexpr Int_t maxnref = 200;
+    static constexpr Int_t maxnref = 50;
 
     // ttree names
     const Int_t nTTrees = 4;
