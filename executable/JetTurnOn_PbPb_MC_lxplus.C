@@ -143,9 +143,9 @@ void JetTurnOn_PbPb_MC_lxplus(TString input_file_list, TString output){
 
                 for(std::size_t tj=0; tj<obj_pt->size(); tj++){
 
-                    Float_t deta = TMath::Abs(obj_eta->at(tj) - jt.eta[lj]);
-                    Float_t dphi = TMath::ACos(TMath::Cos(obj_phi->at(tj) - jt.phi[lj]));
-                    Float_t dR = TMath::Sqrt(deta*deta + dphi*dphi);
+                    Double_t deta = TMath::Abs(obj_eta->at(tj) - jt.eta[lj]);
+                    Double_t dphi = TMath::ACos(TMath::Cos(obj_phi->at(tj) - jt.phi[lj]));
+                    Double_t dR = TMath::Sqrt(deta*deta + dphi*dphi);
 
                     if((dR<0.3) && (obj_pt->at(tj)>=GetJetTriggerThreshold(sHLTrigs[t]))){
                         iHltMatch[t]=1;
