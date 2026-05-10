@@ -18,9 +18,7 @@ root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/f
 <details>
   <summary> JetTurnOn_PbPb_MC_lxplus.C </summary>
   
-### Generating Jet HLT Efficiencies
-# IN PROGRESS
-
+### Generating Leading Jet p<sup>T</sup> Spectra for Jet HLT Efficiencies
 ```
 root 'executable/JetTurnOn_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
 ```
