@@ -52,7 +52,8 @@ NOTE: When using this script you should change the working directory to your own
 </details>
 
 <details>
-  <summary>[1] Forests or HiForest</summary>
-  
+  <summary> HiForest </summary>
+
+#### [1] Forests or HiForest
 Forests are something used in the Heavy Ion Physics Analysis Group (HIN PAG) at CMS, when making ROOT files of TTrees. From a shared [CMSSW repository](https://github.com/CmsHI/cmssw/tree/forest_CMSSW_16_1_X) someone is able to use code already written to make forests out of a primary dataset stored as miniAOD files. This essentially only shows up in these scripts as a specific TDirectory and TTree labeling within the .root files being processed.
 </details>
