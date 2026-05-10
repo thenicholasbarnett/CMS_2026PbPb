@@ -1,0 +1,46 @@
+#!/bin/bash -l
+set -euo pipefail
+
+if [[ $# -ne 3 ]]; then
+  echo "Usage: $0 EXECUTABLE INPUT OUTPUT" >&2
+  exit 1
+fi
+
+start_dir="$(pwd)"
+
+executable="$1"
+input_file="$2"
+output_file="$3"
+
+case "$executable" in
+
+  *.py)
+    echo "Running CMSSW python job"
+
+    source /cvmfs/cms.cern.ch/cmsset_default.sh
+
+    cmssw_dir="/afs/cern.ch/user/n/nbarnett/public/CondorWorkArea/CMSSW_16_1_0/src"
+    cd "$cmssw_dir"
+    eval "$(scramv1 runtime -sh)"
+
+    cd "$start_dir"
+
+    cmsRun "$executable" "$input_file" "$output_file"
+    ;;
+
+  *.C)
+    echo "Running ROOT macro"
+    root -l -b -q "${executable}(\"${input_file}\", \"${output_file}\")"
+    ;;
+
+  *.sh)
+    echo "Running bash script"
+    chmod +x "$executable"
+    "$executable" "$input_file" "$output_file"
+    ;;
+
+  *)
+    echo "Unsupported executable type: $executable" >&2
+    exit 1
+    ;;
+esac
