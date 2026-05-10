@@ -8,13 +8,13 @@
 #include <string>
 #include <stdexcept>
 
-#include "../header_files/BranchMapping.h"
-#include "../header_files/EventMap_MC_PbPb.h"
-#include "../header_files/JetMap.h"
-#include "../header_files/TriggerMap_PbPb_MC.h"
-#include "../header_files/Binning.h"
-#include "../header_files/HistogramMap.h"
-#include "../header_files/JetSelection_PbPb.h"
+#include "../header/BranchMapping.h"
+#include "../header/EventMap_MC_PbPb.h"
+#include "../header/JetMap.h"
+#include "../header/TriggerMap_PbPb_MC.h"
+#include "../header/Binning.h"
+#include "../header/HistogramMap.h"
+#include "../header/JetSelection_PbPb.h"
 
 void JetTurnOn_PbPb_MC_lxplus(TString input_file_list, TString output){
 
