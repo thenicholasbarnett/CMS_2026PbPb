@@ -60,13 +60,12 @@ void JetTurnOn_PbPb_MC_lxplus(const TString& input_file_list, const TString& out
         filenumber+=1;
 
         // reading and staging input file
-        TString input = filename;
-        TFile *fi = TFile::Open(input,"read");
-        if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
+        TFile *fi = TFile::Open(filename.c_str(),"read");
+        if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + filename);}
         fi->cd();
 
         // showing the file being processed in the terminal
-        cout<<"processing file "<< filenumber <<": "<<input<<endl;
+        cout<<"processing file "<< filenumber <<": "<<filename<<endl;
 
         // getting ttrees, printing iff the ttree isn't in the input file
         TTree *ttrees[nTTrees];
