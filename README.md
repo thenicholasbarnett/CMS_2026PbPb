@@ -2,7 +2,7 @@
 <details>
   <summary> Find_maxnref.C </summary>
 
-### Finding Maximum nref in files
+### Finding Maximum nref in ROOT Files
   
 ```
 root 'executable/Find_maxnref.C("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
