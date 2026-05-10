@@ -14,7 +14,7 @@ root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/f
 ```
 root 'executable/JetTurnOn_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
 ```
-Above is a generic terminal command to execute the script JetTurnOn_PbPb_MC_lxplus.C on a list of root files with <sup>*</sup> f_orests. This is script uses one text file input list of root files, with <sup>*</sup>forests, and produces one output root file.
+Above is a generic terminal command to execute the script JetTurnOn_PbPb_MC_lxplus.C on a list of root files with <sup>*</sup>forests. This is script uses one text file input list of root files, with <sup>*</sup>forests, and produces one output root file.
 
 Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
 ```
