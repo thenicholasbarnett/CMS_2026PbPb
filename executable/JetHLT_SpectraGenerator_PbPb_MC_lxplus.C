@@ -22,7 +22,7 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
     static constexpr Float_t ptcut = 20.0;
 
     // more than number of jets in any event being processed
-    static constexpr Int_t maxnref = 50;
+    static constexpr Int_t maxnref = 150;
 
     // ttree names
     const Int_t nTTrees = 4;
@@ -56,16 +56,16 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
 
     // looping over files
     while(getline(myfile, filename)){
-
         filenumber+=1;
 
         // reading and staging input file
-        TFile *fi = TFile::Open(filename.c_str(),"read");
-        if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + filename);}
+        TString input = filename;
+        TFile *fi = TFile::Open(input,"read");
+        if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
         fi->cd();
 
         // showing the file being processed in the terminal
-        cout<<"processing file "<< filenumber <<": "<<filename<<endl;
+        cout<<"processing file "<< filenumber <<": "<<input<<endl;
 
         // getting ttrees, printing iff the ttree isn't in the input file
         TTree *ttrees[nTTrees];
@@ -147,7 +147,7 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
                     Double_t dR = TMath::Sqrt(deta*deta + dphi*dphi);
 
                     if((dR<0.3) && (obj_pt->at(tj)>=GetJetTriggerThreshold(sHLTrigs[t]))){
-                        iHltMatch[t]=1;
+                        iHltMatch[t] = 1;
                         break;
                     }
                 }
@@ -160,30 +160,17 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
 
                 hists.ljtpt_eta[b]->Fill(jt.pt[lj], evt.w);
 
-                int flag_l1 = 0;
-                int flag_lthlt = 0;
-
                 // looping through HLTs
                 for(std::size_t t=0; t<nHLT; t++){
                     if(trg.HLT[t]==1){
-                        hists.hlt_ljtpt_eta[0][b][t]->Fill(jt.pt[lj], evt.w);
-
-                        if(iHltMatch[t]==1){hists.hlt_ljtpt_eta[1][b][t]->Fill(jt.pt[lj], evt.w);}
-                        if(trg.L1T[L1SeedHLT[t]]==1){
-                            hists.l1hlt_ljtpt_eta[0][b][t]->Fill(jt.pt[lj], evt.w);
-                            flag_lthlt=1;
-                            if(iHltMatch[t]==1){hists.l1hlt_ljtpt_eta[1][b][t]->Fill(jt.pt[lj], evt.w);}
-                        }
+                        hists.hlt_ljtpt_eta[JetSpectraStruct::kNoDR][b][t]->Fill(jt.pt[lj], evt.w);
+                        if(iHltMatch[t]==1){hists.hlt_ljtpt_eta[JetSpectraStruct::kDR][b][t]->Fill(jt.pt[lj], evt.w);}
                     }
                 }
 
                 // looping through L1Ts
                 for(std::size_t t=0; t<nL1T; t++){
-                    if(trg.L1T[t] == 1){
-                        hists.l1_ljtpt_eta[b][t]->Fill(jt.pt[lj], evt.w);
-                        flag_l1 = 1;
-                    }
-                }
+                    if(trg.L1T[t] == 1){hists.l1_ljtpt_eta[b][t]->Fill(jt.pt[lj], evt.w);}}
 
                 for(std::size_t hb=0; hb<bins.hiBins.size(); hb++){
                     const auto& hiBin = bins.hiBins[hb];
@@ -193,25 +180,14 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
                     
                     for(std::size_t t=0; t<nHLT; t++){
                         if(trg.HLT[t]==1){
-                            hists.hlt_ljtpt_hibin[0][b][t][hb]->Fill(jt.pt[lj], evt.w);
-                            if(iHltMatch[t]==1){hists.hlt_ljtpt_hibin[1][b][t][hb]->Fill(jt.pt[lj], evt.w);}
-                            if(trg.L1T[L1SeedHLT[t]]==1){
-                                hists.l1hlt_ljtpt_hibin[0][b][t][hb]->Fill(jt.pt[lj], evt.w);
-                                flag_lthlt=1;
-                                if(iHltMatch[t]==1){hists.l1hlt_ljtpt_hibin[1][b][t][hb]->Fill(jt.pt[lj], evt.w);}
-                            }
+                            hists.hlt_ljtpt_hibin[JetSpectraStruct::kNoDR][b][t][hb]->Fill(jt.pt[lj], evt.w);
+                            if(iHltMatch[t]==1){hists.hlt_ljtpt_hibin[JetSpectraStruct::kDR][b][t][hb]->Fill(jt.pt[lj], evt.w);}
                         }
                     }
 
                     // looping through L1Ts
-                    for(std::size_t t=0; t<nL1T; t++){
-                        if(trg.L1T[t] == 1){
-                            hists.l1_ljtpt_hibin[b][t][hb]->Fill(jt.pt[lj], evt.w);
-                            flag_l1 = 1;
-                        }
-                    }
+                    for(std::size_t t=0; t<nL1T; t++){if(trg.L1T[t] == 1){hists.l1_ljtpt_hibin[b][t][hb]->Fill(jt.pt[lj], evt.w);}}
                 }
-                if(flag_l1==0 && flag_lthlt==1){throw std::runtime_error("ERROR: L1 trigger check didn't pass, but the L1T+HLT check passed in event "+ std::to_string(i));}
             }
         }
         fi->Close();
@@ -243,10 +219,8 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
         dji->cd(); 
         hists.ljtpt_eta[b]->Write();
         for(std::size_t t=0; t<nHLT; t++){
-            hists.hlt_ljtpt_eta[0][b][t]->Write();
-            hists.l1hlt_ljtpt_eta[0][b][t]->Write();
-            hists.hlt_ljtpt_eta[1][b][t]->Write();
-            hists.l1hlt_ljtpt_eta[1][b][t]->Write();
+            hists.hlt_ljtpt_eta[JetSpectraStruct::kNoDR][b][t]->Write();
+            hists.hlt_ljtpt_eta[JetSpectraStruct::kDR][b][t]->Write();
             if((t>=nL1T)){continue;}
             hists.l1_ljtpt_eta[b][t]->Write();
         }
@@ -255,10 +229,8 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
         for(std::size_t hb=0; hb<bins.hiBins.size(); hb++){
             hists.ljtpt_hibin[b][hb]->Write();
             for(std::size_t t=0; t<nHLT; t++){
-                hists.hlt_ljtpt_hibin[0][b][t][hb]->Write();
-                hists.l1hlt_ljtpt_hibin[0][b][t][hb]->Write();
-                hists.hlt_ljtpt_hibin[1][b][t][hb]->Write();
-                hists.l1hlt_ljtpt_hibin[1][b][t][hb]->Write();
+                hists.hlt_ljtpt_hibin[JetSpectraStruct::kNoDR][b][t][hb]->Write();
+                hists.hlt_ljtpt_hibin[JetSpectraStruct::kDR][b][t][hb]->Write();
                 if((t>=nL1T)){continue;}
                 hists.l1_ljtpt_hibin[b][t][hb]->Write();
             }
