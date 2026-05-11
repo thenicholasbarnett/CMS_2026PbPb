@@ -75,6 +75,15 @@ root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/n
 ```
 </details>
 
+<details>
+  <summary> JetHLT_EfficiencyGenerator.C </summary>
+
+### Generating Jet HLT Efficiencies
+```
+root 'executable/JetHLT_EfficiencyGenerator.C("path/to/input.root", "JetEfficiencies.root")'
+```
+Above is an example of how to execute this script with generic inputs.
+
 #### Footnotes
 
 <details>
