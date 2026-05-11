@@ -46,13 +46,13 @@ NOTE: When using this script you should change the working directory to your own
 ### Finding Maximum nref in ROOT Files
   
 ```
-root 'executable/Find_maxnref.C("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
+root -l -q 'executable/Find_maxnref.C++("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
 ```
 Above is a generic example of how to execute script Find_maxnref.C in a terminal to find maximum event level jet multiplicity (nref) in a list of root files with forests<sup>[1]</sup>. Executable Find_maxnref.C can be trivially changed to work with root files containing different ttrees.
 
 Below is a working example of using Find_maxnref.C that will produce maxnref.root in the current directory (immediately before it finishes executing). In this working example the jets being checked are clustered with akCs4PF from an MC sample.
 ```
-root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","maxnref.root","akCs4PF",true)'
+root -l -q 'executable/Find_maxnref.C++("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","maxnref.root","akCs4PF",true)'
 ```
 </details>
 
@@ -65,13 +65,13 @@ Some of the executable scripts in this repositoryh are specifically used to gene
   
 ### Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies
 ```
-root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
+root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("path/to/input/filenames.txt","path/to/output.root")'
 ```
 Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
 
 Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
 ```
-root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
+root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
 ```
 </details>
 
@@ -80,12 +80,12 @@ root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/n
 
 ### Generating Jet HLT Efficiencies
 ```
-root 'executable/JetHLT_EfficiencyGenerator.C("path/to/input.root", "output.root")'
+root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("path/to/input.root", "output.root")'
 ```
 Above is an example of how to execute this script with generic inputs. This macro will take in the output from JetHLT_SpectraGenerator_PbPb_MC_lxplus.C, and makes jet trigger turn on curves from it. This script will generate the total jet trigger efficiency, that is the inefficiencies due to an HLT and its L1seed, and relative efficiency, being the inefficiency due to just the HLT. These efficiencies will be generated with and without offline-online object matching.
 Below is a working example using an appropriate output to make actual jet efficiencies.
 ```
-root 'executable/JetHLT_EfficiencyGenerator.C("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
+root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
 ```
 </details>
 
