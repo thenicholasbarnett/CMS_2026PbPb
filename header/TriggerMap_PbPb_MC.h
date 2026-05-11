@@ -75,8 +75,8 @@ inline TString GetHLTObjTreeName(std::size_t i){
 struct TriggersStruct{
 
     // trigger decisions
-    Int_t HLT[nHLT];
-    Int_t L1T[nL1T];
+    Int_t HLT[nHLT]={0};
+    Int_t L1T[nL1T]={0};
 
     // HLT object variables
     std::vector<Double_t>* HLT_JetObj_pt[nHLT];
@@ -85,7 +85,7 @@ struct TriggersStruct{
 
     // constructor
     TriggersStruct(){
-        for(std::size_t i = 0; i < nHLT; i++){
+        for(std::size_t i=0; i<nHLT; i++){
             HLT_JetObj_pt[i]  = nullptr;
             HLT_JetObj_eta[i] = nullptr;
             HLT_JetObj_phi[i] = nullptr;
@@ -95,8 +95,8 @@ struct TriggersStruct{
     // mapping trigger decisions to branches
     std::vector<std::pair<TString, void*>> BranchMap(){
         std::vector<std::pair<TString, void*>> branches;
-        for(Int_t i = 0; i < nHLT; i++){branches.push_back({sHLTrigs[i], &HLT[i]});}
-        for(Int_t i = 0; i < nL1T; i++){branches.push_back({sL1Trigs[i], &L1T[i]});}
+        for(std::size_t i=0; i<nHLT; i++){branches.push_back({sHLTrigs[i], &HLT[i]});}
+        for(std::size_t i=0; i<nL1T; i++){branches.push_back({sL1Trigs[i], &L1T[i]});}
         return branches;
     }
 
