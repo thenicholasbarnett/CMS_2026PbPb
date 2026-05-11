@@ -2,10 +2,6 @@
 
 Executable scipts in this repository are described below, each with both a generic and working example.
 
-## General Use Executables
-
-These are some executable scripts that can be used for general purposes. This includes scripts to help interact with Condor and CRAB as well as combine ROOT files.
-
 | Executable                               | Task                                               |
 | ---------------------------------------- | -------------------------------------------------- |
 | MakeCondor.sh                            | Creating and submitting Condor jobs                |
@@ -13,6 +9,10 @@ These are some executable scripts that can be used for general purposes. This in
 | Find_maxnref.C                           | Finding maximum nref in a filelist                 |
 | JetHLT_SpectraGenerator_PbPb_MC_lxplus.C | Make leading jet pT spectra for different triggers |
 | JetHLT_EfficiencyGenerator.C             | Make jet trigger efficiencies                      |
+
+## General Use Executables
+
+These are some executable scripts that can be used for general purposes. This includes scripts to help interact with Condor and CRAB as well as combine ROOT files.
 
 <details>
   <summary> MakeCondor.sh </summary>
