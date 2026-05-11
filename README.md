@@ -1,35 +1,23 @@
-## How to Use Executable Scripts
+# How to Use Executables
 
 Executable scipts in this repository are described below with generic and working examples.
 
-<details>
-  <summary> Find_maxnref.C </summary>
+## General Use Executables
 
-### Finding Maximum nref in ROOT Files
-  
-```
-root 'executable/Find_maxnref.C("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
-```
-Above is a generic example of how to execute script Find_maxnref.C in a terminal to find maximum event level jet multiplicity (nref) in a list of root files with forests<sup>[1]</sup>. Executable Find_maxnref.C can be trivially changed to work with root files containing different ttrees.
-
-Below is a working example of using Find_maxnref.C that will produce maxnref.root in the current directory (immediately before it finishes executing). In this working example the jets being checked are clustered with akCs4PF from an MC sample.
-```
-root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","maxnref.root","akCs4PF",true)'
-```
-</details>
+These are some executable scripts that can be used for general purposes. This includes scripts to help interact with Condor and CRAB as well as combine ROOT files.
 
 <details>
-  <summary> JetHLT_SpectraGenerator_PbPb_MC_lxplus.C </summary>
-  
-### Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies
-```
-root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
-```
-Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
+  <summary> MakeCondor.sh </summary>
 
-Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
+### Submitting Condor Jobs
+HTCondor or Condor is a batch job scheduler or execution system. Condor can be used with CMSSW, and this script can make this a smooth procedure. There setup consists of one driver, one run wrapper, and one submit generator. By changing the paths specified in cmssw_dir inside run_job.sh, template inside MakeCondor.sh, and condor_base inside MakeCondor_template.sh you can also use these bash scripts to run Condor jobs with ease. The MakeCondor_template.sh and run_job.sh should be moved to the condor_base
+Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
 ```
-root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTEff_MC.root")'
+./executable/Condor/MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
+```
+Below is a working example of how to submit some condor jobs using my files and writing to my directory. 
+```
+./executable/Condor/MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt /eos/cms/store/group/phys_heavyions/nbarnett/JetCalibrations/2024/smeared_dijet_asymmetries
 ```
 </details>
 
@@ -53,17 +41,37 @@ NOTE: When using this script you should change the working directory to your own
 </details>
 
 <details>
-  <summary> MakeCondor.sh </summary>
+  <summary> Find_maxnref.C </summary>
 
-### Submitting Condor Jobs
-HTCondor or Condor is a batch job scheduler or execution system. Condor can be used with CMSSW, and this script can make this a smooth procedure. There setup consists of one driver, one run wrapper, and one submit generator. By changing the paths specified in cmssw_dir inside run_job.sh, template inside MakeCondor.sh, and condor_base inside MakeCondor_template.sh you can also use these bash scripts to run Condor jobs with ease. The MakeCondor_template.sh and run_job.sh should be moved to the condor_base
-Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
+### Finding Maximum nref in ROOT Files
+  
 ```
-./executable/Condor/MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
+root 'executable/Find_maxnref.C("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
 ```
-Below is a working example of how to submit some condor jobs using my files and writing to my directory. 
+Above is a generic example of how to execute script Find_maxnref.C in a terminal to find maximum event level jet multiplicity (nref) in a list of root files with forests<sup>[1]</sup>. Executable Find_maxnref.C can be trivially changed to work with root files containing different ttrees.
+
+Below is a working example of using Find_maxnref.C that will produce maxnref.root in the current directory (immediately before it finishes executing). In this working example the jets being checked are clustered with akCs4PF from an MC sample.
 ```
-./executable/Condor/MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt /eos/cms/store/group/phys_heavyions/nbarnett/JetCalibrations/2024/smeared_dijet_asymmetries
+root 'executable/Find_maxnref.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","maxnref.root","akCs4PF",true)'
+```
+</details>
+
+## Making Jet HLT Efficiencies
+
+Some of the executable scripts in this repositoryh are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
+
+<details>
+  <summary> JetHLT_SpectraGenerator_PbPb_MC_lxplus.C </summary>
+  
+### Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies
+```
+root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("path/to/input/filenames.txt","path/to/output.root")'
+```
+Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
+
+Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
+```
+root 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTEff_MC.root")'
 ```
 </details>
 
