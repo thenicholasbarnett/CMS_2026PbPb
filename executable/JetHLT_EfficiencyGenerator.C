@@ -12,6 +12,7 @@
 #include "../header/TriggerMap_PbPb_MC.h"
 #include "../header/JetSpectraHistograms.h"
 #include "../header/JetEfficiency.h"
+#include "../header/JetEfficiencyPlotting.h"
 
 void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){
     
@@ -84,4 +85,18 @@ void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){
         }
     }
     std::cout<<"all histogram saved to output file"<<std::endl;
+ 
+    fo->Close();
+    fi->Close();
+
+    // saving efficiency plots as .png
+    PlotConfig cfg;
+    cfg.runNumber = "";
+    cfg.globalTag = "";
+    cfg.jetAlgo   = "akCs4PF";
+    cfg.ptmin     = 20.0;
+    cfg.ptmax     = 300.0;
+    cfg.effmax    = 1.4;
+
+    SaveEfficiencyPlots(out, bins, cfg);
 }
