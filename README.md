@@ -1,8 +1,11 @@
+
+<p align="center">
+  <img src="image/CMS_logo.png" alt="CMS logo" width="150"/>
+</p>
+
 # About
 
 This repository is made to be used for the 2026 PbPb collisions at the Compact Muon Solenoid to monitor jet trigger and offline object health, or otherwise help with run related activities and studies. Any and all contents of this repository are welcome to be used by anyone for any reason.
-
-![CMS logo](image/CMS_logo.png)
 
 # How to
 
