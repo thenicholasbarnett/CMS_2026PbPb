@@ -34,7 +34,6 @@ struct PlotConfig{
 
 inline TCanvas* MakeCanvas(const TString& name) {
     TCanvas* c = new TCanvas(name, "", 2400, 2400);
-    c->SetRealAspectRatio();
     return c;
 }
 
