@@ -1,6 +1,6 @@
 # How to Use Executables
 
-Executable scipts in this repository are described below with generic and working examples.
+Executable scipts in this repository are described below, each with both a generic and working example.
 
 ## General Use Executables
 
