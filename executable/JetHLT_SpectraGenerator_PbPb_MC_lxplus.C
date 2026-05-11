@@ -13,7 +13,7 @@
 #include "../header/JetMap.h"
 #include "../header/TriggerMap_PbPb_MC.h"
 #include "../header/Binning.h"
-#include "../header/HistogramMap.h"
+#include "../header/JetSpectraHistograms.h"
 #include "../header/JetSelection_PbPb.h"
 
 void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, const TString& output){
@@ -45,7 +45,7 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
     BinningStruct bins;
 
     // histograms
-    HistogramStruct hists(bins);
+    JetSpectraStruct hists(bins);
 
     // getting list of root files to process
     ifstream myfile(input_file_list);
