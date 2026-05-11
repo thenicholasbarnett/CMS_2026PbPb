@@ -5,7 +5,7 @@
   </tr>
 </table>
 
-# How to
+# Executables
 
 Executable scipts in this repository are described below, each with both a generic and working example.
 
