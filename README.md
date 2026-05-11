@@ -1,4 +1,10 @@
-# How to Use Executables
+# About
+
+This repository is made to be used for the 2026 PbPb collisions at the Compact Muon Solenoid to monitor jet trigger and offline object health, or otherwise help with run related activities and studies. Any and all contents of this repository are welcome to be used by anyone for any reason.
+
+![CMS logo](images/CMS_logo.pdf)
+
+# How to
 
 Executable scipts in this repository are described below, each with both a generic and working example.
 
@@ -107,4 +113,4 @@ Forests are something used in the Heavy Ion Physics Analysis Group (HIN PAG) at 
 </details>
 
 #### Author
-The author of this repository is Nicholas Shawn Barnett (that's me 🙂). I am happy to take any and all suggestions and feedback. If there's anything not working or you would like to see in this repository then please write to nbarne21@uic.edu about any actionable tasks.
+Nicholas Shawn Barnett (that's me 🙂) is the author of and maintains this repository. I am happy to take any and all suggestions and feedback. If there's anything not working or you would like to see in this repository then please write to nbarne21@uic.edu about any actionable tasks.
