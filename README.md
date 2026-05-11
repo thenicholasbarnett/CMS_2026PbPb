@@ -87,6 +87,8 @@ Below is a working example using an appropriate output to make actual jet effici
 ```
 root 'executable/JetHLT_EfficiencyGenerator.C("", "JetEfficiencies.root")'
 ```
+</details>
+
 #### Footnotes
 
 <details>
