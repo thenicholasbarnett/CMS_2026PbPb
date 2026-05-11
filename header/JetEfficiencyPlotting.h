@@ -13,6 +13,7 @@
 #include <vector>
 #include <array>
 #include <stdexcept>
+#include <iostream>
  
 #include "Binning.h"
 #include "TriggerMap_PbPb_MC.h"
@@ -22,19 +23,48 @@
 struct PlotConfig{
     TString runNumber = "";
     TString globalTag = "";
-    TString jetAlgo = "akCs4PF";
-    float ptmin = 20.0;
-    float ptmax = 300.0;
-    float effmax = 1.4;
-    float legxmin = 0.1;
-    float legxmax = 0.9;
-    float legymin = 0.68;
-    float legymax = 0.9;
+    TString jetAlgo   = "akCs4PF";
+    float ptmin  = 20.0;
+    float ptmax  = 200.0;
+    float effmax = 1.1;
+    // int canvasSize = 800;
+    int canvasSize = 2400;
+    float imageScaling = 1.0;
+    // float imageScaling = 3.0;
+    float legfrac = 0.2;
 };
 
-inline TCanvas* MakeCanvas(const TString& name) {
-    TCanvas* c = new TCanvas(name, "", 2400, 2400);
-    return c;
+struct CanvasStruct {
+    TCanvas* c = nullptr;
+    TPad* plotpad = nullptr;
+    TPad* legpad = nullptr;
+};
+
+inline CanvasStruct MakeCanvas(const TString& name, const PlotConfig& cfg){
+    CanvasStruct cs;
+    cs.c = new TCanvas(name, "", cfg.canvasSize, cfg.canvasSize);
+    cs.c->cd();
+
+    // TPad for legends
+    cs.legpad = new TPad(name + "_legpad", "", 0.0, 1.0 - cfg.legfrac, 1.0, 1.0);
+    cs.legpad->SetTopMargin(0.05);
+    cs.legpad->SetBottomMargin(0.0);
+    cs.legpad->SetLeftMargin(0.0);
+    cs.legpad->SetRightMargin(0.0);
+    cs.legpad->SetFillStyle(0);
+    cs.legpad->Draw();
+
+    // TPad for plot
+    cs.plotpad = new TPad(name + "_plotpad", "", 0.0, 0.0, 1.0, 1.0 - cfg.legfrac);
+    cs.plotpad->SetTopMargin(0.02);
+    cs.plotpad->SetBottomMargin(0.12);
+    cs.plotpad->SetLeftMargin(0.12);
+    cs.plotpad->SetRightMargin(0.05);
+    cs.plotpad->SetGridy();
+    cs.plotpad->SetGridx();
+    cs.plotpad->Draw();
+
+    return cs;
 }
 
 inline TLegend* MakeLegend(float xmin, float ymin, float xmax, float ymax) {
@@ -59,14 +89,30 @@ inline void StyleGraph(TGraphAsymmErrors* g, std::size_t triggerIndex) {
     g->SetLineColor(colors[triggerIndex]);
     g->SetMarkerStyle(20);
     g->SetMarkerSize(1.5);
+    g->SetLineWidth(3);
+}
+
+inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clones, const std::vector<TString>& infoEntries, JetSpectraStruct::MatchType matchType, float legfrac){
+    legpad->cd();
+
+    // trigger legend
+    TLegend* ltrig = MakeLegend(0.02, 0.03, 0.65, 0.97);
+    ltrig->SetNColumns(1);
+    for(std::size_t t=0; t<nHLT; t++){ltrig->AddEntry(clones[t], sHLTrigs[t], "lp");}
+    ltrig->Draw("same");
+
+    // info legend
+    TLegend* linfo = MakeLegend(0.65, 0.03, 0.98, 0.97);
+    for(const auto& entry : infoEntries){linfo->AddEntry((TObject*)0, entry, "");}
+    if(matchType == JetSpectraStruct::kDR){linfo->AddEntry((TObject*)0, "#Delta R < 0.3", "");}
+    linfo->Draw("same");
 }
 
 inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, JetEfficiencyOutputStruct::EfficiencyType effType, std::size_t etaIndex, const TString& outDir, const PlotConfig& cfg){
     const auto& etaBin = bins.etaBins[etaIndex];
     TString hname = "heff" + JetSpectraStruct::MatchSuffix(matchType) + "_" + JetEfficiencyOutputStruct::EfficiencyName(effType) + etaBin.shortName;
 
-    TCanvas* c = MakeCanvas(hname);
-    c->cd();
+    CanvasStruct cs = MakeCanvas(hname, cfg);
 
     std::vector<TGraphAsymmErrors*> clones(nHLT, nullptr);
     for(std::size_t t=0; t<nHLT; t++){
@@ -74,32 +120,32 @@ inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const Bin
         StyleGraph(clones[t], t);
     }
 
+    cs.plotpad->cd();
     clones[0]->Draw("ap");
     clones[0]->SetTitle("");
     clones[0]->GetXaxis()->SetTitle("p_{T,leading jet} (GeV)");
     clones[0]->GetYaxis()->SetTitle(effType == JetEfficiencyOutputStruct::kFull ? "HLT + L1seed + minBias / minBias" : "HLT + L1seed + minBias / L1seed + minBias");
     clones[0]->GetXaxis()->CenterTitle(true);
     clones[0]->GetYaxis()->CenterTitle(true);
+    clones[0]->GetXaxis()->SetTitleOffset(1.0);
+    clones[0]->GetYaxis()->SetTitleOffset(1.0);
     clones[0]->SetMinimum(0.0);
     clones[0]->SetMaximum(cfg.effmax);
     clones[0]->GetXaxis()->SetRangeUser(cfg.ptmin, cfg.ptmax);
 
     for(std::size_t t=1; t<nHLT; t++){clones[t]->Draw("p same");}
     DrawRefLine(cfg.ptmin, cfg.ptmax);
+    
+    std::vector<TString> infoEntries;
+    if(!cfg.runNumber.IsNull()){infoEntries.push_back(cfg.runNumber);}
+    if(!cfg.globalTag.IsNull()){infoEntries.push_back(cfg.globalTag);}
+    if(!cfg.jetAlgo.IsNull()){infoEntries.push_back(cfg.jetAlgo);}
+    infoEntries.push_back(etaBin.title);
 
-    TLegend* l = MakeLegend(cfg.legxmin, cfg.legymin, cfg.legxmax, cfg.legymax);
-    for(std::size_t t=0; t<nHLT; t++){l->AddEntry(clones[t], sHLTrigs[t], "lp");}
-    if(!cfg.runNumber.IsNull()){l->AddEntry((TObject*)0, cfg.runNumber, "");}
-    if(!cfg.globalTag.IsNull()){l->AddEntry((TObject*)0, cfg.globalTag, "");}
-    if(!cfg.jetAlgo.IsNull()){l->AddEntry((TObject*)0, cfg.jetAlgo,   "");}
-    l->AddEntry((TObject*)0, etaBin.title, "");
-    if(matchType == JetSpectraStruct::kDR){l->AddEntry((TObject*)0, "#Delta R < 0.3", "");}
-    l->Draw("same");
+    DrawLegends(cs.legpad, clones, infoEntries, matchType, cfg.legfrac);
 
-    c->SaveAs(outDir + "/" + hname + ".png");
- 
-    delete c;
-    delete l;
+    cs.c->SaveAs(outDir + "/" + hname + ".png");
+    delete cs.c;
 }
 
 inline void SaveEfficiencyCanvas_hiBin(const JetEfficiencyOutputStruct& out, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, JetEfficiencyOutputStruct::EfficiencyType effType, std::size_t etaIndex, std::size_t hiBinIndex, const TString& outDir, const PlotConfig& cfg){
@@ -108,8 +154,7 @@ inline void SaveEfficiencyCanvas_hiBin(const JetEfficiencyOutputStruct& out, con
 
     TString hname = "heff" + JetSpectraStruct::MatchSuffix(matchType) + "_" + JetEfficiencyOutputStruct::EfficiencyName(effType) + etaBin.shortName + hiBin.shortName;
 
-    TCanvas* c = MakeCanvas(hname);
-    c->cd();
+    CanvasStruct cs = MakeCanvas(hname, cfg);
 
     std::vector<TGraphAsymmErrors*> clones(nHLT, nullptr);
     for(std::size_t t=0; t<nHLT; t++){
@@ -117,39 +162,42 @@ inline void SaveEfficiencyCanvas_hiBin(const JetEfficiencyOutputStruct& out, con
         StyleGraph(clones[t], t);
     }
 
+    cs.plotpad->cd();
     clones[0]->Draw("ap");
     clones[0]->SetTitle("");
     clones[0]->GetXaxis()->SetTitle("p_{T,leading jet} (GeV)");
     clones[0]->GetYaxis()->SetTitle(effType == JetEfficiencyOutputStruct::kFull ? "HLT / MinBias" : "HLT / L1 Seed");
     clones[0]->GetXaxis()->CenterTitle(true);
     clones[0]->GetYaxis()->CenterTitle(true);
+    clones[0]->GetXaxis()->SetTitleOffset(1.0);
+    clones[0]->GetYaxis()->SetTitleOffset(1.0);
     clones[0]->SetMinimum(0.0);
     clones[0]->SetMaximum(cfg.effmax);
     clones[0]->GetXaxis()->SetRangeUser(cfg.ptmin, cfg.ptmax);
 
     for(std::size_t t=1; t<nHLT; t++){clones[t]->Draw("p same");}
     DrawRefLine(cfg.ptmin, cfg.ptmax);
+    
+    std::vector<TString> infoEntries;
+    if(!cfg.runNumber.IsNull()){infoEntries.push_back(cfg.runNumber);}
+    if(!cfg.globalTag.IsNull()){infoEntries.push_back(cfg.globalTag);}
+    if(!cfg.jetAlgo.IsNull()){infoEntries.push_back(cfg.jetAlgo);}
+    infoEntries.push_back(hiBin.title);
+    infoEntries.push_back(etaBin.title);
 
-    TLegend* l = MakeLegend(cfg.legxmin, cfg.legymin, cfg.legxmax, cfg.legymax);
-    for(std::size_t t=0; t<nHLT; t++){l->AddEntry(clones[t], sHLTrigs[t], "lp");}
-    if(!cfg.runNumber.IsNull()){l->AddEntry((TObject*)0, cfg.runNumber, "");}
-    if(!cfg.globalTag.IsNull()){l->AddEntry((TObject*)0, cfg.globalTag, "");}
-    if(!cfg.jetAlgo.IsNull()){l->AddEntry((TObject*)0, cfg.jetAlgo,   "");}
-    l->AddEntry((TObject*)0, hiBin.title, "");
-    l->AddEntry((TObject*)0, etaBin.title, "");
-    if(matchType == JetSpectraStruct::kDR){l->AddEntry((TObject*)0, "#Delta R < 0.3", "");}
-    l->Draw("same");
+    DrawLegends(cs.legpad, clones, infoEntries, matchType, cfg.legfrac);
 
-    c->SaveAs(outDir + "/" + hname + ".png");
- 
-    delete c;
-    delete l;
+    cs.c->SaveAs(outDir + "/" + hname + ".png");
+    delete cs.c;
 }
 
 inline void SaveEfficiencyPlots( const JetEfficiencyOutputStruct& out, const BinningStruct& bins, const PlotConfig& cfg){
-    gStyle->SetImageScaling(3.0);
+    gStyle->SetImageScaling(cfg.imageScaling);
     gStyle->SetTitleSize(0.04, "XY");
     gStyle->SetLabelSize(0.04, "XY");
+    gStyle->SetGridColor(kGray+2);
+    gStyle->SetGridWidth(2);
+    gStyle->SetGridStyle(1);
 
     TDatime now;
     TString timestamp = Form("%04d-%02d-%02d_%02d-%02d-%02d", now.GetYear(), now.GetMonth(), now.GetDay(), now.GetHour(), now.GetMinute(), now.GetSecond());
