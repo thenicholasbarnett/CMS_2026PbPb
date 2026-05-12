@@ -25,7 +25,11 @@ Some executable scripts in this repository can be used for general purposes. Inc
 <summary>MakeCondor.sh</summary>
 
 <h3>Submitting Condor Jobs</h3>
-HTCondor or Condor is a batch job scheduler or execution system. Condor can be accessed through CMSSW, and these scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By simply changing cmssw_dir inside run_job.sh you can also use these bash scripts to schedule Condor jobs with ease. Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
+HTCondor or Condor is a batch job scheduler or execution system. Condor can be accessed through CMSSW, and these scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By simply changing cmssw_dir inside run_job.sh you can also use these bash scripts to schedule Condor jobs with ease. 
+
+<br>
+
+Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
 
 ```
 ./executable/Condor/MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
@@ -48,6 +52,8 @@ Below is a working example of how to submit some condor jobs using my files and 
 hadd is a ROOT command that will essentially add ttrees and histograms for multiple files, iff these files have matching names for histograms, ttrees, branchs, etc. 
 hadd can be executed like this 'hadd output.root path/to/inputs/*.root'
 When using hadd on very many files the process becomes slow and more likely to fail. This issue can be avoided by making bunches of files, using hadd on these bunches to get outputs, then using hadd on the ouputs. When needed this bunching process can be repeated until there is only one output file. The bash script batch_hadd.sh does exactly this, but multiple times simultaneously based on the specified number of cores provided when executing.
+
+<br>
 
 Below is a generic example of how to execute batch_hadd.sh in a terminal. 
 
