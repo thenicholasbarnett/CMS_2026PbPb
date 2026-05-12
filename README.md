@@ -25,16 +25,16 @@ Executable scipts in this repository are described below, each with both a gener
   <details>
     <summary> MakeCondor.sh </summary>
   
-    ### Submitting Condor Jobs
-    HTCondor or Condor is a batch job scheduler or execution system. Condor can be used with CMSSW, and this script can make this a smooth procedure. There setup consists of one driver, one run wrapper, and one submit generator. By changing the paths specified in cmssw_dir inside run_job.sh, template inside MakeCondor.sh, and condor_base inside MakeCondor_template.sh you can also use these bash scripts to run Condor jobs with ease. The MakeCondor_template.sh and run_job.sh should be moved to the condor_base
-    Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
-    ```
-    ./executable/Condor/MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
-    ```
-    Below is a working example of how to submit some condor jobs using my files and writing to my directory. 
-    ```
-    ./executable/Condor/MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt /eos/cms/store/group/phys_heavyions/nbarnett/JetCalibrations/2024/smeared_dijet_asymmetries
-    ```
+  ### Submitting Condor Jobs
+  HTCondor or Condor is a batch job scheduler or execution system. Condor can be used with CMSSW, and this script can make this a smooth procedure. There setup consists of one driver, one run wrapper, and one submit generator. By changing the paths specified in cmssw_dir inside run_job.sh, template inside MakeCondor.sh, and condor_base inside MakeCondor_template.sh you can also use these bash scripts to run Condor jobs with ease. The MakeCondor_template.sh and run_job.sh should be moved to the condor_base
+  Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
+  ```
+  ./executable/Condor/MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
+  ```
+  Below is a working example of how to submit some condor jobs using my files and writing to my directory. 
+  ```
+  ./executable/Condor/MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt /eos/cms/store/group/phys_heavyions/nbarnett/JetCalibrations/2024/smeared_dijet_asymmetries
+  ```
   </details>
   
   <details>
@@ -73,37 +73,39 @@ Executable scipts in this repository are described below, each with both a gener
   </details>
 </details>
 
-## Jet HLT Efficiency Executables
+<details>
+  <summary><h2>Jet HLT Efficiency Executables</h2></summary>
 
 Some of the executable scripts in this repositoryh are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
 
 <details>
   <summary> JetHLT_SpectraGenerator_PbPb_MC_lxplus.C </summary>
   
-### Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies
-```
-root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("path/to/input/filenames.txt","path/to/output.root")'
-```
-Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
-
-Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
-```
-root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
-```
-</details>
-
-<details>
-  <summary> JetHLT_EfficiencyGenerator.C </summary>
-
-### Generating Jet HLT Efficiencies
-```
-root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("path/to/input.root", "output.root")'
-```
-Above is an example of how to execute this script with generic inputs. This macro will take in the output from JetHLT_SpectraGenerator_PbPb_MC_lxplus.C, and makes jet trigger turn on curves from it. This script will generate the total jet trigger efficiency, that is the inefficiencies due to an HLT and its L1seed, and relative efficiency, being the inefficiency due to just the HLT. These efficiencies will be generated with and without offline-online object matching.
-Below is a working example using an appropriate output to make actual jet efficiencies.
-```
-root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
-```
+  ### Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies
+  ```
+  root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("path/to/input/filenames.txt","path/to/output.root")'
+  ```
+  Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests<sup>[1]</sup>. This is script uses one text file input list of ROOT files, with forests<sup>[1]</sup>, and produces one output ROOT file.
+  
+  Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
+  ```
+  root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
+  ```
+  </details>
+  
+  <details>
+    <summary> JetHLT_EfficiencyGenerator.C </summary>
+  
+  ### Generating Jet HLT Efficiencies
+  ```
+  root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("path/to/input.root", "output.root")'
+  ```
+  Above is an example of how to execute this script with generic inputs. This macro will take in the output from JetHLT_SpectraGenerator_PbPb_MC_lxplus.C, and makes jet trigger turn on curves from it. This script will generate the total jet trigger efficiency, that is the inefficiencies due to an HLT and its L1seed, and relative efficiency, being the inefficiency due to just the HLT. These efficiencies will be generated with and without offline-online object matching.
+  Below is a working example using an appropriate output to make actual jet efficiencies.
+  ```
+  root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
+  ```
+  </details>
 </details>
 
 #### Footnotes
