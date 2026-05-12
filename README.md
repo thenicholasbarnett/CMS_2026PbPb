@@ -4,8 +4,8 @@
     <td>This repository is made to be used for the 2026 PbPb collisions at the Compact Muon Solenoid to monitor jet trigger and offline object health, or otherwise help with run related activities and studies. Any and all contents of this repository are welcome to be used by anyone for any reason.</td>
   </tr>
 </table>
-
-# Executables
+<details>
+  <summary><h1>Executables</h1></summary>
 
 Executable scipts in this repository are described below, each with both a generic and working example.
 
@@ -104,6 +104,7 @@ Some of the executable scripts in this repositoryh are specifically used to gene
   ```
   root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
   ```
+  </details>
   </details>
 </details>
 
