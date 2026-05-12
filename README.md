@@ -61,7 +61,7 @@ Below is a working example of using batch_hadd.sh to add all the ROOT files from
 ./executable/batch_hadd.sh /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/output_jra_production_ak6pf_2025OO_all.root "/eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/*.root" 10 4
 ```
 
-> NOTE: When using this script you should change the working directory to your own directory.
+> NOTE: Change WORKDIR to the desired work area directory.
 
 </details>
 
