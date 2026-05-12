@@ -12,19 +12,20 @@ executable="$1"
 input_file="$2"
 output_file="$3"
 
+# Set this to your CMSSW src directory on lxplus, e.g.:
+# /afs/cern.ch/user/x/username/public/CondorWorkArea/CMSSW_X_Y_Z/src
+cmssw_dir=""
+
+echo "Setting up CMSSW environment..."
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cd "$cmssw_dir"
+eval "$(scramv1 runtime -sh)"
+cd "$start_dir"
+
 case "$executable" in
 
   *.py)
     echo "Running CMSSW python job"
-
-    source /cvmfs/cms.cern.ch/cmsset_default.sh
-
-    cmssw_dir="/afs/cern.ch/user/n/nbarnett/public/CondorWorkArea/CMSSW_16_1_0/src"
-    cd "$cmssw_dir"
-    eval "$(scramv1 runtime -sh)"
-
-    cd "$start_dir"
-
     cmsRun "$executable" "$input_file" "$output_file"
     ;;
 

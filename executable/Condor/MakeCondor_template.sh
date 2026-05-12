@@ -11,7 +11,7 @@ executable="$2"
 filelist="$3"
 output_base="$4"
 
-condor_base="/eos/cms/store/group/phys_heavyions/nbarnett/condor"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 today=$(date +"%Y-%m-%d_%H-%M-%S")
 
 exe_name="$(basename "$executable")"
@@ -23,11 +23,9 @@ cp "$executable" .
 cp "$filelist" .
 
 run_script="run_job.sh"
-
 cp "$condor_base/run_job.sh" "$run_script"
 chmod +x "$run_script"
 
-# Make sure the user executable is executable if it is a bash script
 if [[ "$exe_name" == *.sh ]]; then
   chmod +x "$exe_name"
 fi
