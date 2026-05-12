@@ -37,6 +37,8 @@ Below is a working example of how to submit some condor jobs using my files and 
 ./executable/Condor/MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt /eos/cms/store/group/phys_heavyions/nbarnett/JetCalibrations/2024/smeared_dijet_asymmetries
 ```
 
+> NOTE: Change cmssw_dir inside run_job.sh to desired CMSSW working area.
+
 </details>
 
 <details>
@@ -59,7 +61,7 @@ Below is a working example of using batch_hadd.sh to add all the ROOT files from
 ./executable/batch_hadd.sh /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/output_jra_production_ak6pf_2025OO_all.root "/eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/*.root" 10 4
 ```
 
-NOTE: When using this script you should change the working directory to your own directory.
+> NOTE: When using this script you should change the working directory to your own directory.
 
 </details>
 
