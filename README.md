@@ -17,8 +17,7 @@ Each executable script in this repository is documented in this table. Details o
 | JetHLT_SpectraGenerator_PbPb_MC_lxplus.C | Make leading jet pT spectra for different triggers |
 | JetHLT_EfficiencyGenerator.C             | Make jet trigger efficiencies                      |
 
-<details>
-<summary><h2>General Use Executables</h2></summary>
+<h2>General Use Executables</h2>
 
 Some executable scripts in this repository can be used for general purposes. Including scripts to help interact with Condor and CRAB as well as combine ROOT files.
 
@@ -82,10 +81,8 @@ root -l -q 'executable/Find_maxnref.C++("/afs/cern.ch/user/n/nbarnett/public/txt
 ```
 
 </details>
-</details>
 
-<details>
-<summary><h2>Jet HLT Efficiency Executables</h2></summary>
+<h2>Jet HLT Efficiency Executables</h2>
 
 Some of the executable scripts in this repositoryh are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
 
@@ -124,7 +121,6 @@ Below is a working example using an appropriate output to make actual jet effici
 root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
 ```
 
-</details>
 </details>
 
 ___
