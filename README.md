@@ -26,9 +26,7 @@ Some executable scripts in this repository can be used for general purposes. Inc
 
 <h3>Submitting Condor Jobs</h3>
 HTCondor or Condor is a batch job scheduler or execution system. Condor can be accessed through CMSSW, and these scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By simply changing cmssw_dir inside run_job.sh you can also use these bash scripts to schedule Condor jobs with ease. 
-
-<br>
-
+<br><br>
 Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
 
 ```
