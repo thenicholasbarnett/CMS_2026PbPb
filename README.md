@@ -121,6 +121,7 @@ root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("path/to/input.root", "out
 ```
 
 Above is an example of how to execute this script with generic inputs. This macro will take in the output from JetHLT_SpectraGenerator_PbPb_MC_lxplus.C, and makes jet trigger turn on curves from it. This script will generate the total jet trigger efficiency, that is the inefficiencies due to an HLT and its L1seed, and relative efficiency, being the inefficiency due to just the HLT. These efficiencies will be generated with and without offline-online object matching.
+<br><br>
 Below is a working example using an appropriate output to make actual jet efficiencies.
 
 ```
