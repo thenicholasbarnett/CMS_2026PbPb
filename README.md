@@ -84,7 +84,7 @@ root -l -q 'executable/Find_maxnref.C++("/afs/cern.ch/user/n/nbarnett/public/txt
 
 <h2>Jet HLT Efficiency Executables</h2>
 
-Some of the executable scripts in this repositoryh are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
+Some of the executable scripts in this repository are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
 
 <details>
 <summary>JetHLT_SpectraGenerator_PbPb_MC_lxplus.C</summary>
