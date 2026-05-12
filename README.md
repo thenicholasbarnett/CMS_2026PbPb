@@ -17,7 +17,7 @@ Each executable script in this repository is documented in this table. Details o
 | JetHLT_SpectraGenerator_PbPb_MC_lxplus.C | Make leading jet pT spectra for different triggers |
 | JetHLT_EfficiencyGenerator.C             | Make jet trigger efficiencies                      |
 
-<h2>General Use Executables</h2>
+>General Use Executables
 
 Some executable scripts in this repository can be used for general purposes. Including scripts to help interact with Condor and CRAB as well as combine ROOT files.
 
