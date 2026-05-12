@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "../header/Binning.h"
-#include "../header/TriggerMap_PbPb_MC.h"
-#include "../header/JetSpectraHistograms.h"
 #include "../header/JetEfficiency.h"
 #include "../header/JetEfficiencyPlotting.h"
+#include "../header/JetSpectraHistograms.h"
+#include "../header/JetTriggers_PbPb_MC.h"
 
 void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){
     

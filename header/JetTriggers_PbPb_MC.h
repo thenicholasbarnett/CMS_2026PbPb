@@ -1,5 +1,5 @@
-#ifndef TRIGGERMAP_PBPB_H
-#define TRIGGERMAP_PBPB_H
+#ifndef JETTRIGGERS_PBPB_H
+#define JETTRIGGERS_PBPB_H
 
 #include "TString.h"
 #include "Rtypes.h"
