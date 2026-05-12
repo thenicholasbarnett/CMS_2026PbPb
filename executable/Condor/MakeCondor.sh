@@ -11,7 +11,8 @@ executable="$2"
 filelist="$3"
 output_dir="$4"
 
-template="/eos/cms/store/group/phys_heavyions/nbarnett/condor/MakeCondor_template.sh"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+template="$SCRIPT_DIR/MakeCondor_template.sh"
 
 today=$(date +"%Y-%m-%d_%H-%M-%S")
 workdir="condor_${jobname}_${today}"
