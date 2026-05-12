@@ -1,5 +1,5 @@
-#ifndef EVENTMAP_MC_PBPB_H
-#define EVENTMAP_MC_PBPB_H
+#ifndef EVENTSTRUCTS_MC_PBPB_H
+#define EVENTSTRUCTS_MC_PBPB_H
 
 #include "TString.h"
 #include "Rtypes.h"

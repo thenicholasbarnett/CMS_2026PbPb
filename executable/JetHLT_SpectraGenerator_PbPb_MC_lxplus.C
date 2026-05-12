@@ -8,13 +8,13 @@
 #include <string>
 #include <stdexcept>
 
-#include "../header/BranchMapping.h"
-#include "../header/EventMap_MC_PbPb.h"
-#include "../header/JetMap.h"
-#include "../header/TriggerMap_PbPb_MC.h"
 #include "../header/Binning.h"
-#include "../header/JetSpectraHistograms.h"
+#include "../header/BranchMapping.h"
+#include "../header/EventStructs_MC_PbPb.h"
 #include "../header/JetSelection_PbPb.h"
+#include "../header/JetSpectraHistograms.h"
+#include "../header/JetStruct.h"
+#include "../header/JetTriggers_PbPb_MC.h"
 
 void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, const TString& output){
 

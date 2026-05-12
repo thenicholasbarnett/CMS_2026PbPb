@@ -16,9 +16,9 @@
 #include <iostream>
  
 #include "Binning.h"
-#include "TriggerMap_PbPb_MC.h"
-#include "JetSpectraHistograms.h"
 #include "JetEfficiency.h"
+#include "JetSpectraHistograms.h"
+#include "JetTriggers_PbPb_MC.h"
 
 struct PlotConfig{
     TString runNumber = "";

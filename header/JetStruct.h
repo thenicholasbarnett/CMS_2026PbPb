@@ -1,5 +1,5 @@
-#ifndef JETMAP_H
-#define JETMAP_H
+#ifndef JETSTRUCT_H
+#define JETSTRUCT_H
 
 #include "TString.h"
 #include "Rtypes.h"

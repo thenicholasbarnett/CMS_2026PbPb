@@ -10,8 +10,8 @@
 #include <stdexcept>
 
 #include "Binning.h"
-#include "TriggerMap_PbPb_MC.h"
 #include "JetSpectraHistograms.h"
+#include "JetTriggers_PbPb_MC.h"
 
 inline void GetHistograms(TFile* fi, const BinningStruct& bins, JetSpectraStruct& hists){
 
