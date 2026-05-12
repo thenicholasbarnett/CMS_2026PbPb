@@ -15,7 +15,9 @@ PATTERN="$2"
 GROUP_SIZE="${3:-50}"
 NJOBS="${4:-4}"
 
-WORKDIR="/eos/cms/store/group/phys_heavyions/nbarnett/hadd" 
+# Set this to the directory hadd is performed, e.g.:
+# /eos/cms/store/group/phys_heavyions/<username>/hadd
+WORKDIR="" 
 TMPDIR="$WORKDIR/hadd_tmp_$$"
 mkdir -p "$TMPDIR"
 
