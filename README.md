@@ -30,7 +30,7 @@ Some executable scripts in this repository can be used for general purposes. Inc
 
 HTCondor or Condor is a batch job scheduler or execution system. Condor can be accessed through CMSSW, and these scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By simply changing cmssw_dir inside run_job.sh you can also use these bash scripts to schedule Condor jobs with ease. 
 <br><br>
-Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
+Below is a generic terminal command one can use to execute MakeCondor.sh in an LXPLUS terminal after running `chmod +x MakeCondor.sh`, and after making the changes specified above.
 
 ```
 ./executable/Condor/MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
@@ -133,6 +133,13 @@ root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys
 ___
 
 <h3>Glossary</h3>
+
+<details>
+<summary>LXPLUS</summary>
+
+Linux Public Login User Service (LXPLUS) is the interactive logon service for CERN users. The LXPLUS services is comprised of 100 virtual machines provided by the CERN IT Department.  More information can be found at [lxplusdoc.web.cern.ch](https://lxplusdoc.web.cern.ch/)
+
+</details>
 
 <details>
 <summary>ROOT</summary>
