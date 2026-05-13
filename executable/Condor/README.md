@@ -4,38 +4,58 @@ HTCondor, formerly Condor, is a distributed high throughput computing system dev
 <br><br>
 <h1>HTCondor Job Submission</h1>
 
-Condor can be accessed through CMSSW, and these bash scripts can make this a smooth interaction. By specifying a working directory, with a CMSSW release, you can also use these bash scripts to schedule Condor jobs with ease.
+Condor can be accessed through CMSSW, and these bash scripts can make this a smooth interaction. By specifying a working directory, with a CMSSW release, you can also use these bash scripts to schedule Condor jobs with ease. Here is a set of three bash scripts acting as a Condor submission wrapper.
 
-<h2>Overview</h2>
+> Prerequisites: Access to LXPLUS and a CMSSW release on AFS or EOS
 
-This job submission setup consists of three bash scripts, each fulfilling a different role.
 <br>
 
 | Script | Role | Description |
-|---|---|---|
+|----|----|----|
 | `MakeCondor.sh` | Driver | Entry point called by the user. Creates a timestamped working directory and delegates to the template. |
 | `MakeCondor_template.sh` | Submit Generator | Generates the HTCondor submission file using a template, then submits the jobs. |
-| `run_job.sh` | Run Wrapper | Executed on the worker node. Sets up CMSSW runtime environment and runs the user-provided executable based on its type (`.py`, `.C`, or `.sh`). |
+| `run_job.sh` | Runtime Wrapper | Executed on the worker node. Sets up CMSSW runtime environment and runs the user-provided executable based on its type (`.py`, `.C`, or `.sh`). |
 
-<br>
+<h2>Usage</h2>
 
-> NOTE: Change CMSSW_src on line 17 of run_job.sh to desired CMSSW working area.
+Specify which CMSSW release to use by setting `CMSSW_src` on line 17 of `run_job.sh` to the desired CMSSW working area before submitting jobs. The CMSSW release will be pinned on any node executing a job submitted through this wrapper, fixing the versions of ROOT, python, and all other dependencies for reproducible job execution.
 
-<br>
-
-Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after changing CMSSW_src inside run_job.sh, and  running `chmod +x MakeCondor.sh`.
+Executing `MakeCondor.sh` with the following command will submit jobs to an HTCondor scheduler. A working directory is made in the directory staged when executing `MakeCondor.sh`.
 
 ```
-MakeCondor.sh JobName /path/to/executable.C(or executable.py/executable.sh) /path/to/filelist.txt /path/to/store/output/files
+MakeCondor.sh JOBNAME EXECUTABLE FILELIST OUTPUT_DIR
 ```
 
-<br>
+| Argument | Description |
+| - | - |
+| `JOBNAME` | Label for set of jobs being submitted. Used in directory and file naming. |
+| `EXECUTABLE` | Path to macro executing on each worker node for each input file. |
+| `FILELIST` | Path to plain text file containing one input file on every line. One Condor job is submitted for each input file. |
+| `OUTPUT_DIR` | Directory to store output files. A timestamped output subdirectory is made here. |
 
-Below is a working example of how to submit some condor jobs using my files and writing to the currently staged directory.
+<details>
+<summary><h3>Working Directory</h3></summary>
+
+The working directory is where the Condor submission file is made and submitted. The filelist, executable, jobname, submission file, submit generator, and runtime wrapper are all put into this working directory. The working directory is timestamped and contains everything used in the Condor submission. The name and output structure of the working directory is shown below.
 
 ```
-MakeCondor.sh smeared_dijet_asymmetries_MC_2024ppRef /afs/cern.ch/user/n/nbarnett/public/4_6_2026_JER/smeared_asymmetry_generator_condor_2024ppRef_MC_4_9_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2024ppRef_MC_filenames/forests_2024ppRef_MC_withPU_10files.txt .
+condor_<JOBNAME>_<YEAR-MONTH-DAY_HOUR-MINUTE-SECOND>/
+├── MakeCondor_<JOBNAME>.sh
+├── submit_<JOBNAME>.condor
+├── <EXECUTABLE>
+├── <FILELIST>
+├── run_job.sh
+└── logs/
+    ├── out/   # stdout per job
+    ├── err/   # stderr per job
+    └── log/   # HTCondor log per job
 ```
+
+</details>
+
+<h2>Example</h2>
+
+> Don't forget to run `chmod +x MakeCondor.sh` before executing driver
 
 <h3>Resources</h3>
 
