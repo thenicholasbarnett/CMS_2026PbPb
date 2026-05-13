@@ -23,7 +23,6 @@ cp "$executable" .
 cp "$filelist" .
 
 run_script="run_job.sh"
-cp "$condor_base/run_job.sh" "$run_script"
 chmod +x "$run_script"
 
 if [[ "$exe_name" == *.sh ]]; then
