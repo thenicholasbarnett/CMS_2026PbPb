@@ -1,8 +1,8 @@
-<img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="500"/>
+<img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="700"/>
 
 <h3>Submitting Condor Jobs</h3>
 
-> NOTE: Change cmssw_dir inside run_job.sh to desired CMSSW working area.
+> NOTE: Change CMSSW_src inside run_job.sh to desired CMSSW working area.
 
 HTCondor or Condor is a batch job scheduler or execution system. Condor can be accessed through CMSSW, and these scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By simply changing cmssw_dir inside run_job.sh you can also use these bash scripts to schedule Condor jobs with ease. 
 <br><br>
