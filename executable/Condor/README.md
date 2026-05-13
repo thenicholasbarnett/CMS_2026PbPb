@@ -1,10 +1,12 @@
 <img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="700"/>
 
+HTCondor, formerly Condor, is a distributed high throughput computing system developed at University of Wisconsin-Madison. This is essentially a specialized workload management system. Users submit jobs to a scheduler, these jobs are placed in a queue, and HTCondor chooses when and where to run the jobs. HTCondor is open source with extensive documentation. See the following links for more useful information regarding HTCondor.
+* [Source Code Repository](https://github.com/htcondor/htcondor)
+* [Documentation](https://htcondor.org/documentation/htcondor.html)
+* [CERN TWiki](https://twiki.cern.ch/twiki/bin/view/CENF/NeutrinoClusterCondorDoc)
 <h3>Submitting Condor Jobs</h3>
-
-HTCondor or Condor is a batch job scheduler or execution system. 
 <br><br>
-Condor can be accessed through CMSSW, and these scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By specifying a working directory, with a CMSSW release, for the run wrapper you can also use these bash scripts to schedule Condor jobs with ease. 
+Condor can be accessed through CMSSW, and these bash scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By specifying a working directory, with a CMSSW release, for the run wrapper you can also use these bash scripts to schedule Condor jobs with ease. 
 <br><br>
 Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after changing CMSSW_src inside run_job.sh, and  running `chmod +x MakeCondor.sh`.
 
