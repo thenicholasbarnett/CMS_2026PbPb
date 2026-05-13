@@ -14,11 +14,11 @@ output_file="$3"
 
 # Set this to your CMSSW src directory on lxplus, e.g.:
 # /afs/cern.ch/user/x/username/public/CondorWorkArea/CMSSW_X_Y_Z/src
-cmssw_dir=""
+CMSSW_src=""
 
 echo "Setting up CMSSW environment..."
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd "$cmssw_dir"
+cd "$CMSSW_src"
 eval "$(scramv1 runtime -sh)"
 cmsenv
 cd "$start_dir"
