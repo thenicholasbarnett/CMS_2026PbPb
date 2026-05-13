@@ -12,7 +12,7 @@ executable="$1"
 input_file="$2"
 output_file="$3"
 
-# Set this to your CMSSW src directory on lxplus, e.g.:
+# Set this to your CMSSW src directory on AFS or EOS, e.g.:
 # /afs/cern.ch/user/x/username/public/CondorWorkArea/CMSSW_X_Y_Z/src
 CMSSW_src=""
 
