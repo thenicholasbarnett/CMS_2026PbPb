@@ -31,9 +31,76 @@ MakeCondor.sh JOBNAME EXECUTABLE FILELIST OUTPUT_DIR
 | `JOBNAME` | Label for set of jobs being submitted. Used in directory and file naming. |
 | `EXECUTABLE` | Path to macro executing on each worker node for each input file. |
 | `FILELIST` | Path to plain text file containing one input file on every line. One Condor job is submitted for each input file. |
-| `OUTPUT_DIR` | Directory to store output files. A timestamped output subdirectory is made here. |
+| `OUTPUT_DIR` | Directory to store output ROOT files. A timestamped output subdirectory is made here. |
+
+<h2>Working Example</h2>
+
+In this example a C++ macro is generating dijet asymmetries from ten HiForest files made from a hard QCD MC sample of the 2024 pp reference run (5.36 TeV) generated wth Pythia. This pp reference run was collected for comparisons with the PbPb collisions that followed shortly after.
+
+> Don't forget to run `chmod +x MakeCondor.sh` before executing driver
+
+```
+./MakeCondor.sh DijetAsymmetry_2024ppRef /afs/cern.ch/user/n/nbarnett/public/executable_files/asymmetry_generator_condor_2024ppRef_MC_5_12_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filelists/filelist_HiForest_2024ppref_MC_withPU_10files.txt .
+```
+
+The filelist used is shown below. This format is needed to properly use this Condor submission wrapper.
+
+```
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1006.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1007.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1008.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1009.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_100.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1010.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1011.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1012.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1013.root
+/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1014.root
+```
+
+<h3>Condor Commands</h3>
+
+These commands can be run in a terminal logged into LXPLUS to interact with HTCondor. These are the most common Condor commands, but there are many more.
+
+| Command | Description |
+| - | - |
+| `condor_q` | Shows job queue on the local schedd. |
+| `condor_rm <JOB_ID>` | Removes job with specified ID from the queue. |
+
+<h3>Executable Interface</h3></summary>
+
+This Condor submission wrapper as written works with an exexutable that accepts exactly two positional arguments. This convention is enforced within `run_job.sh`, regardless of the executable file type. The executable provided will be executed in one of the following ways. Compatability of this execution with the specified executable should be tested before any jobs requests are handed off to the schedule daemon assigned to the current LXPLUS node.
+
+```
+./Executable.sh <INPUT_FILE> <OUTPUT.root>
+```
+
+```
+root -l -b -q Executable.C <INPUT_FILE> <OUTPUT.root>
+```
+
+```
+cmsRun Executable.py <INPUT_FILE> <OUTPUT.root>
+```
 
 <details>
+
+<summary><h3>More Condor Commands</h3></summary>
+
+| Command | Description |
+| - | - |
+| `condor_q` | Shows job queue on schedule daemon (schedd) asigned to staged LXPLUS node. |
+
+</details>
+
+<details>
+
+<summary>
+
+</details>
+
+<details>
+
 <summary><h3>Working Directory</h3></summary>
 
 The working directory is where the Condor submission file is made and submitted. The filelist, executable, jobname, submission file, submit generator, and runtime wrapper are all put into this working directory. The working directory is timestamped and contains everything used in the Condor submission. The name and output structure of the working directory is shown below.
@@ -52,10 +119,6 @@ condor_<JOBNAME>_<YEAR-MONTH-DAY_HOUR-MINUTE-SECOND>/
 ```
 
 </details>
-
-<h2>Example</h2>
-
-> Don't forget to run `chmod +x MakeCondor.sh` before executing driver
 
 <h3>Resources</h3>
 
