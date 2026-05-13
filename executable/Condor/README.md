@@ -1,3 +1,5 @@
+<img src="../../image/HTCondor_logo.png" alt="CMS logo" width="500"/>
+
 <h3>Submitting Condor Jobs</h3>
 
 > NOTE: Change cmssw_dir inside run_job.sh to desired CMSSW working area.
