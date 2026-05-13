@@ -20,6 +20,7 @@ echo "Setting up CMSSW environment..."
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd "$cmssw_dir"
 eval "$(scramv1 runtime -sh)"
+cmsenv
 cd "$start_dir"
 
 case "$executable" in
