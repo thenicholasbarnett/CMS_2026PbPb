@@ -12,15 +12,15 @@ FILELIST="$3"
 OUTPUT_DIR="$4"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-template="$SCRIPT_DIR/MakeCondor_template.sh"
+TEMPLATE="$SCRIPT_DIR/MakeCondor_template.sh"
 
-today=$(date +"%Y-%m-%d_%H-%M-%S")
-workdir="condor_${JOBNAME}_${today}"
+TODAY=$(date +"%Y-%m-%d_%H-%M-%S")
+WORKDIR="condor_${JOBNAME}_${TODAY}"
 
 mkdir -p "$workdir"
 cd "$workdir" || exit 1
 
-cp "$template" "./MakeCondor_${JOBNAME}.sh"
+cp "$TEMPLATE" "./MakeCondor_${JOBNAME}.sh"
 cp "$SCRIPT_DIR/run_job.sh" "./run_job.sh" 
 chmod +x "./MakeCondor_${JOBNAME}.sh"
 
