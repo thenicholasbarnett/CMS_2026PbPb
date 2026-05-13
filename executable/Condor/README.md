@@ -9,9 +9,9 @@ HTCondor, formerly Condor, is a distributed high throughput computing system dev
 
 Condor can be accessed through CMSSW, and these bash scripts can make this a smooth interaction. This setup consists of one driver, one run wrapper, and one submit generator. By specifying a working directory, with a CMSSW release, for the run wrapper you can also use these bash scripts to schedule Condor jobs with ease. 
 
-<br>
-
 > NOTE: Change CMSSW_src on line 17 of run_job.sh to desired CMSSW working area.
+
+<br>
 
 Below is a generic terminal command one can use to execute MakeCondor.sh in an lxplus terminal after changing CMSSW_src inside run_job.sh, and  running `chmod +x MakeCondor.sh`.
 
