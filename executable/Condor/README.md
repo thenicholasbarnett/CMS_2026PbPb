@@ -1,4 +1,4 @@
-<img src="../../image/HTCondor_logo.png" alt="CMS logo" width="500"/>
+<img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="500"/>
 
 <h3>Submitting Condor Jobs</h3>
 
