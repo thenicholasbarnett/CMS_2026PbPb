@@ -21,6 +21,7 @@ mkdir -p "$workdir"
 cd "$workdir" || exit 1
 
 cp "$template" "./MakeCondor_${jobname}.sh"
+cp "$SCRIPT_DIR/run_job.sh" "./run_job.sh" 
 chmod +x "./MakeCondor_${jobname}.sh"
 
 "./MakeCondor_${jobname}.sh" "$jobname" "$executable" "$filelist" "$output_dir"
