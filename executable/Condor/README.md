@@ -1,10 +1,10 @@
 <img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="700"/>
 
-HTCondor, formerly Condor, is a distributed high throughput computing system developed at University of Wisconsin-Madison, providing a specialized workload management system. Users submit jobs to a scheduler, these jobs are placed in a queue, and HTCondor chooses when and where to run the jobs. HTCondor is open source, licensed under Apache 2.0, with extensive documentation. Please see the resources section for additional information regarding HTCondor.
+HTCondor, formerly Condor, is a distributed high throughput computing system developed at University of Wisconsin-Madison, providing a specialized workload management system. Users submit jobs to a scheduler, these jobs are placed in a queue, and HTCondor chooses when and where to run the jobs. HTCondor is open source, licensed under Apache 2.0, with extensive documentation. Please see the resources section for additional information.
 <br><br>
 <h1>HTCondor Job Submission</h1>
 
-Condor can be accessed through CMSSW, and these bash scripts can make this a smooth interaction. By specifying a working directory, with a CMSSW release, you can also use these bash scripts to schedule Condor jobs with ease. Here is a set of three bash scripts acting as a Condor submission wrapper.
+Condor can be accessed through LXPLUS, and these bash scripts can make this a smooth interaction. By specifying a working directory, with a CMSSW release, you can also use these bash scripts to schedule Condor jobs with ease. Here is a set of three bash scripts acting as a Condor submission wrapper.
 
 > Prerequisites: Access to LXPLUS and a CMSSW release on AFS or EOS
 
@@ -58,15 +58,6 @@ The filelist used is shown below. This format is needed to properly use this Con
 /eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1014.root
 ```
 
-<h3>Condor Commands</h3>
-
-These commands can be run in a terminal logged into LXPLUS to interact with HTCondor. These are the most common Condor commands, but there are many more.
-
-| Command | Description |
-| - | - |
-| `condor_q` | Shows job queue on the local schedd. |
-| `condor_rm <JOB_ID>` | Removes job with specified ID from the queue. |
-
 <h3>Executable Interface</h3></summary>
 
 This Condor submission wrapper as written works with an exexutable that accepts exactly two positional arguments. This convention is enforced within `run_job.sh`, regardless of the executable file type. The executable provided will be executed in one of the following ways. Compatability of this execution with the specified executable should be tested before any jobs requests are handed off to the schedule daemon assigned to the current LXPLUS node.
@@ -82,20 +73,7 @@ root -l -b -q Executable.C <INPUT_FILE> <OUTPUT.root>
 ```
 cmsRun Executable.py <INPUT_FILE> <OUTPUT.root>
 ```
-
-<details>
-
-<summary><h3>More Condor Commands</h3></summary>
-
-| Command | Description |
-| - | - |
-| `condor_q -better-analyze <ID>` | Shows job queue on schedule daemon (schedd) asigned to staged LXPLUS node. |
-
-</details>
-
-<details>
-
-<summary><h3>Working Directory</h3></summary>
+<h3>Working Directory</h3>
 
 The working directory is where the Condor submission file is made and submitted. The filelist, executable, jobname, submission file, submit generator, and runtime wrapper are all put into this working directory. The working directory is timestamped and contains everything used in the Condor submission. The name and output structure of the working directory is shown below.
 
@@ -111,6 +89,17 @@ condor_<JOBNAME>_<YEAR-MONTH-DAY_HOUR-MINUTE-SECOND>/
     ├── err/   # stderr per job
     └── log/   # HTCondor log per job
 ```
+
+<details>
+
+<summary><h3>Condor Commands</h3></summary>
+
+These commands can be run in a terminal logged into LXPLUS to interact with HTCondor. These are the most common Condor commands, but there are many more.
+
+| Command | Description |
+| - | - |
+| `condor_q` | Shows job queue on the local schedd. |
+| `condor_rm <JOB_ID>` | Removes job with specified ID from the queue. |
 
 </details>
 
