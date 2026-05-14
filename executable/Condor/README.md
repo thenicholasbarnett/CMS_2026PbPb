@@ -58,9 +58,9 @@ The filelist used is shown below. This format is needed to properly use this Con
 /eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1014.root
 ```
 
-<h3>Executable Interface</h3></summary>
+<h3>Executable Interface</h3>
 
-This Condor submission wrapper as written works with an exexutable that accepts exactly two positional arguments. This convention is enforced within `run_job.sh`, regardless of the executable file type. The executable provided will be executed in one of the following ways. Compatability of this execution with the specified executable should be tested before any jobs requests are handed off to the schedule daemon assigned to the current LXPLUS node.
+This Condor submission wrapper as written works with an executable that accepts exactly two positional arguments. This convention is enforced within `run_job.sh`, regardless of the executable file type. The executable provided will be executed in one of the following ways. Compatability of this execution with the specified executable should be tested before any jobs requests are handed off to the schedule daemon assigned to the current LXPLUS node.
 
 ```
 ./Executable.sh <INPUT_FILE> <OUTPUT.root>
