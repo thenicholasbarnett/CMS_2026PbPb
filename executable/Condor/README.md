@@ -1,6 +1,6 @@
 <img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="700"/>
 
-HTCondor, formerly Condor, is a distributed high throughput computing system developed at University of Wisconsin-Madison. This is essentially a specialized workload management system. Users submit jobs to a scheduler, these jobs are placed in a queue, and HTCondor chooses when and where to run the jobs. HTCondor is open source with extensive documentation. Please see additional useful information regarding HTCondor in the resources section.
+HTCondor, formerly Condor, is a distributed high throughput computing system developed at University of Wisconsin-Madison, providing a specialized workload management system. Users submit jobs to a scheduler, these jobs are placed in a queue, and HTCondor chooses when and where to run the jobs. HTCondor is open source, licensed under Apache 2.0, with extensive documentation. Please see the resources section for additional information regarding HTCondor.
 <br><br>
 <h1>HTCondor Job Submission</h1>
 
@@ -89,13 +89,7 @@ cmsRun Executable.py <INPUT_FILE> <OUTPUT.root>
 
 | Command | Description |
 | - | - |
-| `condor_q` | Shows job queue on schedule daemon (schedd) asigned to staged LXPLUS node. |
-
-</details>
-
-<details>
-
-<summary>
+| `condor_q -better-analyze <ID>` | Shows job queue on schedule daemon (schedd) asigned to staged LXPLUS node. |
 
 </details>
 
