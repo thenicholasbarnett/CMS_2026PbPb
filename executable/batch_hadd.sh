@@ -6,13 +6,15 @@ PATTERN="$2"
 GROUP_SIZE="${3:-50}"
 NJOBS="${4:-4}"
 
-MY_TMPDIR=$(mktemp -d /tmp/hadd_tmp_XXXXXX)
+EOS_WORKDIR="/eos/cms/store/group/phys_heavyions/nbarnett/hadd"
+MY_TMPDIR="${EOS_WORKDIR}/hadd_tmp_$$"
+eos mkdir -p "$MY_TMPDIR"
 
 mapfile -t FILES < <(ls $PATTERN 2>/dev/null | sort)
 
 if (( ${#FILES[@]} == 0 )); then
     echo "No files matched: $PATTERN"
-    rm -rf "$MY_TMPDIR"
+    eos rm -r "$MY_TMPDIR"
     exit 1
 fi
 
@@ -55,10 +57,10 @@ while (( ${#current_files[@]} > 1 )); do
 done
 
 echo "Writing final output: ${OUT}"
-xrdcp "${current_files[0]}" "$OUT"
+mv "${current_files[0]}" "$OUT"
 
 echo "Cleaning up ${MY_TMPDIR}"
-rm -rf "$MY_TMPDIR"
+eos rm -r "$MY_TMPDIR"
 
 echo ""
 echo "=== Merge Summary ==="
