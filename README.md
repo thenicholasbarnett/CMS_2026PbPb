@@ -21,13 +21,6 @@ Each executable script in this repository is documented in this table. Details o
 Some executable scripts in this repository can be used for general purposes. Including scripts to help interact with Condor and CRAB as well as combine ROOT files.
 
 <details>
-<summary>Submitting Condor Jobs</summary>
-
-Go to executable/Condor for extensive README.md or visit [github.com/thenicholasbarnett/cms-condor-wrapper](https://github.com/thenicholasbarnett/cms-condor-wrapper)
-
-</details>
-
-<details>
 <summary>batch_hadd.sh</summary>
 
 <h3>Combining Many ROOT Files</h3>
@@ -113,6 +106,9 @@ root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys
 
 </details>
 
+<h2>Submitting Condor Jobs</h2>
+
+In this, and in a seperate, repository is a useful HTCondor wrapper, which makes submitting Condor jobs on LXPLUS easy (and fun!). Go to executable/Condor for extensive README.md or visit [github.com/thenicholasbarnett/cms-condor-wrapper](https://github.com/thenicholasbarnett/cms-condor-wrapper)
 ___
 
 <h3>Glossary</h3>
