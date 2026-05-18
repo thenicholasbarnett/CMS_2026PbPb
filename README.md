@@ -108,7 +108,7 @@ root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys
 
 <h2>Submitting Condor Jobs</h2>
 
-In this, and in a seperate, repository is a useful HTCondor wrapper, which makes submitting Condor jobs on LXPLUS easy (and fun!). Go to executable/Condor for extensive README.md or visit [github.com/thenicholasbarnett/cms-condor-wrapper](https://github.com/thenicholasbarnett/cms-condor-wrapper)
+An HTCondor wrapper for easy (and fun!) Condor job submission on LXPLUS lives in this repo and [a separate one](https://github.com/thenicholasbarnett/cms-condor-wrapper) — see executable/Condor for the full README.
 ___
 
 <h3>Glossary</h3>
