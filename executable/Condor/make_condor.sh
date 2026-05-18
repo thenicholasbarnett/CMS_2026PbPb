@@ -1,47 +1,57 @@
 #!/bin/bash
 set -euo pipefail
 
-if [[ $# -ne 4 ]]; then
-  echo "Usage: $0 JOBNAME EXECUTABLE FILELIST OUTPUT_DIR" >&2
+if [[ $# -lt 4 || $# -gt 5 ]]; then
+  echo "Usage: $0 JOBNAME EXECUTABLE FILELIST OUTPUT_DIR [--no-submit|-n]" >&2
   exit 1
 fi
 
-jobname="$1"
-executable="$2"
-filelist="$3"
-output_base="$4"
+JOBNAME="$1"
+EXECUTABLE="$(realpath "$2")"
+FILELIST="$(realpath "$3")"
+OUTPUT_DIR="$(realpath "$4")"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-today=$(date +"%Y-%m-%d_%H-%M-%S")
-
-exe_name="$(basename "$executable")"
-filelist_name="$(basename "$filelist")"
-
-echo "Copying executable and filelist..."
-
-cp "$executable" .
-cp "$filelist" .
-
-run_script="run_job.sh"
-chmod +x "$run_script"
-
-if [[ "$exe_name" == *.sh ]]; then
-  chmod +x "$exe_name"
+NO_SUBMIT=false
+if [[ $# -eq 5 && ( "$5" == "--no-submit" || "$5" == "-n" ) ]]; then
+  NO_SUBMIT=true
+elif [[ $# -eq 5 ]]; then
+  echo "Unknown flag: $5" >&2
+  exit 1
 fi
 
-logdir="logs"
-mkdir -p "$logdir/out" "$logdir/err" "$logdir/log"
+TODAY=$(date +"%Y-%m-%d_%H-%M-%S")
+WORKDIR="condor_${JOBNAME}_${TODAY}"
+WRAPPER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+chmod +x runtime_wrapper.sh
 
-final_output_dir="${output_base}/condor_${jobname}_${today}"
-mkdir -p "$final_output_dir"
+echo "Making working directory: ${WORKDIR}"
 
-submission_file="submit_${jobname}.condor"
+mkdir -p "${WORKDIR}"
+(
+    cd "${WORKDIR}"
 
-echo "Creating condor submission file..."
+    EXE_NAME="$(basename "${EXECUTABLE}")"
+    FILELIST_NAME="$(basename "${FILELIST}")"
 
-cat > "$submission_file" <<EOF
+    echo "Copying files to working directory..."
+
+    cp "${EXECUTABLE}" .
+    cp "${FILELIST}" .
+
+    if [[ "${EXE_NAME}" == *.sh ]]; then
+        chmod +x "${EXE_NAME}"
+    fi
+
+    mkdir -p logs/out logs/err logs/log
+
+    mkdir -p "${OUTPUT_DIR}/${WORKDIR}"
+
+    SUBMISSION_FILE="submit_${JOBNAME}.condor"
+    echo "Making Condor submission file: ${SUBMISSION_FILE}"
+
+    cat > "${SUBMISSION_FILE}" <<EOF
 Universe                = vanilla
-Executable              = $run_script
+Executable              = ${WRAPPER_DIR}/runtime_wrapper.sh
 
 +JobFlavour             = "longlunch"
 
@@ -50,36 +60,38 @@ when_to_transfer_output = ON_EXIT
 
 request_cpus            = 4
 
-Transfer_Input_Files    = $(pwd)/$run_script,$(pwd)/$exe_name
-
+Transfer_Input_Files    = ${WRAPPER_DIR}/runtime_wrapper.sh,$(pwd)/${EXE_NAME}
 EOF
 
-count=0
+    COUNT=0
 
-while IFS= read -r input_file; do
+    while IFS= read -r INPUT_FILE; do
 
-  # skip empty lines
-  [[ -z "$input_file" ]] && continue
+        [[ -z "${INPUT_FILE}" ]] && continue
 
-  output_file="${final_output_dir}/output_${jobname}_${count}.root"
+        OUTPUT_FILE="${OUTPUT_DIR}/${WORKDIR}/output_${JOBNAME}_${COUNT}.root"
 
-  cat >> "$submission_file" <<EOF
-Arguments = $exe_name $input_file $output_file
+        cat >> "${SUBMISSION_FILE}" <<EOF
+Arguments = ${EXE_NAME} ${INPUT_FILE} ${OUTPUT_FILE}
 
-Output    = $(pwd)/$logdir/out/job_${count}.out
-Error     = $(pwd)/$logdir/err/job_${count}.err
-Log       = $(pwd)/$logdir/log/job_${count}.log
+Output    = $(pwd)/logs/out/job_${COUNT}.out
+Error     = $(pwd)/logs/err/job_${COUNT}.err
+Log       = $(pwd)/logs/log/job_${COUNT}.log
 
 Queue
 
 EOF
+        COUNT=$((COUNT + 1))
 
-  count=$((count + 1))
+    done < "${FILELIST_NAME}"
 
-done < "$filelist_name"
+    if [[ "$NO_SUBMIT" == true ]]; then
+        echo "--no-submit flag enabled — skipping condor_submit."
+        echo "${COUNT} jobs in submission file: $(pwd)/${SUBMISSION_FILE}"
+    else
+        echo "Submitting ${COUNT} jobs..."
+        condor_submit "${SUBMISSION_FILE}"
+        echo "Done."
+    fi
 
-echo "Submitting $count jobs..."
-
-condor_submit "$submission_file"
-
-echo "Done."
+)

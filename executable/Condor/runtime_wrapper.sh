@@ -6,43 +6,45 @@ if [[ $# -ne 3 ]]; then
   exit 1
 fi
 
-start_dir="$(pwd)"
-
-executable="$1"
-input_file="$2"
-output_file="$3"
+START_DIR="$(pwd)"
+EXECUTABLE="$(realpath "$1")"
+INPUT="$(realpath "$2")"
+OUTPUT="$3"
 
 # Set this to your CMSSW src directory on AFS or EOS, e.g.:
-# /afs/cern.ch/user/x/username/public/CondorWorkArea/CMSSW_X_Y_Z/src
-CMSSW_src=""
+# /afs/cern.ch/user/x/username/public/condor/workArea/CMSSW_X_Y_Z/src
+CMSSW_SRC=""
 
-echo "Setting up CMSSW environment..."
+if [[ -z "${CMSSW_SRC}" ]]; then
+  echo "ERROR: CMSSW_SRC is not set in runtime_wrapper.sh" >&2
+  exit 1
+fi
+
+echo "Running in CMSSW environment: $(basename "$(dirname "${CMSSW_SRC}")")"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd "$CMSSW_src"
+cd "${CMSSW_SRC}"
 eval "$(scramv1 runtime -sh)"
 cmsenv
-cd "$start_dir"
+cd "${START_DIR}"
 
-case "$executable" in
+case "${EXECUTABLE}" in
 
-  *.py)
-    echo "Running CMSSW python job"
-    cmsRun "$executable" "$input_file" "$output_file"
-    ;;
+    *.py)
+        cmsRun "${EXECUTABLE}" "${INPUT}" "${OUTPUT}"
+        ;;
 
-  *.C)
-    echo "Running ROOT macro"
-    root -l -b -q "${executable}(\"${input_file}\", \"${output_file}\")"
-    ;;
+    *.C | *.cc | *.cpp | *.cxx)
+        root -l -b -q "${EXECUTABLE}(\"${INPUT}\", \"${OUTPUT}\")"
+        ;;
 
-  *.sh)
-    echo "Running bash script"
-    chmod +x "$executable"
-    "$executable" "$input_file" "$output_file"
-    ;;
+    *.sh)
+        chmod +x "${EXECUTABLE}"
+        "${EXECUTABLE}" "${INPUT}" "${OUTPUT}"
+        ;;
 
-  *)
-    echo "Unsupported executable type: $executable" >&2
-    exit 1
-    ;;
+    *)
+        echo "ERROR: Unsupported executable file extension ${EXECUTABLE##*.}" >&2
+        exit 1
+        ;;
+
 esac
