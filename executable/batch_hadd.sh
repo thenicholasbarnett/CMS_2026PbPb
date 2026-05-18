@@ -3,10 +3,10 @@ set -euo pipefail
 
 OUT="$1"
 PATTERN="$2"
-GROUP_SIZE="${3:-50}"
+GROUP_SIZE="${3:-10}"
 NJOBS="${4:-4}"
 
-EOS_WORKDIR="/eos/cms/store/group/phys_heavyions/nbarnett/hadd"
+EOS_WORKDIR=""
 MY_TMPDIR="${EOS_WORKDIR}/hadd_tmp_$$"
 eos mkdir -p "$MY_TMPDIR"
 
