@@ -73,11 +73,13 @@ Some of the executable scripts in this repository are specifically used to gener
 
 <h3>Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies</h3>
 
+This C++ macro can be compiled with `g++` into a standalone executable or interpreted directly with ROOT.
+
 ```
 root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp("path/to/input/filenames.txt","path/to/output.root")'
 ```
 
-Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests. This is script uses one text file input list of ROOT files, with forests, and produces one output ROOT file.
+Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_lxplus.cpp on a list of ROOT files with forests. This is script uses one text file input list of ROOT files, with forests, and produces one output ROOT file.
 
 Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
 
