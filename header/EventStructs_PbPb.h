@@ -1,5 +1,5 @@
-#ifndef EVENTSTRUCTS_MC_PBPB_H
-#define EVENTSTRUCTS_MC_PBPB_H
+#ifndef EVENTSTRUCTS_PBPB_H
+#define EVENTSTRUCTS_PBPB_H
 
 #include "TString.h"
 #include "Rtypes.h"
@@ -11,20 +11,22 @@
 struct EventStruct{
 
     // event variables //
-    // weight
-    Float_t w;
+    // weight is 1 for data and is mapped to a branch for MC
+    Float_t w = 1.0f;
     // vertex position
     Float_t vz;
     // centrality proxy
     Int_t hiBin;
 
     // mapping variables to branches
-    std::vector<std::pair<TString, void*>> BranchMap(){
-        return{
-            {"weight", &w},
+    // weight is mapped to a branch iff the file being processed is MC
+    std::vector<std::pair<TString, void*>> BranchMap(bool isMC){
+        std::vector<std::pair<TString, void*>> branches = {
             {"vz", &vz},
             {"hiBin", &hiBin}
         };
+        if(isMC) branches.push_back({"weight", &w});
+        return branches;
     }
 };
 
