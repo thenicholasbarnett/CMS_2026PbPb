@@ -13,7 +13,7 @@ Each executable script in this repository is documented in this table. Details o
 | ---------------------------------------- | -------------------------------------------------- |
 | batch_hadd.sh                            | Combine many ROOT files                            |
 | Find_maxnref.C                           | Find maximum nref in a filelist                    |
-| JetHLT_SpectraGenerator_PbPb_MC_lxplus.C | Make leading jet pT spectra for different triggers |
+| JetHLT_SpectraGenerator_PbPb_lxplus.cpp  | Make leading jet pT spectra for different triggers |
 | JetHLT_EfficiencyGenerator.C             | Make jet trigger efficiencies                      |
 
 <h2>General Use Executables</h2>
@@ -69,12 +69,12 @@ root -l -q 'executable/Find_maxnref.C++("/afs/cern.ch/user/n/nbarnett/public/txt
 Some of the executable scripts in this repository are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
 
 <details>
-<summary>JetHLT_SpectraGenerator_PbPb_MC_lxplus.C</summary>
+<summary>JetHLT_SpectraGenerator_PbPb_lxplus.cpp</summary>
 
 <h3>Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies</h3>
 
 ```
-root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("path/to/input/filenames.txt","path/to/output.root")'
+root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp("path/to/input/filenames.txt","path/to/output.root")'
 ```
 
 Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_MC_lxplus.C on a list of ROOT files with forests. This is script uses one text file input list of ROOT files, with forests, and produces one output ROOT file.
@@ -82,7 +82,7 @@ Above is a generic terminal command to execute the script JetHLT_SpectraGenerato
 Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
 
 ```
-root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.C++("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
+root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.cpp("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
 ```
 
 </details>
