@@ -10,19 +10,38 @@
 
 #include "../header/Binning.h"
 #include "../header/BranchMapping.h"
-#include "../header/EventStructs_MC_PbPb.h"
+#include "../header/EventStructs_PbPb.h"
 #include "../header/JetSelection_PbPb.h"
 #include "../header/JetSpectraHistograms.h"
 #include "../header/JetStruct.h"
 #include "../header/JetTriggers_PbPb_MC.h"
 
-void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, const TString& output){
+// minimum pt of jets to include
+static constexpr Float_t ptcut = 20.0;
 
-    // minimum pt of jets to include
-    static constexpr Float_t ptcut = 20.0;
+// more than number of jets in any event being processed
+static constexpr Int_t maxnref = 150;
 
-    // more than number of jets in any event being processed
-    static constexpr Int_t maxnref = 150;
+void run(const TString& input_file_list, const TString& output, bool isMC);
+
+int main(int argc, char* argv[]){
+    if(argc < 4){
+        std::cerr << "Usage: ./jet_tests <filelist.txt> <output.root> <isMC>" << std::endl;
+        return 1;
+    }
+    std::string isMCArg = argv[3];
+    if(isMCArg != "true" && isMCArg != "false" && isMCArg != "1" && isMCArg != "0"){
+        std::cerr << "ERROR: isMC must be true or false" << std::endl;
+        return 1;
+    }
+    bool isMC = (isMCArg == "true" || isMCArg == "1");
+    run(argv[1], argv[2], isMC);
+    return 0;
+}
+
+void JetHLT_SpectraGenerator_PbPb_lxplus(const TString& input_file_list, const TString& output, bool isMC){run(input_file_list, output, isMC);}
+ 
+void run(const TString& input_file_list, const TString& output, bool isMC){
 
     // ttree names
     const Int_t nTTrees = 4;
@@ -48,8 +67,8 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
     JetSpectraStruct hists(bins);
 
     // getting list of root files to process
-    ifstream myfile(input_file_list);
-    string filename;
+    std::ifstream myfile(input_file_list);
+    std::string filename;
 
     // keeping track of how many files have been processed
     int filenumber = 0;
@@ -65,7 +84,7 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
         fi->cd();
 
         // showing the file being processed in the terminal
-        cout<<"processing file "<< filenumber <<": "<<input<<endl;
+        std::cout<<"processing file "<< filenumber <<": "<<input<<std::endl;
 
         // getting ttrees, printing iff the ttree isn't in the input file
         TTree *ttrees[nTTrees];
@@ -75,7 +94,7 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
         }
 
         // assigning variables to branches
-        SetBranches(ttrees[0],evt.BranchMap());
+        SetBranches(ttrees[0],evt.BranchMap(isMC));
         SetBranches(ttrees[1],fltr.BranchMap());
         SetBranches(ttrees[2],jt.BranchMap());
         SetBranches(ttrees[3],trg.BranchMap());
@@ -114,7 +133,7 @@ void JetHLT_SpectraGenerator_PbPb_MC_lxplus(const TString& input_file_list, cons
             // terminal will yell at me if the leading jet index isn't zero (it never yells at me)
             Int_t lj=0;
             for(Int_t j=0; j<jt.nref; j++){if(jt.pt[j]>jt.pt[lj]){lj=j;}}
-            if(lj!=0){cout<<"leading jet index is "<<lj<<endl;}
+            if(lj!=0){std::cout<<"leading jet index is "<<lj<<std::endl;}
 
             /// Skipping events without jets or with a leading jet below ptcut
             if((jt.nref==0)||(jt.pt[lj]<=ptcut)){continue;}
