@@ -9,7 +9,7 @@
 
 Each executable file in this repository is documented in this table.
 <br>
-Details of each executable in this table, including both a generic and working example, are given as dropdowns below.
+Details of each executable in this table are given as dropdowns below.
 
 | Executable                               | Task                                               |
 | ---------------------------------------- | -------------------------------------------------- |
