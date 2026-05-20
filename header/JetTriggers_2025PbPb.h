@@ -1,5 +1,5 @@
-#ifndef JETTRIGGERS_2026PBPB_MC_H
-#define JETTRIGGERS_2026PBPB_MC_H
+#ifndef JETTRIGGERS_2025PBPB_H
+#define JETTRIGGERS_2025PBPB_H
 
 #include "TString.h"
 #include "Rtypes.h"
@@ -11,11 +11,11 @@
 
 // HLT trigger names
 const std::array sHLTrigs = {
-    TString("HLT_HIPuAK4CaloJet40Eta5p1_MinBiasHF1AND_v9"),
-    TString("HLT_HIPuAK4CaloJet60Eta5p1_MinBiasHF1AND_v9"),
-    TString("HLT_HIPuAK4CaloJet80Eta5p1_v17"),
-    TString("HLT_HIPuAK4CaloJet100Eta5p1_v17"),
-    TString("HLT_HIPuAK4CaloJet120Eta5p1_v17")
+    TString("HLT_HIPuAK4CaloJet40Eta5p1_MinBiasHF1AND_v8"),
+    TString("HLT_HIPuAK4CaloJet60Eta5p1_MinBiasHF1AND_v8"),
+    TString("HLT_HIPuAK4CaloJet80Eta5p1_v16"),
+    TString("HLT_HIPuAK4CaloJet100Eta5p1_v16"),
+    TString("HLT_HIPuAK4CaloJet120Eta5p1_v16")
 };
 
 // L1 trigger names
