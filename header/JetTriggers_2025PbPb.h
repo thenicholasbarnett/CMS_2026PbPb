@@ -66,9 +66,7 @@ inline TString GetL1ShortName(const TString& trig){
 const TString sHLTObjDir = "hltobject/";
 
 inline TString GetHLTObjTreeName(std::size_t i){
-    TString trig = sHLTrigs[i];
-    trig.Remove(trig.Last('v') + 1);
-    return sHLTObjDir + trig;
+    return sHLTObjDir + sHLTrigs[i];
 }
 
 // declaring trigger structure
