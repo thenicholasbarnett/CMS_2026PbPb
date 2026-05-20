@@ -14,7 +14,8 @@
 #include "../header/JetSelection_PbPb.h"
 #include "../header/JetSpectraHistograms.h"
 #include "../header/JetStruct.h"
-#include "../header/JetTriggers_PbPb_MC.h"
+// #include "../header/JetTriggers_2026PbPb_MC.h"
+#include "../header/JetTriggers_2025PbPb.h"
 
 // minimum pt of jets to include
 static constexpr Float_t ptcut = 20.0;
