@@ -66,7 +66,7 @@ root -l -q 'executable/Find_maxnref.C++("/afs/cern.ch/user/n/nbarnett/public/txt
 
 <h2>Jet HLT Efficiency Executables</h2>
 
-Some of the executable scripts in this repository are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be used sequentially to produce jet HLT effeciciencies.
+Some of the executable scripts in this repository are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be run sequentially to produce jet HLT effeciciencies.
 
 <details>
 <summary>JetHLT_SpectraGenerator_PbPb_lxplus.cpp</summary>
@@ -74,18 +74,24 @@ Some of the executable scripts in this repository are specifically used to gener
 <h3>Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies</h3>
 
 This C++ macro can be compiled with `g++` into a standalone executable or interpreted directly with ROOT.
-
+This macro can be compiled into a binary executable with the following line.
 ```
-root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp("path/to/input/filenames.txt","path/to/output.root")'
+g++ -o JetHLT executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp $(root-config --cflags --libs)
 ```
-
-Above is a generic terminal command to execute the script JetHLT_SpectraGenerator_PbPb_lxplus.cpp on a list of ROOT files with forests. This is script uses one text file input list of ROOT files, with forests, and produces one output ROOT file.
-
-Below is a working example of using JetTurnOn_PbPb_MC_lxplus.C to generate JetHLTEff_MC.root in the current directory on the list of files /afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt
-
+After compiling, this standalone executable can be run with the following command.
 ```
-root -l -q 'executable/JetHLT_SpectraGenerator_PbPb_MC_lxplus.cpp("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","JetHLTSpectra_MC.root")'
+./JetHLT filelist.txt output.root isMC
 ```
+This macro can also be executed with ROOT by using its built-in CLING interpreter. 
+```
+root -l -b -q 'executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
+```
+Details on each positional argument this macro expects.
+| Argument | Description |
+| :-: | - |
+| `filelist.txt` | Plain text file containing one file, including its path, on each line. |
+| `output.root` | ROOT file made by this macro containing jet spectra. |
+| `isMC` | Bool specifying to use weights or not. Can be `true`, `false`, `1`, `0`. |
 
 </details>
 
