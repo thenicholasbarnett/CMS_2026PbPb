@@ -74,6 +74,7 @@ Some of the executable scripts in this repository are specifically used to gener
 <h3>Generating Leading Jet p<sub>T</sub> Spectra for Jet HLT Efficiencies</h3>
 
 This C++ macro can be compiled with `g++` into a standalone executable or interpreted directly with ROOT.
+<br><br>
 This macro can be compiled into a binary executable with the following line.
 ```
 g++ -o JetHLT executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp $(root-config --cflags --libs)
@@ -86,12 +87,12 @@ This macro can also be executed with ROOT by using its built-in CLING interprete
 ```
 root -l -b -q 'executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
 ```
-Details on each positional argument this macro expects.
+Below are details on each positional argument this macro expects.
 | Argument | Description |
 | :-: | - |
-| `filelist.txt` | Plain text file containing one file, including its path, on each line. |
+| `filelist.txt` | Plain text file containing one input file, including its path, on each line. |
 | `output.root` | ROOT file made by this macro containing jet spectra. |
-| `isMC` | Bool specifying to use weights or not. Can be `true`, `false`, `1`, `0`. |
+| `isMC` | Bool specifying to use weights or not. Can be `true`, `false`, `1`, or `0`. |
 
 </details>
 
