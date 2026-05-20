@@ -7,7 +7,9 @@
 
 <h1>Executables</h1>
 
-Each executable script in this repository is documented in this table. Details of each executable in this table, including both a generic and working example, are given as dropdowns below.
+Each executable file in this repository is documented in this table.
+<br>
+Details of each executable in this table, including both a generic and working example, are given as dropdowns below.
 
 | Executable                               | Task                                               |
 | ---------------------------------------- | -------------------------------------------------- |
@@ -18,7 +20,9 @@ Each executable script in this repository is documented in this table. Details o
 
 <h2>General Use Executables</h2>
 
-Some executable scripts in this repository can be used for general purposes. Including scripts to help interact with Condor and CRAB as well as combine ROOT files.
+Some executable files in this repository can be used for general purposes. 
+<br>
+Interacting with Condor and CRAB as well as combining ROOT files are some example uses of the executables in this repository.
 
 <details>
 <summary>batch_hadd.sh</summary>
