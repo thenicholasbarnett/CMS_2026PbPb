@@ -1,7 +1,7 @@
 <table>
 <tr>
 <td><img src="image/CMS_logo.png" alt="CMS logo" width="500"/></td>
-<td>This repository was started to be of use for the 2026 PbPb collisions at the Compact Muon Solenoid. Executables in this repository can be used to monitor jet trigger and offline object health, or otherwise help with run related activities and studies. Any and all contents of this repository are welcome to be used by anyone for any reason.</td>
+<td>This repository is to be of use for the 2026 PbPb collisions at the Compact Muon Solenoid. Executables in this repository can be used to monitor jet trigger and offline object health, or for help with run related activities and studies. Any and all contents of this repository are welcome to be used by anyone for any reason.</td>
 </tr>
 </table>
 
@@ -11,42 +11,50 @@ Each executable file in this repository is documented in this table.
 <br>
 Details of each executable in this table are given as dropdowns below.
 
-| Executable                               | Task                                               |
-| ---------------------------------------- | -------------------------------------------------- |
-| batch_hadd.sh                            | Combine many ROOT files                            |
-| Find_maxnref.C                           | Find maximum nref in a filelist                    |
-| JetHLT_SpectraGenerator_PbPb_lxplus.cpp  | Make leading jet pT spectra for different triggers |
-| JetHLT_EfficiencyGenerator.C             | Make jet trigger efficiencies                      |
+| Executable | Task |
+| :-: | - |
+| `batch_hadd.sh` | Merge many ROOT files |
+| `Find_maxnref.C` | Find maximum nref in a filelist |
+| `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
+| `JetHLT_EfficiencyGenerator.C` | Make jet trigger efficiencies |
 
 <h2>General Use Executables</h2>
 
 Some executable files in this repository can be used for general purposes. 
 <br>
-Interacting with Condor and CRAB as well as combining ROOT files are some example uses of the executables in this repository.
+Interacting with HTCondor and CRAB as well as combining ROOT files are some example uses of the executables in this repository.
 
 <details>
 <summary>batch_hadd.sh</summary>
 
-<h3>Combining Many ROOT Files</h3>
+<h3>Merging Many ROOT Files</h3>
 
-> NOTE: Change WORKDIR inside batch_hadd.sh to the desired working area directory.
-
-hadd is a ROOT command that will essentially add ttrees and histograms for multiple files, iff these files have matching names for histograms, ttrees, branchs, etc. 
-hadd can be executed like this 'hadd output.root path/to/inputs/*.root'
-When using hadd on very many files the process becomes slow and more likely to fail. This issue can be avoided by making bunches of files, using hadd on these bunches to get outputs, then using hadd on the ouputs. When needed this bunching process can be repeated until there is only one output file. The bash script batch_hadd.sh does exactly this, but multiple times simultaneously based on the specified number of cores provided when executing.
+Many ROOT files can be merged using the command hadd. The command `hadd output.root path/to/inputs/*root` will add compatible ROOT objects, such as TTrees, RNTuples, and histograms. To be compatible the input files must have the same object names. These added objects are placed into an output ROOT file upon running hadd. This command is particularly useful after processing many files in parellel. More information on hadd can be found in the [ROOT documentation](https://root.cern/doc/v638/hadd_8cxx.html).
 <br><br>
-Below is a generic example of how to execute batch_hadd.sh in a terminal. 
-
+Using hadd on very many files may take an exceedingly long time and is more likely to give ill defined behavior or crash. By using hadd on subsets of a large number of files, then using hadd on the output, these issues can be avoided. This shell script avoids some issues with hadd by iteratively adding subsets of ROOT files sequentially. Additionally, this bash script runs hadd multiple times in parellel on the same machine, further reducing the time to add many ROOT files.
+<br><br>
+This bash script can be executed with the following terminal commands in the current shell session.
 ```
-./executable/batch_hadd.sh path/to/output.root "path/to/inputs/*.root" INT(number per bunch) INT(number of cores)
+source batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
-
-Below is a working example of using batch_hadd.sh to add all the ROOT files from /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/ into a single output file in the same directory. In this example, the script groups ROOT files into batches of 10 and runs up to 4 simultaneous hadd processes across 4 CPU cores.
-
 ```
-./executable/batch_hadd.sh /eos/cms/store/group/phys_heavyions/nbarnett/jra_files/output_jra_production_ak6pf_2025OO_all.root "/eos/cms/store/group/phys_heavyions/nbarnett/jra_files/condor_jra_production_ak6pf_2025OO_05_06_2026/*.root" 10 4
+. batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
-
+This bash script can be executed by launching a new bash process in a couple ways.
+```
+bash batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+After giving execute permission (`chmod +x batch_hadd.sh`) this shell script can also be executed in a child process like this.
+```
+./batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+Details on each positional argument this shell takes as an input.
+| Argument | Description |
+| :-: | - |
+| `OUT_FILE` | Merged output ROOT file. |
+| `IN_FILES` | Pattern for the input ROOT files to be merged. Example: `path/to/files/*root` |
+| `BATCH_SIZE` | Number of ROOT files in each batch to hadd. |
+| `NJOBS` | Number of parellel hadd commands to run. |
 </details>
 
 <details>
