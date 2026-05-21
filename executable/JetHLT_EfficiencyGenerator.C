@@ -12,7 +12,8 @@
 #include "../header/JetEfficiency.h"
 #include "../header/JetEfficiencyPlotting.h"
 #include "../header/JetSpectraHistograms.h"
-#include "../header/JetTriggers_PbPb_MC.h"
+#include "../header/JetTriggers_2026PbPb_MC.h"
+//#include "../header/JetTriggers_2025PbPb.h"
 
 void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){
     
