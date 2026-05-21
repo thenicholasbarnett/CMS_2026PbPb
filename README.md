@@ -29,17 +29,10 @@ Interacting with HTCondor and CRAB as well as combining ROOT files are some exam
 
 <h3>Merging Many ROOT Files</h3>
 
-Many ROOT files can be merged using the command hadd. The command `hadd output.root path/to/inputs/*root` will add compatible ROOT objects, such as TTrees, RNTuples, and histograms. To be compatible the input files must have the same object names. These added objects are placed into an output ROOT file upon running hadd. This command is particularly useful after processing many files in parellel. More information on hadd can be found in the [ROOT documentation](https://root.cern/doc/v638/hadd_8cxx.html).
+Many ROOT files can be merged using the command hadd. The command `hadd output.root path/to/inputs/*root` will add compatible ROOT objects, such as TTrees, RNTuples, and histograms. To be compatible the input files must have the same object names. These added objects are placed into an output ROOT file upon running hadd. This command is particularly useful after processing many files in parallel. More information on hadd can be found in the [ROOT documentation](https://root.cern/doc/v638/hadd_8cxx.html).
 <br><br>
-Using hadd on very many files may take an exceedingly long time and is more likely to give ill defined behavior or crash. By using hadd on subsets of a large number of files, then using hadd on the output, these issues can be avoided. This shell script avoids some issues with hadd by iteratively adding subsets of ROOT files sequentially. Additionally, this bash script runs hadd multiple times in parellel on the same machine, further reducing the time to add many ROOT files.
+Using hadd on very many files may take an exceedingly long time and is more likely to give ill-defined behavior or crash. By using hadd on subsets of a large number of files, then using hadd on the output, these issues can be avoided. This shell script avoids some issues with hadd by iteratively merging batches of ROOT files. Additionally, this bash script runs hadd multiple times in parallel on the same machine, further reducing the time to add many ROOT files.
 <br><br>
-This bash script can be executed with the following terminal commands in the current shell session.
-```
-source batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
-```
-```
-. batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
-```
 This bash script can be executed by launching a new bash process in a couple ways.
 ```
 bash batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
@@ -48,13 +41,21 @@ After giving execute permission (`chmod +x batch_hadd.sh`) this shell script can
 ```
 ./batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
+This bash script can be executed with the following terminal commands in the current shell session.
+> WARNING: Executing in the current shell session is not recommended because if the argument validation fails then the current terminal session will close entirely
+```
+source batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+```
+. batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
 Details on each positional argument this shell takes as an input.
 | Argument | Description |
 | :-: | - |
 | `OUT_FILE` | Merged output ROOT file. |
 | `IN_FILES` | Pattern for the input ROOT files to be merged. Example: `path/to/files/*root` |
 | `BATCH_SIZE` | Number of ROOT files in each batch to hadd. |
-| `NJOBS` | Number of parellel hadd commands to run. |
+| `NJOBS` | Number of parallel hadd commands to run. |
 </details>
 
 <details>
