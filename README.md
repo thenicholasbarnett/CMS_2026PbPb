@@ -90,7 +90,7 @@ This C++ macro can be compiled with `g++` into a standalone executable or interp
 <br><br>
 This macro can be compiled into a binary executable with the following line.
 ```
-g++ -o JetHLT executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp $(root-config --cflags --libs)
+g++ -o JetHLT JetHLT_SpectraGenerator_PbPb_lxplus.cpp $(root-config --cflags --libs)
 ```
 After compiling, this standalone executable can be run with the following command.
 ```
@@ -98,7 +98,7 @@ After compiling, this standalone executable can be run with the following comman
 ```
 This macro can also be executed with ROOT by using its built-in CLING interpreter. 
 ```
-root -l -b -q 'executable/JetHLT_SpectraGenerator_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
+root -l -b -q 'JetHLT_SpectraGenerator_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
 ```
 Below are details on each positional argument this macro expects.
 | Argument | Description |
