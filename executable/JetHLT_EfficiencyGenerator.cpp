@@ -13,9 +13,22 @@
 #include "../header/JetEfficiencyPlotting.h"
 #include "../header/JetSpectraHistograms.h"
 #include "../header/JetTriggers_2026PbPb_MC.h"
-//#include "../header/JetTriggers_2025PbPb.h"
+// #include "../header/JetTriggers_2025PbPb.h"
 
-void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){
+void run(const TString& input, const TString& output);
+
+int main(int argc, char* argv[]){
+    if(argc < 3){
+        std::cerr << "Usage: ./JetHLT_Eff <input.root> <output.root>" << std::endl;
+        return 1;
+    }
+    run(argv[1], argv[2]);
+    return 0;
+}
+
+void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){run(input, output);}
+ 
+void run(const TString& input, const TString& output){
     
     // no preset legends in histograms
     gStyle->SetOptStat(0);
