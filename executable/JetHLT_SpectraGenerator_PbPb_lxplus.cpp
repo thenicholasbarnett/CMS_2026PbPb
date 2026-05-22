@@ -97,7 +97,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         // assigning variables to branches
         SetBranches(ttrees[0],evt.BranchMap(isMC));
         SetBranches(ttrees[1],fltr.BranchMap());
-        SetBranches(ttrees[2],jt.BranchMap());
+        SetBranches(ttrees[2],jt.BranchMap(isMC));
         SetBranches(ttrees[3],trg.BranchMap());
 
         // getting HLT object ttrees
@@ -133,22 +133,22 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
 
             // terminal will yell at me if the leading jet index isn't zero (it never yells at me)
             Int_t lj=0;
-            for(Int_t j=0; j<jt.nref; j++){if(jt.pt[j]>jt.pt[lj]){lj=j;}}
+            for(Int_t j=0; j<jt.reco.nref; j++){if(jt.reco.pt[j]>jt.reco.pt[lj]){lj=j;}}
             if(lj!=0){std::cout<<"leading jet index is "<<lj<<std::endl;}
 
             /// Skipping events without jets or with a leading jet below ptcut
-            if((jt.nref==0)||(jt.pt[lj]<=ptcut)){continue;}
+            if((jt.reco.nref==0)||(jt.reco.pt[lj]<=ptcut)){continue;}
 
             // only looking at events that fire the minbias l1 trigger
             if(trg.L1T[0]==0){continue;}
 
             // using header file for jet identification
-            if(!js.JetSelection(jt.eta[lj], jt.phi[lj], jt.PfCEF[lj], jt.PfNEF[lj],jt.PfMUF[lj])){continue;}
+            if(!js.JetSelection(jt.reco.eta[lj], jt.reco.phi[lj], jt.reco.pf.CEF[lj], jt.reco.pf.NEF[lj],jt.reco.pf.MUF[lj])){continue;}
 
             // filling histograms for events passing cuts
             hists.vz->Fill(evt.vz, evt.w);
             hists.hiBin->Fill(evt.hiBin, evt.w);
-            hists.nref->Fill(jt.nref, evt.w);
+            hists.nref->Fill(jt.reco.nref, evt.w);
 
             // matching HLT object to offline jet
             int iHltMatch[nHLT] = {0};
@@ -162,8 +162,8 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
 
                 for(std::size_t tj=0; tj<obj_pt->size(); tj++){
 
-                    Double_t deta = TMath::Abs(obj_eta->at(tj) - jt.eta[lj]);
-                    Double_t dphi = TMath::ACos(TMath::Cos(obj_phi->at(tj) - jt.phi[lj]));
+                    Double_t deta = TMath::Abs(obj_eta->at(tj) - jt.reco.eta[lj]);
+                    Double_t dphi = TMath::ACos(TMath::Cos(obj_phi->at(tj) - jt.reco.phi[lj]));
                     Double_t dR = TMath::Sqrt(deta*deta + dphi*dphi);
 
                     if((dR<0.3) && (obj_pt->at(tj)>=GetJetTriggerThreshold(sHLTrigs[t]))){
@@ -176,37 +176,37 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
             // looping through eta ranges
             for(std::size_t b=0; b<bins.etaBins.size(); b++){
                 const auto& etaBin = bins.etaBins[b];
-                if((TMath::Abs(jt.eta[lj])<etaBin.lo)||(TMath::Abs(jt.eta[lj])>etaBin.hi)){continue;}
+                if((TMath::Abs(jt.reco.eta[lj])<etaBin.lo)||(TMath::Abs(jt.reco.eta[lj])>etaBin.hi)){continue;}
 
-                hists.ljtpt_eta[b]->Fill(jt.pt[lj], evt.w);
+                hists.ljtpt_eta[b]->Fill(jt.reco.pt[lj], evt.w);
 
                 // looping through HLTs
                 for(std::size_t t=0; t<nHLT; t++){
                     if(trg.HLT[t]==1){
-                        hists.hlt_ljtpt_eta[JetSpectraStruct::kNoDR][b][t]->Fill(jt.pt[lj], evt.w);
-                        if(iHltMatch[t]==1){hists.hlt_ljtpt_eta[JetSpectraStruct::kDR][b][t]->Fill(jt.pt[lj], evt.w);}
+                        hists.hlt_ljtpt_eta[JetSpectraStruct::kNoDR][b][t]->Fill(jt.reco.pt[lj], evt.w);
+                        if(iHltMatch[t]==1){hists.hlt_ljtpt_eta[JetSpectraStruct::kDR][b][t]->Fill(jt.reco.pt[lj], evt.w);}
                     }
                 }
 
                 // looping through L1Ts
                 for(std::size_t t=0; t<nL1T; t++){
-                    if(trg.L1T[t] == 1){hists.l1_ljtpt_eta[b][t]->Fill(jt.pt[lj], evt.w);}}
+                    if(trg.L1T[t] == 1){hists.l1_ljtpt_eta[b][t]->Fill(jt.reco.pt[lj], evt.w);}}
 
                 for(std::size_t hb=0; hb<bins.hiBins.size(); hb++){
                     const auto& hiBin = bins.hiBins[hb];
                     if((evt.hiBin<hiBin.lo)||(evt.hiBin>hiBin.hi)){continue;}
 
-                    hists.ljtpt_hibin[b][hb]->Fill(jt.pt[lj], evt.w);
+                    hists.ljtpt_hibin[b][hb]->Fill(jt.reco.pt[lj], evt.w);
                     
                     for(std::size_t t=0; t<nHLT; t++){
                         if(trg.HLT[t]==1){
-                            hists.hlt_ljtpt_hibin[JetSpectraStruct::kNoDR][b][t][hb]->Fill(jt.pt[lj], evt.w);
-                            if(iHltMatch[t]==1){hists.hlt_ljtpt_hibin[JetSpectraStruct::kDR][b][t][hb]->Fill(jt.pt[lj], evt.w);}
+                            hists.hlt_ljtpt_hibin[JetSpectraStruct::kNoDR][b][t][hb]->Fill(jt.reco.pt[lj], evt.w);
+                            if(iHltMatch[t]==1){hists.hlt_ljtpt_hibin[JetSpectraStruct::kDR][b][t][hb]->Fill(jt.reco.pt[lj], evt.w);}
                         }
                     }
 
                     // looping through L1Ts
-                    for(std::size_t t=0; t<nL1T; t++){if(trg.L1T[t] == 1){hists.l1_ljtpt_hibin[b][t][hb]->Fill(jt.pt[lj], evt.w);}}
+                    for(std::size_t t=0; t<nL1T; t++){if(trg.L1T[t] == 1){hists.l1_ljtpt_hibin[b][t][hb]->Fill(jt.reco.pt[lj], evt.w);}}
                 }
             }
         }
