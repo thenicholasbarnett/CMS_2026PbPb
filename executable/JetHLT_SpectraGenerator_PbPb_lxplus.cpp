@@ -56,7 +56,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
     FiltersStruct fltr;
 
     // jet object
-    JetStruct<maxnref> jt(ptcut);
+    JetStruct<maxnref> jt;
 
     // trigger object
     TriggersStruct trg;
