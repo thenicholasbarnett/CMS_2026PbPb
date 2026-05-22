@@ -12,7 +12,7 @@ void run(const TString& input_filelist, const TString& output, const TString& sJ
 
 int main(int argc, char* argv[]){
     if(argc < 5){
-        std::cerr << "Usage: ./jet_tests <filelist.txt> <output.root> <jet clustering algorithm> <isMC>" << std::endl;
+        std::cerr << "Usage: ./jet_tests <filelist.txt> <output.root> <JetAlgorithm> <isMC>" << std::endl;
         return 1;
     }
     std::string isMCArg = argv[4];
