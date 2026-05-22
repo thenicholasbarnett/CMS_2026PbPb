@@ -55,7 +55,7 @@ struct JetStruct{
     } gen;
 
     // mapping variables to branches
-    std::vector<std::pair<TString, void*>> BranchMap(isMC){
+    std::vector<std::pair<TString, void*>> BranchMap(bool isMC){
         std::vector<std::pair<TString, void*>> map = {
             {"nref", &reco.nref},
             {"rawpt", reco.rawpt},
