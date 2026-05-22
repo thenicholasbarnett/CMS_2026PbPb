@@ -59,27 +59,44 @@ Details on each positional argument this shell takes as an input.
 </details>
 
 <details>
-<summary>Find_maxnref.C</summary>
+<summary>find_maxnref.cpp</summary>
 
 <h3>Finding Maximum nref in ROOT Files</h3>
 
+The number of jets in a single event is stored in a HiForest as nref, in the JetAnalyzer TTree. Jet variables, such as p<sub>T</sub>, are stored as arrays in the same TTree. If the arrays declared that are mapped to each jet variable for an event have less entries than nref for that event then ill-defined behavior will occur or the execution will crash. Finding the maximum nref for a set of ROOT files containing JetAnalyzer TTrees can be useful so that the size of arrays declared when processing these files do not cause issues.
+<br><br>
+Like most C++ macros in this repository this file can be both compiled with `g++` as well as interpreted with Cling. 
+Cling is an interactive C++ interpreter that is built in to ROOT. 
+<br><br>
+This macro can be compiled into a stadalone executable with the following command.
 ```
-root -l -q 'executable/Find_maxnref.C++("path/to/input/filenames.txt","path/to/output.root","Jet Clustering Algorithm (like akCs4PF for example)",true(iff scanning MC files))'
+g++ -o mnref find_maxnref.cpp $(root-config --cflags --libs)
 ```
-
-Above is a generic example of how to execute script Find_maxnref.C in a terminal to find maximum event level jet multiplicity (nref) in a list of root files with forests. Executable Find_maxnref.C can be trivially changed to work with root files containing different ttrees.
-
-Below is a working example of using Find_maxnref.C that will produce maxnref.root in the current directory (immediately before it finishes executing). In this working example the jets being checked are clustered with akCs4PF from an MC sample.
-
+After compiling this binary executable can be run.
 ```
-root -l -q 'executable/Find_maxnref.C++("/afs/cern.ch/user/n/nbarnett/public/txt_files/filename_txt_files/2026_filenames/filenames_forests_fdamas_2026_PbPb_Dijet_MC.txt","maxnref.root","akCs4PF",true)'
+./mnref <filelist.txt> <output.root> <JetAlgorithm> <isMC>
 ```
+This macro can also be executed using ROOT with the Cling interpreter.
+```
+root -l -b -q 'find_maxnref.cpp("filelist.txt","output.root","JetAlgorithm",isMC)'
+```
+The input arguments for this macro are listed in this table.
+| Argument | Description |
+| :-: | - |
+| `filelist.txt` | Plain text file of input ROOT files, one for each line. |
+| `output.root` | Name of output ROOT file to store processed information. |
+| `JetAlgorithm` | Clustering algorithm used to populate TTree. |
+| `isMC` | Bool specifying whether the inputs are MC or not. |
 
 </details>
 
 <h2>Jet HLT Efficiency Executables</h2>
 
 Some of the executable scripts in this repository are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be run sequentially to produce jet HLT effeciciencies.
+<br><br>
+Jet trigger efficiency can be defined as various ratios of leading jet p<sub>T</sub> spectra for different triggers.
+Generating leading jet p<sub>T</sub> spectra is the first step to take when determining jet trigger efficiencies.
+In this workflow executing `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` on a list of ROOT files with JetAnalyzer and TTrees will provide an output ROOT file that can be used to generate HLT efficiencies for jets.
 
 <details>
 <summary>JetHLT_SpectraGenerator_PbPb_lxplus.cpp</summary>
@@ -96,7 +113,7 @@ After compiling, this standalone executable can be run with the following comman
 ```
 ./JetHLT filelist.txt output.root isMC
 ```
-This macro can also be executed with ROOT by using its built-in CLING interpreter. 
+This macro can also be executed with ROOT by using its built-in Cling interpreter. 
 ```
 root -l -b -q 'JetHLT_SpectraGenerator_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
 ```
@@ -110,21 +127,11 @@ Below are details on each positional argument this macro expects.
 </details>
 
 <details>
-<summary>JetHLT_EfficiencyGenerator.C</summary>
+<summary>JetHLT_EfficiencyGenerator.cpp</summary>
 
 <h3>Generating Jet HLT Efficiencies</h3>
 
-```
-root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("path/to/input.root", "output.root")'
-```
-
-Above is an example of how to execute this script with generic inputs. This macro will take in the output from JetHLT_SpectraGenerator_PbPb_MC_lxplus.C, and makes jet trigger turn on curves from it. This script will generate the total jet trigger efficiency, that is the inefficiencies due to an HLT and its L1seed, and relative efficiency, being the inefficiency due to just the HLT. These efficiencies will be generated with and without offline-online object matching.
-<br><br>
-Below is a working example using an appropriate output to make actual jet efficiencies.
-
-```
-root -l -q 'executable/JetHLT_EfficiencyGenerator.C++("/eos/cms/store/group/phys_heavyions/nbarnett/JetHLTSpectra_MC.root", "JetEfficiencies.root")'
-```
+> IN PROGRESS
 
 </details>
 
