@@ -18,8 +18,7 @@
 #include "Binning.h"
 #include "JetEfficiency.h"
 #include "JetSpectraHistograms.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-//#include "../header/JetTriggers_2025PbPb.h"
+#include "JetTriggers_PbPb_MC.h"
 
 struct PlotConfig{
     TString runNumber = "";
@@ -107,46 +106,6 @@ inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clo
     for(const auto& entry : infoEntries){linfo->AddEntry((TObject*)0, entry, "");}
     if(matchType == JetSpectraStruct::kDR){linfo->AddEntry((TObject*)0, "#Delta R < 0.3", "");}
     linfo->Draw("same");
-}
-
-inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, JetEfficiencyOutputStruct::EfficiencyType effType, std::size_t etaIndex, const TString& outDir, const PlotConfig& cfg){
-    const auto& etaBin = bins.etaBins[etaIndex];
-    TString hname = "heff" + JetSpectraStruct::MatchSuffix(matchType) + "_" + JetEfficiencyOutputStruct::EfficiencyName(effType) + etaBin.shortName;
-
-    CanvasStruct cs = MakeCanvas(hname, cfg);
-
-    std::vector<TGraphAsymmErrors*> clones(nHLT, nullptr);
-    for(std::size_t t=0; t<nHLT; t++){
-        clones[t] = (TGraphAsymmErrors*)out.jetEfficiencies_inclusive[matchType][effType][etaIndex][t]->Clone();
-        StyleGraph(clones[t], t);
-    }
-
-    cs.plotpad->cd();
-    clones[0]->Draw("ap");
-    clones[0]->SetTitle("");
-    clones[0]->GetXaxis()->SetTitle("p_{T,leading jet} (GeV)");
-    clones[0]->GetYaxis()->SetTitle(effType == JetEfficiencyOutputStruct::kFull ? "HLT + L1seed + minBias / minBias" : "HLT + L1seed + minBias / L1seed + minBias");
-    clones[0]->GetXaxis()->CenterTitle(true);
-    clones[0]->GetYaxis()->CenterTitle(true);
-    clones[0]->GetXaxis()->SetTitleOffset(1.0);
-    clones[0]->GetYaxis()->SetTitleOffset(1.0);
-    clones[0]->SetMinimum(0.0);
-    clones[0]->SetMaximum(cfg.effmax);
-    clones[0]->GetXaxis()->SetRangeUser(cfg.ptmin, cfg.ptmax);
-
-    for(std::size_t t=1; t<nHLT; t++){clones[t]->Draw("p same");}
-    DrawRefLine(cfg.ptmin, cfg.ptmax);
-    
-    std::vector<TString> infoEntries;
-    if(!cfg.runNumber.IsNull()){infoEntries.push_back(cfg.runNumber);}
-    if(!cfg.globalTag.IsNull()){infoEntries.push_back(cfg.globalTag);}
-    if(!cfg.jetAlgo.IsNull()){infoEntries.push_back(cfg.jetAlgo);}
-    infoEntries.push_back(etaBin.title);
-
-    DrawLegends(cs.legpad, clones, infoEntries, matchType, cfg.legfrac);
-
-    cs.c->SaveAs(outDir + "/" + hname + ".png");
-    delete cs.c;
 }
 
 inline void SaveEfficiencyCanvas_hiBin(const JetEfficiencyOutputStruct& out, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, JetEfficiencyOutputStruct::EfficiencyType effType, std::size_t etaIndex, std::size_t hiBinIndex, const TString& outDir, const PlotConfig& cfg){

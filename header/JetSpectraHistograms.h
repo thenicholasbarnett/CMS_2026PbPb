@@ -10,8 +10,8 @@
 #include <cstddef>
 
 #include "Binning.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-//#include "../header/JetTriggers_2025PbPb.h"
+#include "HistUtilities.h"
+#include "JetTriggers_PbPb_MC.h"
 
 inline TH1F* MakeTH1F(const TString& hname, const AxisBins& bins) {
     return new TH1F(hname, hname, bins.nBins, bins.lo, bins.hi);
@@ -45,44 +45,27 @@ struct JetSpectraStruct{
     TH1I* pphfF = nullptr;
 
     // leading jet pT histograms
-
-    // [Eta]
-    std::vector<TH1F*> ljtpt_eta;
-    // [Eta][L1]
-    std::vector<std::vector<TH1F*>> l1_ljtpt_eta;
-    // [MatchType][Eta][HLT]
-    std::vector<std::vector<std::vector<TH1F*>>> hlt_ljtpt_eta;
     // [Eta][hiBin]
-    std::vector<std::vector<TH1F*>> ljtpt_hibin;
+    std::vector<std::vector<TH1F*>> ljtpt;
     // [Eta][L1][hiBin]
-    std::vector<std::vector<std::vector<TH1F*>>> l1_ljtpt_hibin;
+    std::vector<std::vector<std::vector<TH1F*>>> l1_ljtpt;
     // [MatchType][Eta][HLT][hiBin]
-    std::vector<std::vector<std::vector<std::vector<TH1F*>>>> hlt_ljtpt_hibin;
+    std::vector<std::vector<std::vector<std::vector<TH1F*>>>> hlt_ljtpt;
 
-    JetSpectraStruct() = default;
     JetSpectraStruct(const BinningStruct& bins){
         InitAxes(bins);
         InitHistograms(bins);
     }
-    JetSpectraStruct(const BinningStruct& bins, bool allocate){
-        InitAxes(bins);
-        if(allocate){InitHistograms(bins);}
-    }
+    
     void InitAxes(const BinningStruct& bins){
         const std::size_t nEta = bins.etaBins.size();
         const std::size_t nhiBin = bins.hiBins.size();
-        // [Eta]
-        ljtpt_eta.resize(nEta, nullptr);
-        // [Eta][L1]
-        l1_ljtpt_eta.resize(nEta,std::vector<TH1F*>(nL1T, nullptr));
-        // [MatchType][Eta][HLT]
-        hlt_ljtpt_eta.resize(kNMatchTypes,std::vector<std::vector<TH1F*>>(nEta,std::vector<TH1F*>(nHLT, nullptr)));
         // [Eta][hiBin]
-        ljtpt_hibin.resize(nEta,std::vector<TH1F*>(nhiBin, nullptr));
+        ljtpt.resize(nEta,std::vector<TH1F*>(nhiBin, nullptr));
         // [Eta][L1][hiBin]
-        l1_ljtpt_hibin.resize(nEta,std::vector<std::vector<TH1F*>>(nL1T,std::vector<TH1F*>(nhiBin, nullptr)));
+        l1_ljtpt.resize(nEta,std::vector<std::vector<TH1F*>>(nL1T,std::vector<TH1F*>(nhiBin, nullptr)));
         // [MatchType][Eta][HLT][hiBin]
-        hlt_ljtpt_hibin.resize(kNMatchTypes,std::vector<std::vector<std::vector<TH1F*>>>(nEta,std::vector<std::vector<TH1F*>>(nHLT,std::vector<TH1F*>(nhiBin, nullptr))));
+        hlt_ljtpt.resize(kNMatchTypes,std::vector<std::vector<std::vector<TH1F*>>>(nEta,std::vector<std::vector<TH1F*>>(nHLT,std::vector<TH1F*>(nhiBin, nullptr))));
     }
 
     void InitHistograms(const BinningStruct& bins) {
@@ -101,32 +84,13 @@ struct JetSpectraStruct{
 
         
         for (std::size_t b=0; b<nEta; b++){
-            const auto& etaBin = bins.etaBins[b]; 
-
-            hname = "hjtpt" + etaBin.shortName;
-            ljtpt_eta[b] = MakeTH1F(hname, bins.pt);
-
-            for (std::size_t t = 0; t < nHLT; t++){
-                TString hltShort = GetHLTShortName(sHLTrigs[t]);
-
-                for (int m=0; m<kNMatchTypes; m++){
-                    MatchType matchType = static_cast<MatchType>(m);
-                    hname = "hjtpt" + MatchSuffix(matchType) + etaBin.shortName + hltShort;
-                    hlt_ljtpt_eta[matchType][b][t] = MakeTH1F(hname, bins.pt);
-                }
-            }
-
-            for (std::size_t t=0; t<nL1T; t++){
-                TString l1Short = GetL1ShortName(sL1Trigs[t]);
-                hname = "hjtpt" + etaBin.shortName + l1Short;
-                l1_ljtpt_eta[b][t] = MakeTH1F(hname, bins.pt);
-            }
+            const auto& etaBin = bins.etaBins[b];
 
             for (std::size_t hb=0; hb<nhiBin; hb++){
                 const auto& hiBin = bins.hiBins[hb];
 
                 hname = "hjtpt" + etaBin.shortName + hiBin.shortName;
-                ljtpt_hibin[b][hb] = MakeTH1F(hname, bins.pt);
+                ljtpt[b][hb] = MakeTH1F(hname, bins.pt);
 
                 for (std::size_t t=0; t<nHLT; t++){
                     TString hltShort = GetHLTShortName(sHLTrigs[t]);
@@ -134,17 +98,32 @@ struct JetSpectraStruct{
                     for (int m=0; m<kNMatchTypes; m++){
                         MatchType matchType = static_cast<MatchType>(m);
                         hname = "hjtpt" + MatchSuffix(matchType) + etaBin.shortName + hltShort + hiBin.shortName;
-                        hlt_ljtpt_hibin[matchType][b][t][hb] = MakeTH1F(hname, bins.pt);
+                        hlt_ljtpt[matchType][b][t][hb] = MakeTH1F(hname, bins.pt);
                     }
                 }
                 
                 for (std::size_t t=0; t<nL1T; t++){
                     TString l1Short = GetL1ShortName(sL1Trigs[t]);
                     hname = "hjtpt"+ etaBin.shortName+ l1Short+ hiBin.shortName;
-                    l1_ljtpt_hibin[b][t][hb] = MakeTH1F(hname, bins.pt);
+                    l1_ljtpt[b][t][hb] = MakeTH1F(hname, bins.pt);
                 }
             }
         }
+    }
+
+    void Write(TFile* f) {
+        f->cd();
+        WriteAll(vz_unpassed);
+        WriteAll(vz);
+        WriteAll(hiBin);
+        WriteAll(nref);
+        WriteAll(pclustF);
+        WriteAll(ppvF);
+        WriteAll(pphfF);
+        WriteAll(ljtpt);
+        WriteAll(l1_ljtpt);
+        WriteAll(hlt_ljtpt);
+        f->Close();
     }
 };
 

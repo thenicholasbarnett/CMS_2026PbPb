@@ -14,11 +14,11 @@ struct JetStruct{
     // jet variables //
     // more than any number of jets in an event in ttrees being processed
     static constexpr Int_t maxnref = MAXNREF;
+    // number in event
+    Int_t nref;
 
     // reco jets
-    struct RecoJets{
-        // number in event
-        Int_t nref;
+    struct RecoMomenta{
         // momenta
         Float_t rawpt[MAXNREF];
         Float_t pt[MAXNREF];
@@ -32,11 +32,11 @@ struct JetStruct{
             Float_t NEF[MAXNREF];
             Float_t MUF[MAXNREF];
             // PF multiplicities
-            Int_t   CHM[MAXNREF];
-            Int_t   NHM[MAXNREF];
-            Int_t   CEM[MAXNREF];
-            Int_t   NEM[MAXNREF];
-            Int_t   MUM[MAXNREF];
+            Int_t CHM[MAXNREF];
+            Int_t NHM[MAXNREF];
+            Int_t CEM[MAXNREF];
+            Int_t NEM[MAXNREF];
+            Int_t MUM[MAXNREF];
         } pf;
     } reco;
 
@@ -55,9 +55,9 @@ struct JetStruct{
     } gen;
 
     // mapping variables to branches
-    std::vector<std::pair<TString, void*>> BranchMap(bool isMC){
+    std::vector<std::pair<TString, void*>> BranchMap(){
         std::vector<std::pair<TString, void*>> map = {
-            {"nref", &reco.nref},
+            {"nref", &nref},
             {"rawpt", reco.rawpt},
             {"jtpt", reco.pt},
             {"jteta", reco.eta},

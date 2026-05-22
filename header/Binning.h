@@ -10,7 +10,6 @@ struct AxisBins{
     Int_t nBins;
     Float_t lo;
     Float_t hi;
-
 };
 
 struct RangeBin{
@@ -35,20 +34,20 @@ struct BinningStruct{
 
     // centrality
     std::vector<RangeBin> hiBins = {
-        {0,   20,  "0 < hiBin < 20",    "_hiBin_0_to_20"},
-        {20,  60,  "20 < hiBin < 60",   "_hiBin_20_to_60"},
-        {60,  100, "60 < hiBin < 100",  "_hiBin_60_to_100"},
+        {0, 200, "0 < hiBin < 200", "_hiBin_0_to_200"},
+        {0, 20, "0 < hiBin < 20", "_hiBin_0_to_20"},
+        {20, 60, "20 < hiBin < 60", "_hiBin_20_to_60"},
+        {60, 100, "60 < hiBin < 100", "_hiBin_60_to_100"},
         {100, 160, "100 < hiBin < 160", "_hiBin_100_to_160"},
         {160, 200, "160 < hiBin < 200", "_hiBin_160_to_200"}
     };
 
     // eta
     std::vector<RangeBin> etaBins = {
-        {0.0, 0.5, "|#eta| < 0.5", "_eta_0p0_to_0p5"},
         {0.0, 1.2, "|#eta| < 1.2", "_eta_0p0_to_1p2"},
         {0.0, 2.4, "|#eta| < 2.4", "_eta_0p0_to_2p4"},
-        {1.2, 2.4, "1.2 < |#eta| < 2.4", "_eta_1p2_to_2p4"},
-        {1.2, 5.0, "1.2 < |#eta| < 5.0", "_eta_1p2_to_5p0"}
+        {0.0, 5.1, "|#eta| < 5.1", "_eta_0p0_to_5p1"},
+        {2.7, 5.1, "2.7 < |#eta| < 5.1", "_eta_2p7_to_5p1"}
     };
 };
 

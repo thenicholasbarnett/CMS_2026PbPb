@@ -11,8 +11,7 @@
 
 #include "Binning.h"
 #include "JetSpectraHistograms.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-//#include "../header/JetTriggers_2025PbPb.h"
+#include "JetTriggers_PbPb_MC.h"
 
 inline void GetHistograms(TFile* fi, const BinningStruct& bins, JetSpectraStruct& hists){
 
@@ -22,50 +21,30 @@ inline void GetHistograms(TFile* fi, const BinningStruct& bins, JetSpectraStruct
         return h;
     };
 
-    const TString ji = "jet_inclusive/hjtpt";
-    const TString jh = "jet_hibin/hjtpt";
     const std::size_t nEta = bins.etaBins.size();
     const std::size_t nhiBin = bins.hiBins.size();
 
     // looping through eta bins
     for(std::size_t b=0; b<nEta; b++){
         const auto& etaBin = bins.etaBins[b];
-        hists.ljtpt_eta[b] = GetTH1F(ji + etaBin.shortName);
-
-        // looping through HLT
-        for (std::size_t t=0; t<nHLT; t++){
-            TString hltShort = GetHLTShortName(sHLTrigs[t]);
-
-            // looping through dR matching types
-            for (int m=0; m<JetSpectraStruct::kNMatchTypes; m++){
-                auto matchType = static_cast<JetSpectraStruct::MatchType>(m);
-                hists.hlt_ljtpt_eta[matchType][b][t] = GetTH1F(ji + JetSpectraStruct::MatchSuffix(matchType) + etaBin.shortName + hltShort);
-            }
-        }
-
-        // looping through L1T
-        for (std::size_t t = 0; t < nL1T; t++){
-            TString l1Short = GetL1ShortName(sL1Trigs[t]);
-            hists.l1_ljtpt_eta[b][t] = GetTH1F(ji + etaBin.shortName + l1Short);
-        }
 
         // looping through hiBins
         for (std::size_t hb=0; hb<nhiBin; hb++){
             const auto& hiBin = bins.hiBins[hb];
-            hists.ljtpt_hibin[b][hb] = GetTH1F(jh + etaBin.shortName + hiBin.shortName);
+            hists.ljtpt[b][hb] = GetTH1F("hjtpt" + etaBin.shortName + hiBin.shortName);
 
             for (std::size_t t=0; t<nHLT; t++){
                 TString hltShort = GetHLTShortName(sHLTrigs[t]);
 
                 for (int m=0; m<JetSpectraStruct::kNMatchTypes; m++){
                     auto matchType = static_cast<JetSpectraStruct::MatchType>(m);
-                    hists.hlt_ljtpt_hibin[matchType][b][t][hb] = GetTH1F(jh + JetSpectraStruct::MatchSuffix(matchType) + etaBin.shortName + hltShort + hiBin.shortName);
+                    hists.hlt_ljtpt[matchType][b][t][hb] = GetTH1F("hjtpt" + JetSpectraStruct::MatchSuffix(matchType) + etaBin.shortName + hltShort + hiBin.shortName);
                 }
             }
 
             for (std::size_t t=0; t<nL1T; t++) {
                 TString l1Short = GetL1ShortName(sL1Trigs[t]);
-                hists.l1_ljtpt_hibin[b][t][hb] = GetTH1F(jh + etaBin.shortName + l1Short + hiBin.shortName);
+                hists.l1_ljtpt[b][t][hb] = GetTH1F("hjtpt" + etaBin.shortName + l1Short + hiBin.shortName);
             }
         }
     }
@@ -85,21 +64,16 @@ struct JetEfficiencyOutputStruct{
         return "unknown";
     }
 
-    // [MatchType][EfficiencyType][Eta][HLT]
-    std::vector<std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>> jetEfficiencies_inclusive;
-
     // [MatchType][EfficiencyType][Eta][hiBin][HLT]
-    std::vector<std::vector<std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>>> jetEfficiencies_hibin;
+    std::vector<std::vector<std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>>> jetEfficiencies;
 
-    JetEfficiencyOutputStruct() = default;
     JetEfficiencyOutputStruct(const BinningStruct& bins){Init(bins);}
 
     void Init(const BinningStruct& bins){
         const std::size_t nEta = bins.etaBins.size();
         const std::size_t nhiBin = bins.hiBins.size();
 
-        jetEfficiencies_inclusive.resize(JetSpectraStruct::kNMatchTypes,std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>(kNEfficiencyTypes,std::vector<std::vector<TGraphAsymmErrors*>>(nEta, std::vector<TGraphAsymmErrors*>(nHLT, nullptr))));
-        jetEfficiencies_hibin.resize(JetSpectraStruct::kNMatchTypes,std::vector<std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>>(kNEfficiencyTypes,std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>(nEta,std::vector<std::vector<TGraphAsymmErrors*>>(nhiBin,std::vector<TGraphAsymmErrors*>(nHLT, nullptr)))));
+        jetEfficiencies.resize(JetSpectraStruct::kNMatchTypes,std::vector<std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>>(kNEfficiencyTypes,std::vector<std::vector<std::vector<TGraphAsymmErrors*>>>(nEta,std::vector<std::vector<TGraphAsymmErrors*>>(nhiBin,std::vector<TGraphAsymmErrors*>(nHLT, nullptr)))));
     }
     
     // generates efficiencies from jet spectra
@@ -121,21 +95,21 @@ struct JetEfficiencyOutputStruct{
                     // looping over HLT
                     for(std::size_t t=0; t<nHLT; t++){
 
-                        // ternary operator
-                        TH1F* denom_eta = (effType == kFull) ? hists.ljtpt_eta[b] : hists.l1_ljtpt_eta[b][L1SeedHLT[t]];
-
-                        // performing ratio to get jet efficiency
-                        jetEfficiencies_inclusive[matchType][effType][b][t] = new TGraphAsymmErrors(hists.hlt_ljtpt_eta[matchType][b][t], denom_eta, "cl=0.683 b(1,1) mode");
-
                         // looping over hiBin
                         for(std::size_t hb=0; hb<nhiBin; hb++){
-                            TH1F* denom_hibin = (effType == kFull) ? hists.ljtpt_hibin[b][hb] : hists.l1_ljtpt_hibin[b][L1SeedHLT[t]][hb];
-                            jetEfficiencies_hibin[matchType][effType][b][hb][t] = new TGraphAsymmErrors(hists.hlt_ljtpt_hibin[matchType][b][t][hb], denom_hibin, "cl=0.683 b(1,1) mode");
+                            TH1F* denom = (effType == kFull) ? hists.ljtpt[b][hb] : hists.l1_ljtpt[b][L1SeedHLT[t]][hb];
+                            jetEfficiencies[matchType][effType][b][hb][t] = new TGraphAsymmErrors(hists.hlt_ljtpt[matchType][b][t][hb], denom, "cl=0.683 b(1,1) mode");
                         }
                     }
                 }
             }
         }
+    }
+
+    void Write(TFile* f){
+        f->cd();
+        WriteAll(jetEfficiencies);
+        f->Close();
     }
 };
 
