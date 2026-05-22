@@ -14,50 +14,78 @@ struct JetStruct{
     // jet variables //
     // more than any number of jets in an event in ttrees being processed
     static constexpr Int_t maxnref = MAXNREF;
-    // predefined minimum pt of jets to include
-    Float_t ptcut;
     // number in event
     Int_t nref;
-    // momenta
-    Float_t rawpt[maxnref];
-    Float_t pt[maxnref];
-    Float_t eta[maxnref];
-    Float_t phi[maxnref];
-    // PF fractions
-    Float_t PfCHF[maxnref];
-    Float_t PfNHF[maxnref];
-    Float_t PfCEF[maxnref];
-    Float_t PfNEF[maxnref];
-    Float_t PfMUF[maxnref];
-    // PF multiplicities
-    Int_t PfCHM[maxnref];
-    Int_t PfNHM[maxnref];
-    Int_t PfCEM[maxnref];
-    Int_t PfNEM[maxnref];
-    Int_t PfMUM[maxnref];
 
-    // constuctor
-    JetStruct(Float_t cut = 0.0) : ptcut(cut), nref(0){}
+    // reco jets
+    struct RecoMomenta{
+        // momenta
+        Float_t rawpt[MAXNREF];
+        Float_t pt[MAXNREF];
+        Float_t eta[MAXNREF];
+        Float_t phi[MAXNREF];
+        struct PFInfo{ 
+            // PF fractions
+            Float_t CHF[MAXNREF];
+            Float_t NHF[MAXNREF];
+            Float_t CEF[MAXNREF];
+            Float_t NEF[MAXNREF];
+            Float_t MUF[MAXNREF];
+            // PF multiplicities
+            Int_t   CHM[MAXNREF];
+            Int_t   NHM[MAXNREF];
+            Int_t   CEM[MAXNREF];
+            Int_t   NEM[MAXNREF];
+            Int_t   MUM[MAXNREF];
+        } pf;
+    } reco;
+
+    // ref jets
+    struct RefMomenta{
+        Float_t pt[MAXNREF];
+        Float_t eta[MAXNREF];
+        Float_t phi[MAXNREF];
+    } ref;
+
+    // gen jets
+    struct GenMomenta{
+        Float_t pt[MAXNREF];
+        Float_t eta[MAXNREF];
+        Float_t phi[MAXNREF];
+    } gen;
 
     // mapping variables to branches
     std::vector<std::pair<TString, void*>> BranchMap(){
-        return{
+        std::vector<std::pair<TString, void*>> map = {
             {"nref", &nref},
-            {"rawpt", rawpt},
-            {"jtpt", pt},
-            {"jteta", eta},
-            {"jtphi", phi},
-            {"jtPfCHF", PfCHF},
-            {"jtPfNHF", PfNHF},
-            {"jtPfCEF", PfCEF},
-            {"jtPfNEF", PfNEF},
-            {"jtPfMUF", PfMUF},
-            {"jtPfCHM", PfCHM},
-            {"jtPfNHM", PfNHM},
-            {"jtPfCEM", PfCEM},
-            {"jtPfNEM", PfNEM},
-            {"jtPfMUM", PfMUM}
+            {"rawpt", reco.rawpt},
+            {"jtpt", reco.pt},
+            {"jteta", reco.eta},
+            {"jtphi", reco.phi},
+            {"jtPfCHF", reco.pf.CHF},
+            {"jtPfNHF", reco.pf.NHF},
+            {"jtPfCEF", reco.pf.CEF},
+            {"jtPfNEF", reco.pf.NEF},
+            {"jtPfMUF", reco.pf.MUF},
+            {"jtPfCHM", reco.pf.CHM},
+            {"jtPfNHM", reco.pf.NHM},
+            {"jtPfCEM", reco.pf.CEM},
+            {"jtPfNEM", reco.pf.NEM},
+            {"jtPfMUM", reco.pf.MUM},
         };
+
+        // including gen and ref jet collections iff MC
+        if(isMC){
+            map.insert(map.end(), {
+                {"refpt", ref.pt},
+                {"refeta", ref.eta},
+                {"refphi", ref.phi},
+                {"genpt", gen.pt},
+                {"geneta", gen.eta},
+                {"genphi", gen.phi},
+            });
+        }
+        return map;
     }
 };
 

@@ -17,6 +17,12 @@ struct EventStruct{
     Float_t vz;
     // centrality proxy
     Int_t hiBin;
+    // run number
+    UInt_t run;
+    // event number
+    ULong64_t event;
+    // lumisection
+    UInt_t lumi;
 
     // mapping variables to branches
     // weight is mapped to a branch iff the file being processed is MC
@@ -25,7 +31,14 @@ struct EventStruct{
             {"vz", &vz},
             {"hiBin", &hiBin}
         };
-        if(isMC) branches.push_back({"weight", &w});
+        if(isMC){branches.push_back({"weight", &w});}
+        if(!isMC){
+            branches.insert(branches.end(), {
+                {"run", &run},
+                {"evt", &event},
+                {"lumi", &lumi}
+            });
+        }
         return branches;
     }
 };
