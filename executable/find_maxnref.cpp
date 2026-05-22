@@ -8,7 +8,26 @@
 #include <string>
 #include <stdexcept>
 
-void Find_maxnref(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, const bool isMC){
+void run(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, bool isMC);
+
+int main(int argc, char* argv[]){
+    if(argc < 5){
+        std::cerr << "Usage: ./jet_tests <filelist.txt> <output.root> <jet clustering algorithm> <isMC>" << std::endl;
+        return 1;
+    }
+    std::string isMCArg = argv[4];
+    if(isMCArg != "true" && isMCArg != "false" && isMCArg != "1" && isMCArg != "0"){
+        std::cerr << "ERROR: isMC must be true or false" << std::endl;
+        return 1;
+    }
+    bool isMC = (isMCArg == "true" || isMCArg == "1");
+    run(argv[1], argv[2], argv[3], isMC);
+    return 0;
+}
+
+void find_maxnref(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, const bool isMC){run(input_filelist, output, sJetAlgorithm, isMC);}
+ 
+void run(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, const bool isMC){
 
     // initializing variables
     Float_t w=0.f;
