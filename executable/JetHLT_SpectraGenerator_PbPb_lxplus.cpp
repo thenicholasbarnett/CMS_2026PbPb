@@ -12,10 +12,10 @@
 #include "../header/BranchMapping.h"
 #include "../header/EventStructs_PbPb.h"
 #include "../header/JetSelection_PbPb.h"
-#include "../header/JetSpectraHistograms.h"
 #include "../header/JetStruct.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-//#include "../header/JetTriggers_2025PbPb.h"
+#include "../header/JetSpectraHistograms.h"
+// #include "../header/JetTriggers_2026PbPb_MC.h"
+#include "../header/JetTriggers_2025PbPb.h"
 
 // minimum pt of jets to include
 static constexpr Float_t ptcut = 20.0;
@@ -27,7 +27,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC);
 
 int main(int argc, char* argv[]){
     if(argc < 4){
-        std::cerr << "Usage: ./jet_tests <filelist.txt> <output.root> <isMC>" << std::endl;
+        std::cerr << "Usage: ./JetHLT <filelist.txt> <output.root> <isMC>" << std::endl;
         return 1;
     }
     std::string isMCArg = argv[3];
@@ -155,7 +155,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
             for(std::size_t t=0; t<nHLT; t++){
                 if(trg.HLT[t]==0){continue;}
 
-                auto* obj_pt  = trg.HLT_JetObj_pt[t];
+                auto* obj_pt = trg.HLT_JetObj_pt[t];
                 auto* obj_eta = trg.HLT_JetObj_eta[t];
                 auto* obj_phi = trg.HLT_JetObj_phi[t];
                 if(!obj_pt || !obj_eta || !obj_phi){continue;}
@@ -178,83 +178,28 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
                 const auto& etaBin = bins.etaBins[b];
                 if((TMath::Abs(jt.reco.eta[lj])<etaBin.lo)||(TMath::Abs(jt.reco.eta[lj])>etaBin.hi)){continue;}
 
-                hists.ljtpt_eta[b]->Fill(jt.reco.pt[lj], evt.w);
-
-                // looping through HLTs
-                for(std::size_t t=0; t<nHLT; t++){
-                    if(trg.HLT[t]==1){
-                        hists.hlt_ljtpt_eta[JetSpectraStruct::kNoDR][b][t]->Fill(jt.reco.pt[lj], evt.w);
-                        if(iHltMatch[t]==1){hists.hlt_ljtpt_eta[JetSpectraStruct::kDR][b][t]->Fill(jt.reco.pt[lj], evt.w);}
-                    }
-                }
-
-                // looping through L1Ts
-                for(std::size_t t=0; t<nL1T; t++){
-                    if(trg.L1T[t] == 1){hists.l1_ljtpt_eta[b][t]->Fill(jt.reco.pt[lj], evt.w);}}
-
                 for(std::size_t hb=0; hb<bins.hiBins.size(); hb++){
                     const auto& hiBin = bins.hiBins[hb];
-                    if((evt.hiBin<hiBin.lo)||(evt.hiBin>hiBin.hi)){continue;}
+                    if((evt.hiBin<hiBin.lo)||(evt.hiBin>=hiBin.hi)){continue;}
 
-                    hists.ljtpt_hibin[b][hb]->Fill(jt.reco.pt[lj], evt.w);
+                    hists.ljtpt[b][hb]->Fill(jt.reco.pt[lj], evt.w);
                     
                     for(std::size_t t=0; t<nHLT; t++){
                         if(trg.HLT[t]==1){
-                            hists.hlt_ljtpt_hibin[JetSpectraStruct::kNoDR][b][t][hb]->Fill(jt.reco.pt[lj], evt.w);
-                            if(iHltMatch[t]==1){hists.hlt_ljtpt_hibin[JetSpectraStruct::kDR][b][t][hb]->Fill(jt.reco.pt[lj], evt.w);}
+                            hists.hlt_ljtpt[JetSpectraStruct::kNoDR][b][t][hb]->Fill(jt.reco.pt[lj], evt.w);
+                            if(iHltMatch[t]==1){hists.hlt_ljtpt[JetSpectraStruct::kDR][b][t][hb]->Fill(jt.reco.pt[lj], evt.w);}
                         }
                     }
 
                     // looping through L1Ts
-                    for(std::size_t t=0; t<nL1T; t++){if(trg.L1T[t] == 1){hists.l1_ljtpt_hibin[b][t][hb]->Fill(jt.reco.pt[lj], evt.w);}}
+                    for(std::size_t t=0; t<nL1T; t++){if(trg.L1T[t] == 1){hists.l1_ljtpt[b][t][hb]->Fill(jt.reco.pt[lj], evt.w);}}
                 }
             }
         }
         fi->Close();
     }
 
-    // making output file to store histograms
+    // making output file and storing histograms
     TFile *fo = new TFile(output,"recreate");
-    fo->cd();
-
-    // writing the histogram to output file //
-
-    // making directories in output root file
-    TDirectory *devt = fo->mkdir("event");
-    TDirectory *dji = fo->mkdir("jet_inclusive");
-    TDirectory *djh = fo->mkdir("jet_hibin");
-
-    // event info histograms
-    devt->cd();
-    hists.vz_unpassed->Write();
-    hists.pclustF->Write();
-    hists.ppvF->Write();
-    hists.pphfF->Write();
-    hists.vz->Write();
-    hists.hiBin->Write();
-    hists.nref->Write();
-
-    // jet histograms by eta 
-    for(std::size_t b=0; b<bins.etaBins.size(); b++){
-        dji->cd(); 
-        hists.ljtpt_eta[b]->Write();
-        for(std::size_t t=0; t<nHLT; t++){
-            hists.hlt_ljtpt_eta[JetSpectraStruct::kNoDR][b][t]->Write();
-            hists.hlt_ljtpt_eta[JetSpectraStruct::kDR][b][t]->Write();
-            if((t>=nL1T)){continue;}
-            hists.l1_ljtpt_eta[b][t]->Write();
-        }
-        // for each hibin
-        djh->cd();
-        for(std::size_t hb=0; hb<bins.hiBins.size(); hb++){
-            hists.ljtpt_hibin[b][hb]->Write();
-            for(std::size_t t=0; t<nHLT; t++){
-                hists.hlt_ljtpt_hibin[JetSpectraStruct::kNoDR][b][t][hb]->Write();
-                hists.hlt_ljtpt_hibin[JetSpectraStruct::kDR][b][t][hb]->Write();
-                if((t>=nL1T)){continue;}
-                hists.l1_ljtpt_hibin[b][t][hb]->Write();
-            }
-        }
-    }
-    fo->Close();
+    hists.Write(fo);
 }
