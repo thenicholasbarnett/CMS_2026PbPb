@@ -69,6 +69,14 @@ struct JetHealthStruct{
 
     void InitHistograms(const BinningStruct& bins) {
         const std::size_t nhiBin = bins.hiBins.size();
+        
+        vz = MakeTH1F("hvz", bins.vz);
+        vz_unpassed = MakeTH1F("hvz_unpassed", bins.vz);
+        hiBin = MakeTH1I("hhiBin", bins.hiBin);
+        nref = MakeTH1I("hnref", bins.nref);
+        pclustF = MakeTH1I("hpclustF", bins.trig);
+        ppvF = MakeTH1I("hppvF", bins.trig);
+        pphfF = MakeTH1I("hpphfF", bins.trig);
  
         for (std::size_t hb = 0; hb < nhiBin; hb++) {
             const TString& s = bins.hiBins[hb].shortName;
