@@ -40,7 +40,7 @@ void run(const TString& input, const TString& output){
     
     // making and getting histograms
     BinningStruct bins;
-    JetSpectraStruct hists(bins, false);
+    JetSpectraStruct hists(bins);
     GetHistograms(fi, bins, hists);
     std::cout<<"histograms retrieved from "<<input<<std::endl;
 
