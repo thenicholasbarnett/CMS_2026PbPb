@@ -57,6 +57,10 @@ struct JetSpectraStruct{
         InitAxes(bins);
         InitHistograms(bins);
     }
+    JetSpectraStruct(const BinningStruct& bins, bool allocate){
+        InitAxes(bins);
+        if(allocate){InitHistograms(bins);}
+    }
     
     void InitAxes(const BinningStruct& bins){
         const std::size_t nEta = bins.etaBins.size();
