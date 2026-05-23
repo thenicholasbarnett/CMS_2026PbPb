@@ -182,7 +182,6 @@ inline void SaveEfficiencyPlots( const JetEfficiencyOutputStruct& out, const Bin
             gSystem->mkdir(outDir, true);
 
             for(std::size_t b=0; b<nEta; b++){
-                SaveEfficiencyCanvas(out, bins, matchType, effType, b, outDir, cfg);
                 for(std::size_t hb=0; hb<nhiBin; hb++){SaveEfficiencyCanvas(out, bins, matchType, effType, b, hb, outDir, cfg);}
             }
         }
