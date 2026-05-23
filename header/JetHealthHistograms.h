@@ -106,7 +106,7 @@ struct JetHealthStruct{
         f->Close();
     }
 
-}
+};
 
 
 #endif
