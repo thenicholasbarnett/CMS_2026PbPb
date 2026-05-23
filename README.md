@@ -17,6 +17,7 @@ Details of each executable in this table are given as dropdowns below.
 | `Find_maxnref.C` | Find maximum nref in a filelist |
 | `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
 | `JetHLT_EfficiencyGenerator.C` | Make jet trigger efficiencies |
+| `JetHealth_PbPb_lxplus.cpp` | Object health checks |
 
 <h2>General Use Executables</h2>
 
@@ -92,7 +93,7 @@ The input arguments for this macro are listed in this table.
 
 <h2>Jet HLT Efficiency Executables</h2>
 
-Some of the executable scripts in this repository are specifically used to generate jet HLT efficiencies for the 2026 PbPb run. The executables below can be run sequentially to produce jet HLT effeciciencies.
+Executables used to generate jet HLT efficiencies for the 2026 PbPb run are in this repository. The executables below can be run sequentially to produce jet HLT effeciciencies.
 <br><br>
 Jet trigger efficiency can be defined as various ratios of leading jet p<sub>T</sub> spectra for different triggers.
 Generating leading jet p<sub>T</sub> spectra is the first step to take when determining jet trigger efficiencies.
@@ -107,11 +108,11 @@ This C++ macro can be compiled with `g++` into a standalone executable or interp
 <br><br>
 This macro can be compiled into a binary executable with the following line.
 ```
-g++ -o JetHLT JetHLT_SpectraGenerator_PbPb_lxplus.cpp $(root-config --cflags --libs)
+g++ -o JetSpectra JetHLT_SpectraGenerator_PbPb_lxplus.cpp $(root-config --cflags --libs)
 ```
 After compiling, this standalone executable can be run with the following command.
 ```
-./JetHLT filelist.txt output.root isMC
+./JetSpectra filelist.txt output.root isMC
 ```
 This macro can also be executed with ROOT by using its built-in Cling interpreter. 
 ```
@@ -133,6 +134,36 @@ Below are details on each positional argument this macro expects.
 
 > IN PROGRESS
 
+</details>
+
+<h2>Object Health Checks</h2>
+
+Executables here can help monitor the health of jets during the 2026 PbPb run. Object health is a necessary check to do during this run, particularly due to the degraded detector conditions in comparison the rest of Run 3.
+
+<details>
+<summary>JetHealth_PbPb_lxplus.cpp</summary>
+
+<h3>Checking Jet Health</h3>
+
+Similarly to other executables in this repository this C++ macro can be both compiled and interpreted.
+Compile this macro with `g++` and execute as a compiled binary using the following commands.
+
+```
+g++ -o JetHealth CMS_2026PbPb/executable/JetHealth_PbPb_lxplus.cpp $(root-config --cflags --libs)
+```
+```
+./JetHealth <filelist.txt> <output.root> <isMC>
+```
+Execute this macro with Cling using ROOT with the following command.
+```
+root -l -b -q 'JetHealth_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
+```
+The input arguments for this macro are listed in this table.
+| Argument | Description |
+| :-: | - |
+| `filelist.txt` | Plain text file of input ROOT files, one for each line. |
+| `output.root` | Name of output ROOT file to store processed information. |
+| `isMC` | Bool specifying whether the inputs are MC or not. |
 </details>
 
 <h2>Submitting Condor Jobs</h2>
