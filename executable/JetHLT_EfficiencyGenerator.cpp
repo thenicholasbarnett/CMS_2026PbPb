@@ -40,7 +40,7 @@ void run(const TString& input, const TString& output){
     
     // making and getting histograms
     BinningStruct bins;
-    JetSpectraStruct hists(bins);
+    JetSpectraStruct hists(bins, false);
     GetHistograms(fi, bins, hists);
     std::cout<<"histograms retrieved from "<<input<<std::endl;
 
@@ -51,11 +51,8 @@ void run(const TString& input, const TString& output){
     
     // making output file
     TFile *fo = new TFile(output,"recreate");
-    hists.Write(fo);
     out.Write(fo);
     std::cout<<"all histogram saved to output file"<<std::endl;
- 
-    fo->Close();
     fi->Close();
 
     // saving efficiency plots as .png
