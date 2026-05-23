@@ -21,6 +21,10 @@ inline TH2F* MakeTH2F(const TString& hname, const AxisBins& xBins, const AxisBin
     return new TH2F(hname, hname, xBins.nBins, xBins.lo, xBins.hi, yBins.nBins, yBins.lo, yBins.hi);
 }
 
+inline TH1I* MakeTH1I(const TString& hname, const AxisBins& bins) {
+    return new TH1I(hname, hname, bins.nBins, bins.lo, bins.hi);
+}
+
 struct JetHealthStruct{
 
     // event histograms
