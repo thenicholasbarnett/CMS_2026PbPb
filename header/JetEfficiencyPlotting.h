@@ -109,7 +109,7 @@ inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clo
     linfo->Draw("same");
 }
 
-inline void SaveEfficiencyCanvas_hiBin(const JetEfficiencyOutputStruct& out, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, JetEfficiencyOutputStruct::EfficiencyType effType, std::size_t etaIndex, std::size_t hiBinIndex, const TString& outDir, const PlotConfig& cfg){
+inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, JetEfficiencyOutputStruct::EfficiencyType effType, std::size_t etaIndex, std::size_t hiBinIndex, const TString& outDir, const PlotConfig& cfg){
     const auto& etaBin = bins.etaBins[etaIndex];
     const auto& hiBin  = bins.hiBins[hiBinIndex];
 
@@ -119,7 +119,7 @@ inline void SaveEfficiencyCanvas_hiBin(const JetEfficiencyOutputStruct& out, con
 
     std::vector<TGraphAsymmErrors*> clones(nHLT, nullptr);
     for(std::size_t t=0; t<nHLT; t++){
-        clones[t] = (TGraphAsymmErrors*)out.jetEfficiencies_hibin[matchType][effType][etaIndex][hiBinIndex][t]->Clone();
+        clones[t] = (TGraphAsymmErrors*)out.jetEfficiencies[matchType][effType][etaIndex][hiBinIndex][t]->Clone();
         StyleGraph(clones[t], t);
     }
 
@@ -183,7 +183,7 @@ inline void SaveEfficiencyPlots( const JetEfficiencyOutputStruct& out, const Bin
 
             for(std::size_t b=0; b<nEta; b++){
                 SaveEfficiencyCanvas(out, bins, matchType, effType, b, outDir, cfg);
-                for(std::size_t hb=0; hb<nhiBin; hb++){SaveEfficiencyCanvas_hiBin(out, bins, matchType, effType, b, hb, outDir, cfg);}
+                for(std::size_t hb=0; hb<nhiBin; hb++){SaveEfficiencyCanvas(out, bins, matchType, effType, b, hb, outDir, cfg);}
             }
         }
     }
