@@ -16,7 +16,7 @@ Details of each executable in this table are given as dropdowns below.
 | `batch_hadd.sh` | Merge many ROOT files |
 | `Find_maxnref.C` | Find maximum nref in a filelist |
 | `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
-| `JetHLT_EfficiencyGenerator.C` | Make jet trigger efficiencies |
+| `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 | `JetHealth_PbPb_lxplus.cpp` | Object health checks |
 
 <h2>General Use Executables</h2>
