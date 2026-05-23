@@ -14,11 +14,11 @@ struct JetStruct{
     // jet variables //
     // more than any number of jets in an event in ttrees being processed
     static constexpr Int_t maxnref = MAXNREF;
-    // number in event
-    Int_t nref;
 
     // reco jets
     struct RecoMomenta{
+        // number in event
+        Int_t nref;
         // momenta
         Float_t rawpt[MAXNREF];
         Float_t pt[MAXNREF];
