@@ -57,7 +57,7 @@ public:
 // OR
 // JetSelect js;
 // jet veto maps are regularly uploaded to this GitHub repository: https://github.com/cms-jet/JECDatabase/tree/master/jet_veto_maps
-// latest veto map as of November 25th, 2025 can be quickly grabbed with wget https://github.com/cms-jet/JECDatabase/raw/refs/heads/master/jet_veto_maps/Winter25Prompt25/Winter25Prompt25_RunCDE.root 
+// latest veto map as of November 25th, 2025 can be quickly grabbed with wget https://github.com/cms-jet/JECDatabase/raw/refs/heads/master/jet_veto_maps/Winter25Prompt25/Winter25Prompt25_RunCDEFG.root 
 
 
 // if(!js.JetSelection(jteta[0], jtphi[0], jtPfCEF[0], jtPfNEF[0],jtPfMUF[0])){continue;}
