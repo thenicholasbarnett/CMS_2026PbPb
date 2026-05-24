@@ -14,6 +14,7 @@
 
 #include "Binning.h"
 #include "HistUtilities.h"
+#include "JetStruct.h"
 
 enum PFType{
     CHF = 0,
