@@ -62,7 +62,7 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
     BinningStruct bins;
 
     // initializing histograms
-    JetHealthStruct hists(bins);
+    JetHealthStruct<maxnref> hists(bins);
 
     // minbias trigger
     Int_t L1minBias;
