@@ -25,6 +25,7 @@ enum PFType{
     PFTypes = 5
 };
 
+template <Int_t MAXNREF>
 struct JetHealthStruct{
 
     // event histograms
@@ -58,13 +59,11 @@ struct JetHealthStruct{
         pf  = MakeTHnSparseF("hjetpf",  "pfFrac:pfType:abseta:hiBin", {bins.pfFrac, pfType, bins.abseta, bins.hiBin});
     }
 
-    template <Int_t MAXNREF>
     void FillKin(const typename JetStruct<MAXNREF>::RecoMomenta& reco, Int_t j, Int_t hiBinVal, Float_t w = 1.0){
         Double_t x[] = {reco.pt[j], reco.eta[j], reco.phi[j], (Double_t)hiBinVal};
         kin->Fill(x, w);
     }
 
-    template <Int_t MAXNREF>
     void FillPF(const typename JetStruct<MAXNREF>::RecoMomenta& reco, Int_t j, Int_t hiBinVal, Float_t w = 1.0){
         const Float_t fracs[PFTypes] = {reco.pf.CHF[j], reco.pf.NHF[j], reco.pf.CEF[j], reco.pf.NEF[j], reco.pf.MUF[j]};
         for (Int_t p = 0; p < PFTypes; p++) {
