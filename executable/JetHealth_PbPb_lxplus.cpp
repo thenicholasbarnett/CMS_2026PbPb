@@ -133,8 +133,8 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
 
             // filling event histograms
             hists.vz->Fill(evt.vz, evt.w);
-            hists.hiBin->Fill(fltr.hiBin, evt.w);
-            hists.nref->Fill(fltr.nref, evt.w);
+            hists.hiBin->Fill(evt.hiBin, evt.w);
+            hists.nref->Fill(jt.reco.nref, evt.w);
 
             // looping through all jets in each event
             for(unsigned int j=0; j<jt.reco.nref; j++){
