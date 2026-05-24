@@ -53,7 +53,7 @@ struct JetHealthStruct{
         pphfF = MakeTH1I("hpphfF", bins.trig);
  
         kin = MakeTHnSparseF("hjetkin", "pt:abseta:phi:hiBin", {bins.pt, bins.abseta, bins.phi, bins.hiBin});
-        const AxisBins pfType = {kNPFTypes, 0., (Float_t)PFTypes, "PF type (CHF/NHF/CEF/NEF/MUF)"};
+        const AxisBins pfType = {PFTypes, 0., (Float_t)PFTypes, "PF type (CHF/NHF/CEF/NEF/MUF)"};
         pf  = MakeTHnSparseF("hjetpf",  "pfFrac:pfType:abseta:hiBin", {bins.pfFrac, pfType, bins.abseta, bins.hiBin});
     }
 
