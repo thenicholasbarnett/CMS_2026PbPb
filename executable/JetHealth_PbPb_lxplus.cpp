@@ -58,14 +58,14 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
     // jet object
     JetStruct<maxnref> jt;
 
-    // trigger object
-    TriggersStruct trg;
-
     // binning
     BinningStruct bins;
 
     // initializing histograms
     JetHealthStruct hists(bins);
+
+    // minbias trigger
+    Int_t L1minBias;
 
     // getting list of root files to process
     std::ifstream myfile(input_filelist);
@@ -98,7 +98,11 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
         SetBranches(ttrees[0],evt.BranchMap(isMC));
         SetBranches(ttrees[1],fltr.BranchMap());
         SetBranches(ttrees[2],jt.BranchMap(isMC));
-        SetBranches(ttrees[3],trg.BranchMap());
+
+        // getting minbias trigger decision
+        ttrees[3]->SetBranchStatus("*",0);
+        ttrees[3]->SetBranchStatus("L1_MinimumBiasHF1_AND_BptxAND",1);
+        ttrees[3]->SetBranchAddress("L1_MinimumBiasHF1_AND_BptxAND", &L1minBias);
 
         // looping over events
         Long64_t nentries = ttrees[0]->GetEntries();
@@ -125,7 +129,12 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
             ttrees[3]->GetEntry(i);
 
             /// Skipping events without jets or that don't fire teh minbias l1 trigger
-            if((jt.reco.nref==0)||(trg.L1T[0]==0)){continue;}
+            if((jt.reco.nref==0)||(L1minBias==0)){continue;}
+
+            // filling event histograms
+            hists.vz->Fill(evt.vz, evt.w);
+            hists.hiBin->Fill(fltr.hiBin, evt.w);
+            hists.nref->Fill(fltr.nref, evt.w);
 
             // looping through all jets in each event
             for(unsigned int j=0; j<jt.reco.nref; j++){
@@ -136,28 +145,9 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
                 // using header file for jet identification
                 if(!js.JetSelection(jt.reco.eta[j], jt.reco.phi[j], jt.reco.pf.CEF[j], jt.reco.pf.NEF[j],jt.reco.pf.MUF[j])){continue;}
                 
-                // filling histograms //
-
-                for(std::size_t b=0; b<bins.etaBins.size(); b++){
-                    const auto& etaBin = bins.etaBins[b];
-                    if((TMath::Abs(jt.reco.eta[j])<etaBin.lo)||(TMath::Abs(jt.reco.eta[j])>=etaBin.hi)){continue;}
-
-                    // looping through centrality intervals
-                    for(std::size_t hb=0; hb<bins.hiBins.size(); hb++){
-                        const auto& hiBinRange = bins.hiBins[hb];
-                        if((evt.hiBin<hiBinRange.lo)||(evt.hiBin>=hiBinRange.hi)){continue;}
- 
-                        hists.pt[hb]->Fill(jt.reco.pt[j], evt.w);
-                        hists.eta[hb]->Fill(jt.reco.eta[j], evt.w);
-                        hists.phi[hb]->Fill(jt.reco.phi[j], evt.w);
-                        hists.etaphi[hb]->Fill(jt.reco.eta[j], jt.reco.phi[j], evt.w);
-                        hists.CHF[hb]->Fill(jt.reco.pf.CHF[j], evt.w);
-                        hists.NHF[hb]->Fill(jt.reco.pf.NHF[j], evt.w);
-                        hists.CEF[hb]->Fill(jt.reco.pf.CEF[j], evt.w);
-                        hists.NEF[hb]->Fill(jt.reco.pf.NEF[j], evt.w);
-                        hists.MUF[hb]->Fill(jt.reco.pf.MUF[j], evt.w);
-                    }
-                }
+                // filling kinematic and PF fraction histograms //
+                hists.FillKin(jt.reco, j, evt.hiBin, evt.w);
+                hists.FillPF(jt.reco, j, evt.hiBin, evt.w);
             }
         }
         fi->Close();
