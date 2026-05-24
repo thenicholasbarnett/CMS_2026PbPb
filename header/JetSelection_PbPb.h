@@ -25,7 +25,7 @@ public:
 
     /// Default → file standard on EOS
     JetSelect() {
-        std::string defaultPath = "/eos/cms/store/group/phys_heavyions/nbarnett/Winter25Prompt25_RunCDE.root";
+        std::string defaultPath = "/eos/cms/store/group/phys_heavyions/nbarnett/Winter25Prompt25_RunCDEFG.root";
         loadVetoMap(defaultPath);
     }
 
