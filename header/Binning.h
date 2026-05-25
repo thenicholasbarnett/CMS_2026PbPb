@@ -31,7 +31,7 @@ struct BinningStruct{
     AxisBins phi = {64, -3.2, 3.2, "#phi (rad)"};
     AxisBins nref = {30, 0, 30, "nref"};
     AxisBins trig = {2, 0, 2, "trigger decision"};
-    AxisBins pfFrac = {10, 0.0, 1.0, "Particle FLow energy fraction"};
+    AxisBins pfFrac = {20, 0.0, 1.0, "Particle FLow energy fraction"};
     AxisBins pfMult = {50, 0, 50, "Particle Flow candidate multiplicity"};
     AxisBins hiBin = {200, 0, 200, "hiBin"};
 
