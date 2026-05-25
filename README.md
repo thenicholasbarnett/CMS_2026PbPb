@@ -166,6 +166,15 @@ The input arguments for this macro are listed in this table.
 | `isMC` | Bool specifying whether the inputs are MC or not. |
 </details>
 
+<details>
+<summary>PlotJetHealth.cpp</summary>
+
+<h3>Generating Object Health Checks</h3>
+
+> IN PROGRESS
+
+</details>
+
 <h2>Submitting Condor Jobs</h2>
 
 An HTCondor wrapper for easy (and fun!) Condor job submission on LXPLUS lives in this repo and [a separate one](https://github.com/thenicholasbarnett/cms-condor-wrapper) — see executable/Condor for the full README.
