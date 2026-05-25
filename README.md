@@ -14,11 +14,11 @@ Details of each executable in this table are given as dropdowns below.
 | Executable | Task |
 | :-: | - |
 | `batch_hadd.sh` | Merge many ROOT files |
-| `Find_maxnref.C` | Find maximum nref in a filelist |
-| `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
-| `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
+| `find_maxnref.C` | Find maximum nref in a filelist |
 | `JetHealth_PbPb_lxplus.cpp` | Processing and plotting object health checks |
 | `PlotJetHealth.cpp` | Plotting object health checks |
+| `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
+| `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 
 <h2>General Use Executables</h2>
 
@@ -92,6 +92,66 @@ The input arguments for this macro are listed in this table.
 
 </details>
 
+<h2>Object Health Checks</h2>
+
+Executables here can help monitor the health of jets, intended for use during the 2026 PbPb run. Object health is a necessary check to do during this data taking period, particularly due to the degraded detector conditions compared to previous years in Run 3. 
+<br><br>
+The main tool in this repository made to monitor jet health is an executable C++ file. This tool will make a timestamped directory with portable network graphic (`.png`) files displaying kinematics (p<sub>T</sub>, η, ϕ), maps of η vs ϕ, and particle-flow (PF) energy fractions. The η-ϕ maps are displayed for different minimum p<sub>T</sub> values, the PF fractions are shown for different |η| ranges, and all of these images are made for various centrality intervals. All of this dimensionality can be easily adjusted in some of the header files, particularly in `Binning.h`.
+<br><br>
+The executable `JetHealth_PbPb_lxplus.cpp` will process HiForest files and produce these plots, as well as provide an output ROOT file. This output contains two different four dimensional histograms, which are projected with `JetHealthPlotting.h` into the various histgrams plotted. The additional executable provided, `PlotJetHealth.cpp`, will produce the same plots from this output. Changing `JetHealthPlotting.h` and executing `PlotJetHealth.cpp` can produce additional displays after processing.
+
+<details>
+<summary>JetHealth_PbPb_lxplus.cpp</summary>
+
+<h3>Checking Jet Health</h3>
+
+This macro should be used to provide insight into the performance of jets. Comparing plots produced with this macro from jets collected during this data taking period to jets previously collected in Run 3, or generated in MC samples, will help display the health of jets being collected. This executable processes input HiForest files, stores jet information into an output ROOT file, and generates the plots described above. Additional plots can be made from the information stored in the output file from this macro using `PlotJetHealth.cpp`.
+<br><br>
+Similarly to other executables in this repository this C++ macro can be both compiled and interpreted.
+Compile this macro with `g++` and execute as a compiled binary using the following commands.
+
+```
+g++ -o JetHealth JetHealth_PbPb_lxplus.cpp $(root-config --cflags --libs)
+```
+```
+./JetHealth <filelist.txt> <output.root> <isMC>
+```
+Execute this macro with Cling using ROOT with the following command.
+```
+root -l -q 'JetHealth_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
+```
+The input arguments for this macro are listed in this table.
+| Argument | Description |
+| :-: | - |
+| `filelist.txt` | Plain text file of input ROOT files, one for each line. |
+| `output.root` | Name of output ROOT file to store processed information. |
+| `isMC` | Bool specifying whether the inputs are MC or not. |
+</details>
+
+<details>
+<summary>PlotJetHealth.cpp</summary>
+
+<h3>Plotting Object Health Checks</h3>
+
+This macro will generate the same plots as `JetHealth_PbPb_lxplus.cpp`, without processing any ROOT files. The output of `JetHealth_PbPb_lxplus.cpp` is used as the input for this macro. This macro is meant to allow alternative checks to be done after processing. Changes to `JetHealthPlotting.h` for example can be quickly observed by executing this macro, without the delay of processing files or access to the HiForest files being processed.
+<br><br>
+As with all C++ macros in this repository this executable can be interpreted or compiled. Executing this file with the Cling interpreter using ROOT is recommended. 
+```
+root -l -q 'PlotJetHealth.cpp("input.root")'
+```
+This macro can also be compiled to be ran as a standalone binary. Any changes to the plotting composition here will require this macro to be compiled again.
+```
+g++ -o PlotJetHealth JetHealth_PbPb_lxplus.cpp $(root-config --cflags --libs)
+```
+```
+PlotJetHealth <input.root>
+```
+One argument is taken as an input to this macro.
+| Argument | Description |
+| :-: | - |
+| `input.root` | Output ROOT file from `JetHealth_PbPb_lxplus.cpp` |
+</details>
+
 <h2>Jet HLT Efficiency Executables</h2>
 
 Executables used to generate jet HLT efficiencies for the 2026 PbPb run are in this repository. The executables below can be run sequentially to produce jet HLT effeciciencies.
@@ -132,45 +192,6 @@ Below are details on each positional argument this macro expects.
 <summary>JetHLT_EfficiencyGenerator.cpp</summary>
 
 <h3>Generating Jet HLT Efficiencies</h3>
-
-> IN PROGRESS
-
-</details>
-
-<h2>Object Health Checks</h2>
-
-Executables here can help monitor the health of jets during the 2026 PbPb run. Object health is a necessary check to do during this run, particularly due to the degraded detector conditions in comparison the rest of Run 3.
-
-<details>
-<summary>JetHealth_PbPb_lxplus.cpp</summary>
-
-<h3>Checking Jet Health</h3>
-
-Similarly to other executables in this repository this C++ macro can be both compiled and interpreted.
-Compile this macro with `g++` and execute as a compiled binary using the following commands.
-
-```
-g++ -o JetHealth CMS_2026PbPb/executable/JetHealth_PbPb_lxplus.cpp $(root-config --cflags --libs)
-```
-```
-./JetHealth <filelist.txt> <output.root> <isMC>
-```
-Execute this macro with Cling using ROOT with the following command.
-```
-root -l -b -q 'JetHealth_PbPb_lxplus.cpp("filelist.txt","output.root",isMC)'
-```
-The input arguments for this macro are listed in this table.
-| Argument | Description |
-| :-: | - |
-| `filelist.txt` | Plain text file of input ROOT files, one for each line. |
-| `output.root` | Name of output ROOT file to store processed information. |
-| `isMC` | Bool specifying whether the inputs are MC or not. |
-</details>
-
-<details>
-<summary>PlotJetHealth.cpp</summary>
-
-<h3>Plotting Object Health Checks</h3>
 
 > IN PROGRESS
 
