@@ -13,7 +13,8 @@
 #include <cstddef>
 
 #include "Binning.h"
-#include "HistUtilities.h"
+#include "Utilities.h"
+
 #include "JetStruct.h"
 
 enum PFType{
@@ -24,6 +25,9 @@ enum PFType{
     MUF = 4,
     PFTypes = 5
 };
+
+constexpr std::array<const char*, PFTypes> PFTypeNames  = {"CHF", "NHF", "CEF", "NEF", "MUF"};
+constexpr std::array<const char*, PFTypes> PFTypeTitles = {"Charged Hadron Fraction","Neutral Hadron Fraction","Charged EM Fraction","Neutral EM Fraction","Muon Fraction"};
 
 template <Int_t MAXNREF>
 struct JetHealthStruct{
@@ -46,17 +50,17 @@ struct JetHealthStruct{
     JetHealthStruct(const BinningStruct& bins){InitHistograms(bins);}
     
     void InitHistograms(const BinningStruct& bins){
-        vz = MakeTH1F("hvz", bins.vz);
-        vz_unpassed = MakeTH1F("hvz_unpassed", bins.vz);
-        hiBin = MakeTH1I("hhiBin", bins.hiBin);
-        nref = MakeTH1I("hnref", bins.nref);
-        pclustF = MakeTH1I("hpclustF", bins.trig);
-        ppvF = MakeTH1I("hppvF", bins.trig);
-        pphfF = MakeTH1I("hpphfF", bins.trig);
+        vz = MakeTH1<TH1F>("hvz", bins.vz);
+        vz_unpassed = MakeTH1<TH1F>("hvz_unpassed", bins.vz);
+        hiBin = MakeTH1<TH1I>("hhiBin", bins.hiBin);
+        nref = MakeTH1<TH1I>("hnref", bins.nref);
+        pclustF = MakeTH1<TH1I>("hpclustF", bins.trig);
+        ppvF = MakeTH1<TH1I>("hppvF", bins.trig);
+        pphfF = MakeTH1<TH1I>("hpphfF", bins.trig);
  
-        kin = MakeTHnSparseF("hjetkin", "pt:abseta:phi:hiBin", {bins.pt, bins.abseta, bins.phi, bins.hiBin});
+        kin = MakeTHnSparse<THnSparseF> ("hjetkin", "pt:eta:phi:hiBin", {bins.pt, bins.eta, bins.phi, bins.hiBin});
         const AxisBins pfType = {PFTypes, 0., (Float_t)PFTypes, "PF type (CHF/NHF/CEF/NEF/MUF)"};
-        pf  = MakeTHnSparseF("hjetpf",  "pfFrac:pfType:abseta:hiBin", {bins.pfFrac, pfType, bins.abseta, bins.hiBin});
+        pf  = MakeTHnSparse<THnSparseF> ("hjetpf",  "pfFrac:pfType:abseta:hiBin", {bins.pfFrac, pfType, bins.abseta, bins.hiBin});
     }
 
     void FillKin(const typename JetStruct<MAXNREF>::RecoMomenta& reco, Int_t j, Int_t hiBinVal, Float_t w = 1.0){
@@ -83,7 +87,6 @@ struct JetHealthStruct{
         WriteAll(pphfF);
         if(kin){kin->Write();}
         if(pf){pf->Write();}
-        f->Close();
     }
 
 };
