@@ -10,6 +10,7 @@
 #include "TString.h"
 #include "TCanvas.h"
 #include "TDatime.h"
+#include "TLatex.h"
 #include "TLegend.h"
 #include "TPad.h"
 #include "TString.h"
@@ -102,6 +103,7 @@ struct PlotConfig{
 
     int canvasSize = 2400;
     float imageScaling = 1.0;
+
     
     float legfrac = 0.2;
 };
@@ -114,6 +116,7 @@ inline TCanvas* MakeSinglePadCanvas(const TString& name, const PlotConfig& cfg, 
     c->SetBottomMargin(0.12);
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.05);
+    c->SetRealAspectRatio();
     if(grid) {
         c->SetGridx();
         c->SetGridy();
@@ -127,6 +130,7 @@ inline TCanvas* MakeColzCanvas(const TString& name, const PlotConfig& cfg){
     c->SetBottomMargin(0.12);
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.15);
+    c->SetRealAspectRatio();
     return c;
 }
 
@@ -163,7 +167,7 @@ inline SplitCanvas MakeSplitPadCanvas(const TString& name, const PlotConfig& cfg
 
 // Legend
 
-inline TLegend* MakeLegend(float xmin = 0.55, float ymin = 0.15, float xmax = 0.93, float ymax = 0.50){
+inline TLegend* MakeLegend(float xmin = 0.575, float ymin = 0.75, float xmax = 0.8, float ymax = 0.95){
     TLegend* l = new TLegend(xmin, ymin, xmax, ymax);
     l->SetBorderSize(0);
     l->SetFillStyle(0);
@@ -203,7 +207,27 @@ inline void StyleTH1(TH1* h, Color_t color){
     h->SetMarkerColor(color);
     h->SetMarkerStyle(20);
     h->SetMarkerSize(0.8);
-    h->SetLineWidth(2);
+    h->SetLineWidth(4);
 }
- 
+
+// TLatex
+
+inline void DrawLabel(const TString& text, float x, float y, float textSize = 0.035, Int_t align = 11){
+    if(text.IsNull()){return;}
+    TLatex* tex = new TLatex(x, y, text);
+    tex->SetNDC();
+    tex->SetTextAlign(align);
+    tex->SetTextSize(textSize);
+    tex->Draw();
+}
+
+inline void DrawCMSLabel(float x = 0.12, float y = 0.965, float textSize = 0.035) {
+    DrawLabel("CMS #bf{#it{Internal}}", x, y, textSize);
+}
+
+inline void DrawJetAlgoLabel(const TString& jetAlgo, float x = 0.8, float y = 0.04, float textSize = 0.035){
+    DrawLabel(Form("#bf{%s}", jetAlgo.Data()), x, y, textSize);
+}
+
+
 #endif
