@@ -14,6 +14,7 @@
 #include "../header/JetSelection_PbPb.h"
 #include "../header/JetStruct.h"
 #include "../header/JetHealthHistograms.h"
+#include "../header/JetHealthPlotting.h"
 #include "../header/JetTriggers_2026PbPb_MC.h"
 // #include "../header/JetTriggers_2025PbPb.h"
 
@@ -43,6 +44,9 @@ int main(int argc, char* argv[]){
 void JetHealth_PbPb_lxplus(const TString& input_filelist, const TString& output, bool isMC){run(input_filelist, output, isMC);}
  
 void run(const TString& input_filelist, const TString& output, bool isMC){
+
+    // turning off stat box for histograms
+    gStyle->SetOptStat(0);
 
     // ttree names
     const Int_t nTTrees = 4;
@@ -152,8 +156,13 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
         }
         fi->Close();
     }
+    
+    JetHealthPlotConfig cfg;
+    cfg.jetAlgo = "akCs4PF";
+    SaveJetHealthPlots(hists, bins, cfg);
 
     // making output file and storing histograms
     TFile *fo = new TFile(output,"recreate");
     hists.Write(fo);
+    fo->Close();
 }
