@@ -52,7 +52,7 @@ inline void SaveKinPlot(THnSparseF* hkin,Int_t axis,const TString& axisLabel,con
 }
 
 inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir) {
-    TString plotName = Form("hpf_%s", kPFTypeNames.at(pfType));
+    TString plotName = Form("hpf_%s", PFTypeNames.at(pfType));
     TCanvas* c = MakeSinglePadCanvas(plotName, cfg, true);
     TLegend* l = MakeLegend();
 
@@ -72,7 +72,7 @@ inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins,
     }
 
     hists.at(0)->GetYaxis()->SetRangeUser(0.0, ymax * 1.35);
-    hists.at(0)->GetXaxis()->SetTitle(kPFTypeTitles.at(pfType));
+    hists.at(0)->GetXaxis()->SetTitle(PFTypeTitles.at(pfType));
     hists.at(0)->GetXaxis()->CenterTitle(true);
     hists.at(0)->GetXaxis()->SetTitleOffset(1.1);
     hists.at(0)->GetYaxis()->SetTitleOffset(1.3);
