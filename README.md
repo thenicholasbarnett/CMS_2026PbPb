@@ -18,6 +18,7 @@ Details of each executable in this table are given as dropdowns below.
 | `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 | `JetHealth_PbPb_lxplus.cpp` | Object health checks |
+| `PlotJetHealth.cpp` | Object health checks |
 
 <h2>General Use Executables</h2>
 
