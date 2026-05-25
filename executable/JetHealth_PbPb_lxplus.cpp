@@ -15,8 +15,6 @@
 #include "../header/JetStruct.h"
 #include "../header/JetHealthHistograms.h"
 #include "../header/JetHealthPlotting.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-// #include "../header/JetTriggers_2025PbPb.h"
 
 // minimum pt of jets to include
 static constexpr Float_t ptcut = 20.0;
