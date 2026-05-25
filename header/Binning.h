@@ -4,6 +4,8 @@
 #include "TString.h"
 #include "Rtypes.h"
 
+#include "MyColors.h"
+
 #include <vector>
 
 struct AxisBins{
@@ -37,12 +39,12 @@ struct BinningStruct{
 
     // centrality
     std::vector<RangeBin> hiBins = {
-        {0, 200, "0 < hiBin < 200", "_hiBin_0_to_200", kBlack},
-        {0, 20, "0 < hiBin < 20", "_hiBin_0_to_20", kBlue},
-        {20, 60, "20 < hiBin < 60", "_hiBin_20_to_60", kRed},
-        {60, 100, "60 < hiBin < 100", "_hiBin_60_to_100", kGreen+2},
-        {100, 160, "100 < hiBin < 160", "_hiBin_100_to_160", kMagenta},
-        {160, 200, "160 < hiBin < 200", "_hiBin_160_to_200", kOrange+1}
+        {0, 200, "0 < hiBin < 200", "_hiBin_0_to_200", KlimtPink},
+        {0, 20, "0 < hiBin < 20", "_hiBin_0_to_20", KlimtRed},
+        {20, 60, "20 < hiBin < 60", "_hiBin_20_to_60", KlimtYellow},
+        {60, 100, "60 < hiBin < 100", "_hiBin_60_to_100", KlimtGreen},
+        {100, 160, "100 < hiBin < 160", "_hiBin_100_to_160", KlimtBlue},
+        {160, 200, "160 < hiBin < 200", "_hiBin_160_to_200", KlimtPurple}
     };
 
     // eta
