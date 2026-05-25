@@ -17,8 +17,8 @@ Details of each executable in this table are given as dropdowns below.
 | `Find_maxnref.C` | Find maximum nref in a filelist |
 | `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
-| `JetHealth_PbPb_lxplus.cpp` | Object health checks |
-| `PlotJetHealth.cpp` | Object health checks |
+| `JetHealth_PbPb_lxplus.cpp` | Processing and plotting object health checks |
+| `PlotJetHealth.cpp` | Plotting object health checks |
 
 <h2>General Use Executables</h2>
 
@@ -170,7 +170,7 @@ The input arguments for this macro are listed in this table.
 <details>
 <summary>PlotJetHealth.cpp</summary>
 
-<h3>Generating Object Health Checks</h3>
+<h3>Plotting Object Health Checks</h3>
 
 > IN PROGRESS
 
