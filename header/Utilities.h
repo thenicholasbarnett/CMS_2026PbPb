@@ -104,7 +104,6 @@ struct PlotConfig{
     int canvasSize = 2400;
     float imageScaling = 1.0;
 
-    
     float legfrac = 0.2;
 };
 

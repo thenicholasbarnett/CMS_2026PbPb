@@ -17,16 +17,17 @@
 
 #include "JetHealthHistograms.h"
 
-struct JetHealthPlotConfig : PlotConfig {std::vector<Float_t> etaPhiPtCuts = {20.0, 100.0, 200.0};};
+struct JetHealthPlotConfig : PlotConfig {std::vector<Float_t> etaPhiPtCuts = {50.0, 100.0, 200.0};};
 inline bool PFTypeLogY(Int_t pfType){return pfType == CEF || pfType == NHF || pfType == MUF;}
 
-inline void SaveKinPlot(THnSparseF* hkin,Int_t axis,const TString& axisLabel,const TString& plotName,const BinningStruct& bins,const JetHealthPlotConfig& cfg,const TString& outDir){
+inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,const TString& plotName,const BinningStruct& bins,const JetHealthPlotConfig& cfg,const TString& outDir){
     TCanvas* c = MakeSinglePadCanvas(plotName, cfg, false);
     TLegend* l = MakeLegend();
  
     const std::size_t nhiBin = bins.hiBins.size();
     std::vector<TH1D*> hists;
     double ymax = 0.0;
+    SetAxisRange(hkin, 0, bins.ptmin, 500);
 
     for(std::size_t hb = nhiBin; hb-- > 0;){
         const auto& hiBin = bins.hiBins.at(hb);
@@ -55,6 +56,7 @@ inline void SaveKinPlot(THnSparseF* hkin,Int_t axis,const TString& axisLabel,con
 
     DrawCMSLabel();
     DrawJetAlgoLabel(cfg.jetAlgo);
+    DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", bins.ptmin), 0.4, 0.97, 0.035);
     
     l->Draw("same");
     c->SaveAs(outDir + "/" + plotName + ".png");
@@ -63,48 +65,53 @@ inline void SaveKinPlot(THnSparseF* hkin,Int_t axis,const TString& axisLabel,con
     delete c;
 }
 
-inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir) {
-    TString plotName = Form("hpf_%s", PFTypeNames.at(pfType));
-    TCanvas* c = MakeSinglePadCanvas(plotName, cfg, true);
-    TLegend* l = MakeLegend();
+inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir){
+    for(const auto& etaBin : bins.etaBins){
+        TString plotName = Form("hpf_%s%s", PFTypeNames.at(pfType), etaBin.shortName.Data());
+        TCanvas* c = MakeSinglePadCanvas(plotName, cfg, true);
+        TLegend* l = MakeLegend();
 
-    const std::size_t nhiBin = bins.hiBins.size();
-    std::vector<TH1D*> hists;
+        const std::size_t nhiBin = bins.hiBins.size();
+        std::vector<TH1D*> hists;
+        SetAxisRange(hpf, 0, bins.ptmin, 500);
 
-    double ymax = 0.0;
-    for(std::size_t hb = nhiBin; hb-- > 0;){
-        const auto& hiBin = bins.hiBins.at(hb);
-        TString suf = Form("_%s_hb%zu", plotName.Data(), hb);
-        TH1D* h = ProjectTHn1D(hpf, 0, {{1, (double)pfType, pfType + 1.0}, {3, hiBin.lo, hiBin.hi}}, suf);
-        StyleTH1(h, hiBin.color);
-        NormalizeTH1(h);
-        ymax = std::max(ymax, (double)h->GetMaximum());
-        hists.push_back(h);
-        l->AddEntry(h, hiBin.title, "l");
+        double ymax = 0.0;
+        for(std::size_t hb = nhiBin; hb-- > 0;){
+            const auto& hiBin = bins.hiBins.at(hb);
+            TString suf = Form("_%s_hb%zu", plotName.Data(), hb);
+            TH1D* h = ProjectTHn1D(hpf, 0, {{1, (double)pfType, pfType + 1.0}, {2, etaBin.lo, etaBin.hi}, {3, hiBin.lo, hiBin.hi}}, suf);
+            StyleTH1(h, hiBin.color);
+            NormalizeTH1(h);
+            ymax = std::max(ymax, (double)h->GetMaximum());
+            hists.push_back(h);
+            l->AddEntry(h, hiBin.title, "l");
+        }
+
+        hists.at(0)->GetYaxis()->SetRangeUser(0.0, ymax * 1.35);
+        hists.at(0)->GetXaxis()->SetTitle(PFTypeTitles.at(pfType));
+        hists.at(0)->GetXaxis()->CenterTitle(true);
+        hists.at(0)->GetXaxis()->SetTitleOffset(1.3);
+        hists.at(0)->GetYaxis()->SetTitleOffset(1.3);
+        if(PFTypeLogY(pfType)){
+            hists.at(0)->GetYaxis()->SetRangeUser(1e-6, ymax * 5.0);
+            c->SetLogy();
+        } else {
+            hists.back()->GetYaxis()->SetRangeUser(0.0, ymax * 1.35);
+        }
+
+        for(std::size_t hb = 0; hb < nhiBin; hb++){hists.at(hb)->Draw(hb == 0 ? "ep" : "ep same");}
+
+        DrawCMSLabel();
+        DrawJetAlgoLabel(cfg.jetAlgo);
+        DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", bins.ptmin), 0.4, 0.975, 0.035);
+        DrawLabel(Form("#bf{%s}", etaBin.title.Data()), 0.7, 0.965, 0.035);
+
+        l->Draw("same");
+        c->SaveAs(outDir + "/" + plotName + ".png");
+
+        for (auto* h : hists) { delete h; }
+        delete c;
     }
-
-    hists.at(0)->GetYaxis()->SetRangeUser(0.0, ymax * 1.35);
-    hists.at(0)->GetXaxis()->SetTitle(PFTypeTitles.at(pfType));
-    hists.at(0)->GetXaxis()->CenterTitle(true);
-    hists.at(0)->GetXaxis()->SetTitleOffset(1.3);
-    hists.at(0)->GetYaxis()->SetTitleOffset(1.3);
-    if(PFTypeLogY(pfType)){
-        hists.at(0)->GetYaxis()->SetRangeUser(1e-6, ymax * 5.0);
-        c->SetLogy();
-    } else {
-        hists.back()->GetYaxis()->SetRangeUser(0.0, ymax * 1.35);
-    }
-
-    for(std::size_t hb = 0; hb < nhiBin; hb++){hists.at(hb)->Draw(hb == 0 ? "ep" : "ep same");}
-
-    DrawCMSLabel();
-    DrawJetAlgoLabel(cfg.jetAlgo);
-
-    l->Draw("same");
-    c->SaveAs(outDir + "/" + plotName + ".png");
-
-    for (auto* h : hists) { delete h; }
-    delete c;
 }
 
 inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinIndex, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir){
@@ -120,13 +127,14 @@ inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinInd
     h->GetYaxis()->CenterTitle(true);
     h->GetXaxis()->SetTitleOffset(1.3);
     h->GetYaxis()->SetTitleOffset(1.3);
-    h->GetZaxis()->SetLabelSize(0);
+    // h->GetZaxis()->SetLabelSize(0);
     gStyle->SetPalette(kRedBlue);
     h->Draw("colz");
 
     DrawCMSLabel(0.12,0.93,0.035);
     DrawJetAlgoLabel(cfg.jetAlgo, 0.75, 0.04, 0.035);
-    DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", ptCut), 0.7, 0.94, 0.035);
+    DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", ptCut), 0.12, 0.04, 0.035);
+    DrawLabel(Form("#bf{%s}", bins.hiBins.at(hiBinIndex).title.Data()), 0.5, 0.93, 0.035);
 
     c->SaveAs(outDir + "/" + plotName + ".png");
     delete h;
@@ -136,6 +144,7 @@ inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinInd
 template <Int_t MAXNREF>
 inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const BinningStruct& bins, const JetHealthPlotConfig& cfg){
     SetPlotStyle(cfg);
+    Float_t PFptcut = 50.0;
 
     TString plotsBase = MakePlotDir("jethealth_plots");
     std::cout << "saving jet health plots to " << plotsBase << std::endl;
@@ -158,7 +167,7 @@ inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const Binn
     // eta-phi 2D plots
     const std::size_t nhiBin = bins.hiBins.size();
     for (Float_t ptCut : cfg.etaPhiPtCuts) {
-        for(std::size_t hb = nhiBin; hb-- > 1;){SaveEtaPhiPlot(hists.kin, ptCut, hb, bins, cfg, etaPhiDir);}
+        for(std::size_t hb = nhiBin; hb-- > 0;){SaveEtaPhiPlot(hists.kin, ptCut, hb, bins, cfg, etaPhiDir);}
     }
 
     std::cout << "all jet health plots saved to " << plotsBase << std::endl;
