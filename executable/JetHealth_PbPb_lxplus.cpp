@@ -19,7 +19,7 @@
 // #include "../header/JetTriggers_2025PbPb.h"
 
 // minimum pt of jets to include
-static constexpr Float_t ptcut = 20.0;
+static constexpr Float_t ptcut = 50.0;
 
 // more than number of jets in any event being processed
 static constexpr Int_t maxnref = 150;
@@ -63,7 +63,7 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
     JetStruct<maxnref> jt;
 
     // binning
-    BinningStruct bins;
+    BinningStruct bins(ptcut);
 
     // initializing histograms
     JetHealthStruct<maxnref> hists(bins);
