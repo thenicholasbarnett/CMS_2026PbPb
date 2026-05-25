@@ -11,8 +11,8 @@
 
 #include "Binning.h"
 #include "JetSpectraHistograms.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-// #include "../header/JetTriggers_2025PbPb.h"
+#include "JetTriggers_2026PbPb_MC.h"
+// #include "JetTriggers_2025PbPb.h"
 
 inline void GetHistograms(TFile* fi, const BinningStruct& bins, JetSpectraStruct& hists){
 
