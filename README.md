@@ -92,7 +92,7 @@ The input arguments for this macro are listed in this table.
 
 </details>
 
-<h2>Object Health Checks</h2>
+<h2>Object Health Executables</h2>
 
 Executables here can help monitor the health of jets, intended for use during the 2026 PbPb run. Object health is a necessary check to do during this data taking period, particularly due to the degraded detector conditions compared to previous years in Run 3. 
 <br><br>
