@@ -18,8 +18,8 @@
 #include "Binning.h"
 #include "JetEfficiency.h"
 #include "JetSpectraHistograms.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
-// #include "../header/JetTriggers_2025PbPb.h"
+#include "JetTriggers_2026PbPb_MC.h"
+// #include "JetTriggers_2025PbPb.h"
 
 struct PlotConfig{
     TString runNumber = "";
