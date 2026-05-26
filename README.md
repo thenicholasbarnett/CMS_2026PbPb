@@ -13,84 +13,12 @@ Details of each executable in this table are given as dropdowns below.
 
 | Executable | Task |
 | :-: | - |
-| `batch_hadd.sh` | Merge many ROOT files |
-| `find_maxnref.C` | Find maximum nref in a filelist |
 | `JetHealth_PbPb_lxplus.cpp` | Processing and plotting object health checks |
 | `PlotJetHealth.cpp` | Plotting object health checks |
 | `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
-
-<h2>General Use</h2>
-
-Some executable files in this repository can be used for general purposes. 
-<br>
-Interacting with HTCondor and CRAB as well as combining ROOT files are some example uses of the executables in this repository.
-
-<details>
-<summary>batch_hadd.sh</summary>
-
-<h3>Merging Many ROOT Files</h3>
-
-Many ROOT files can be merged using the command hadd. The command `hadd output.root path/to/inputs/*root` will add compatible ROOT objects, such as TTrees, RNTuples, and histograms. To be compatible the input files must have the same object names. These added objects are placed into an output ROOT file upon running hadd. This command is particularly useful after processing many files in parallel. More information on hadd can be found in the [ROOT documentation](https://root.cern/doc/v638/hadd_8cxx.html).
-<br><br>
-Using hadd on very many files may take an exceedingly long time and is more likely to give ill-defined behavior or crash. By using hadd on subsets of a large number of files, then using hadd on the output, these issues can be avoided. This shell script avoids some issues with hadd by iteratively merging batches of ROOT files. Additionally, this bash script runs hadd multiple times in parallel on the same machine, further reducing the time to add many ROOT files.
-<br><br>
-This bash script can be executed by launching a new bash process in a couple ways.
-```
-bash batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
-```
-After giving execute permission (`chmod +x batch_hadd.sh`) this shell script can also be executed in a child process like this.
-```
-./batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
-```
-This bash script can be executed with the following terminal commands in the current shell session.
-> WARNING: Executing in the current shell session is not recommended because if the argument validation fails then the current terminal session will close entirely
-```
-source batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
-```
-```
-. batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
-```
-Details on each positional argument this shell takes as an input.
-| Argument | Description |
-| :-: | - |
-| `OUT_FILE` | Merged output ROOT file. |
-| `IN_FILES` | Pattern for the input ROOT files to be merged. Example: `path/to/files/*root` |
-| `BATCH_SIZE` | Number of ROOT files in each batch to hadd. |
-| `NJOBS` | Number of parallel hadd commands to run. |
-</details>
-
-<details>
-<summary>find_maxnref.cpp</summary>
-
-<h3>Finding Maximum nref in ROOT Files</h3>
-
-The number of jets in a single event is stored in a HiForest as nref, in the JetAnalyzer TTree. Jet variables, such as p<sub>T</sub>, are stored as arrays in the same TTree. If the arrays declared that are mapped to each jet variable for an event have less entries than nref for that event then ill-defined behavior will occur or the execution will crash. Finding the maximum nref for a set of ROOT files containing JetAnalyzer TTrees can be useful so that the size of arrays declared when processing these files do not cause issues.
-<br><br>
-Like most C++ macros in this repository this file can be both compiled with `g++` as well as interpreted with Cling. 
-Cling is an interactive C++ interpreter that is built in to ROOT. 
-<br><br>
-This macro can be compiled into a stadalone executable with the following command.
-```
-g++ -o mnref find_maxnref.cpp $(root-config --cflags --libs)
-```
-After compiling this binary executable can be run.
-```
-./mnref <filelist.txt> <output.root> <JetAlgorithm> <isMC>
-```
-This macro can also be executed using ROOT with the Cling interpreter.
-```
-root -l -b -q 'find_maxnref.cpp("filelist.txt","output.root","JetAlgorithm",isMC)'
-```
-The input arguments for this macro are listed in this table.
-| Argument | Description |
-| :-: | - |
-| `filelist.txt` | Plain text file of input ROOT files, one for each line. |
-| `output.root` | Name of output ROOT file to store processed information. |
-| `JetAlgorithm` | Clustering algorithm used to populate TTree. |
-| `isMC` | Bool specifying whether the inputs are MC or not. |
-
-</details>
+| `batch_hadd.sh` | Merge many ROOT files |
+| `find_maxnref.C` | Find maximum nref in a filelist |
 
 <h2>Object Health</h2>
 
@@ -194,6 +122,78 @@ Below are details on each positional argument this macro expects.
 <h3>Generating Jet HLT Efficiencies</h3>
 
 > IN PROGRESS
+
+</details>
+
+<h2>General Use</h2>
+
+Some executable files in this repository can be used for general purposes. 
+<br>
+Interacting with HTCondor and CRAB as well as combining ROOT files are some example uses of the executables in this repository.
+
+<details>
+<summary>batch_hadd.sh</summary>
+
+<h3>Merging Many ROOT Files</h3>
+
+Many ROOT files can be merged using the command hadd. The command `hadd output.root path/to/inputs/*root` will add compatible ROOT objects, such as TTrees, RNTuples, and histograms. To be compatible the input files must have the same object names. These added objects are placed into an output ROOT file upon running hadd. This command is particularly useful after processing many files in parallel. More information on hadd can be found in the [ROOT documentation](https://root.cern/doc/v638/hadd_8cxx.html).
+<br><br>
+Using hadd on very many files may take an exceedingly long time and is more likely to give ill-defined behavior or crash. By using hadd on subsets of a large number of files, then using hadd on the output, these issues can be avoided. This shell script avoids some issues with hadd by iteratively merging batches of ROOT files. Additionally, this bash script runs hadd multiple times in parallel on the same machine, further reducing the time to add many ROOT files.
+<br><br>
+This bash script can be executed by launching a new bash process in a couple ways.
+```
+bash batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+After giving execute permission (`chmod +x batch_hadd.sh`) this shell script can also be executed in a child process like this.
+```
+./batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+This bash script can be executed with the following terminal commands in the current shell session.
+> WARNING: Executing in the current shell session is not recommended because if the argument validation fails then the current terminal session will close entirely
+```
+source batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+```
+. batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+```
+Details on each positional argument this shell takes as an input.
+| Argument | Description |
+| :-: | - |
+| `OUT_FILE` | Merged output ROOT file. |
+| `IN_FILES` | Pattern for the input ROOT files to be merged. Example: `path/to/files/*root` |
+| `BATCH_SIZE` | Number of ROOT files in each batch to hadd. |
+| `NJOBS` | Number of parallel hadd commands to run. |
+</details>
+
+<details>
+<summary>find_maxnref.cpp</summary>
+
+<h3>Finding Maximum nref in ROOT Files</h3>
+
+The number of jets in a single event is stored in a HiForest as nref, in the JetAnalyzer TTree. Jet variables, such as p<sub>T</sub>, are stored as arrays in the same TTree. If the arrays declared that are mapped to each jet variable for an event have less entries than nref for that event then ill-defined behavior will occur or the execution will crash. Finding the maximum nref for a set of ROOT files containing JetAnalyzer TTrees can be useful so that the size of arrays declared when processing these files do not cause issues.
+<br><br>
+Like most C++ macros in this repository this file can be both compiled with `g++` as well as interpreted with Cling. 
+Cling is an interactive C++ interpreter that is built in to ROOT. 
+<br><br>
+This macro can be compiled into a stadalone executable with the following command.
+```
+g++ -o mnref find_maxnref.cpp $(root-config --cflags --libs)
+```
+After compiling this binary executable can be run.
+```
+./mnref <filelist.txt> <output.root> <JetAlgorithm> <isMC>
+```
+This macro can also be executed using ROOT with the Cling interpreter.
+```
+root -l -b -q 'find_maxnref.cpp("filelist.txt","output.root","JetAlgorithm",isMC)'
+```
+The input arguments for this macro are listed in this table.
+| Argument | Description |
+| :-: | - |
+| `filelist.txt` | Plain text file of input ROOT files, one for each line. |
+| `output.root` | Name of output ROOT file to store processed information. |
+| `JetAlgorithm` | Clustering algorithm used to populate TTree. |
+| `isMC` | Bool specifying whether the inputs are MC or not. |
 
 </details>
 
