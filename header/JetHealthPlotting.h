@@ -20,7 +20,7 @@
 struct JetHealthPlotConfig : PlotConfig {std::vector<Float_t> etaPhiPtCuts = {50.0, 100.0, 200.0};};
 inline bool PFTypeLogY(Int_t pfType){return pfType == CEF || pfType == NHF || pfType == MUF;}
 
-inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,const TString& plotName,const BinningStruct& bins,const JetHealthPlotConfig& cfg,const TString& outDir){
+inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,const TString& plotName,const BinningStruct& bins,const JetHealthPlotConfig& cfg,const TString& outDir, TFile *outFile = nullptr){
     TCanvas* c = MakeSinglePadCanvas(plotName, cfg, false);
     TLegend* l = MakeLegend();
  
@@ -52,7 +52,13 @@ inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,co
     hists.at(0)->GetXaxis()->SetTitleOffset(1.3);
     hists.at(0)->GetYaxis()->SetTitleOffset(1.3);
 
-    for(std::size_t hb = 0; hb < nhiBin; hb++){hists.at(hb)->Draw(hb == 0 ? "ep" : "ep same");}
+    for(std::size_t hb = 0; hb < nhiBin; hb++){
+        hists.at(hb)->Draw(hb == 0 ? "ep" : "ep same");
+        if(outFile && !outFile->IsZombie()){
+            outFile->cd();
+            hists.at(hb)->Write();
+        }
+    }
 
     DrawCMSLabel();
     DrawJetAlgoLabel(cfg.jetAlgo);
@@ -65,7 +71,7 @@ inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,co
     delete c;
 }
 
-inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir){
+inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir, TFile *outFile = nullptr){
     for(const auto& etaBin : bins.etaBins){
         TString plotName = Form("hpf_%s%s", PFTypeNames.at(pfType), etaBin.shortName.Data());
         TCanvas* c = MakeSinglePadCanvas(plotName, cfg, true);
@@ -99,7 +105,13 @@ inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins,
             hists.back()->GetYaxis()->SetRangeUser(0.0, ymax * 1.35);
         }
 
-        for(std::size_t hb = 0; hb < nhiBin; hb++){hists.at(hb)->Draw(hb == 0 ? "ep" : "ep same");}
+        for(std::size_t hb = 0; hb < nhiBin; hb++){
+            hists.at(hb)->Draw(hb == 0 ? "ep" : "ep same");
+            if(outFile && !outFile->IsZombie()){
+                outFile->cd();
+                hists.at(hb)->Write();
+            }
+        }
 
         DrawCMSLabel();
         DrawJetAlgoLabel(cfg.jetAlgo);
@@ -114,7 +126,7 @@ inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins,
     }
 }
 
-inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinIndex, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir){
+inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinIndex, const BinningStruct& bins, const JetHealthPlotConfig& cfg, const TString& outDir, TFile *outFile = nullptr){
     const auto& hiBin = bins.hiBins.at(hiBinIndex);
     TString plotName = Form("hetaphi_pt%.0f%s", ptCut, hiBin.shortName.Data());
     TCanvas* c = MakeColzCanvas(plotName, cfg);
@@ -137,14 +149,20 @@ inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinInd
     DrawLabel(Form("#bf{%s}", bins.hiBins.at(hiBinIndex).title.Data()), 0.5, 0.93, 0.035);
 
     c->SaveAs(outDir + "/" + plotName + ".png");
+    if(outFile && !outFile->IsZombie()){
+        outFile->cd();
+        h->Write();
+    }
+
     delete h;
     delete c;
 }
 
 template <Int_t MAXNREF>
-inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const BinningStruct& bins, const JetHealthPlotConfig& cfg){
+inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const BinningStruct& bins, const JetHealthPlotConfig& cfg, TFile *outFile = nullptr){
     SetPlotStyle(cfg);
     Float_t PFptcut = 50.0;
+    if(!outFile || outFile->IsZombie()){std::cout << "No output file specified or specified file is a zombie"<< std::endl;}
 
     TString plotsBase = MakePlotDir("jethealth_plots");
     std::cout << "saving jet health plots to " << plotsBase << std::endl;
@@ -157,17 +175,17 @@ inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const Binn
     gSystem->mkdir(etaPhiDir, true);
 
     // 1D kinematic plots
-    SaveKinPlot(hists.kin, 0, "p_{T} (GeV/c)", "hkin_pt", bins, cfg, kinDir);
-    SaveKinPlot(hists.kin, 1, "#eta", "hkin_eta", bins, cfg, kinDir);
-    SaveKinPlot(hists.kin, 2, "#phi (rad)", "hkin_phi", bins, cfg, kinDir);
+    SaveKinPlot(hists.kin, 0, "p_{T} (GeV/c)", "hkin_pt", bins, cfg, kinDir, outFile);
+    SaveKinPlot(hists.kin, 1, "#eta", "hkin_eta", bins, cfg, kinDir, outFile);
+    SaveKinPlot(hists.kin, 2, "#phi (rad)", "hkin_phi", bins, cfg, kinDir, outFile);
 
     // PF fraction plots
-    for(Int_t p=0; p<PFTypes; p++){SavePFPlot(hists.pf, p, bins, cfg, pfDir);}
+    for(Int_t p=0; p<PFTypes; p++){SavePFPlot(hists.pf, p, bins, cfg, pfDir, outFile);}
 
     // eta-phi 2D plots
     const std::size_t nhiBin = bins.hiBins.size();
     for (Float_t ptCut : cfg.etaPhiPtCuts) {
-        for(std::size_t hb = nhiBin; hb-- > 0;){SaveEtaPhiPlot(hists.kin, ptCut, hb, bins, cfg, etaPhiDir);}
+        for(std::size_t hb = nhiBin; hb-- > 0;){SaveEtaPhiPlot(hists.kin, ptCut, hb, bins, cfg, etaPhiDir, outFile);}
     }
 
     std::cout << "all jet health plots saved to " << plotsBase << std::endl;
