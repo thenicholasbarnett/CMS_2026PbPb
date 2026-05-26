@@ -63,6 +63,8 @@ The input arguments for this macro are listed in this table.
 
 This macro will generate the same plots as `JetHealth_PbPb_lxplus.cpp`, without processing any ROOT files. The output of `JetHealth_PbPb_lxplus.cpp` is used as the input for this macro. This macro is meant to allow alternative checks to be done after processing. Changes to `JetHealthPlotting.h` for example can be quickly observed by executing this macro, without the delay of processing files or access to the HiForest files being processed.
 <br><br>
+An output file name can be specified to this macro if desired, which will store all projected histograms. If the input file given to this macro is corrupt or not present then an ASCII zombie will show up in the terminal, and a standard runtime error will occur. 
+<br><br>
 As with all C++ macros in this repository this executable can be interpreted or compiled. Executing this file with the Cling interpreter using ROOT is recommended. 
 ```
 root -l -q 'PlotJetHealth.cpp("input.root")'
@@ -78,6 +80,7 @@ One argument is taken as an input to this macro.
 | Argument | Description |
 | :-: | - |
 | `input.root` | Output ROOT file from `JetHealth_PbPb_lxplus.cpp` |
+| `output.root` | Optional output filename to write out projected histograms |
 </details>
 
 <h2>HLT Efficiencies</h2>
