@@ -86,7 +86,8 @@ Executables used to generate jet HLT efficiencies for the 2026 PbPb run are in t
 <br><br>
 Jet trigger efficiency can be defined as various ratios of leading jet p<sub>T</sub> spectra for different triggers.
 Generating leading jet p<sub>T</sub> spectra is the first step to take when determining jet trigger efficiencies.
-In this workflow executing `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` on a list of ROOT files with JetAnalyzer and TTrees will provide an output ROOT file that can be used to generate HLT efficiencies for jets.
+In this workflow executing `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` on a list of ROOT files with JetAnalyzer and TTrees will provide an output ROOT file that can be used to generate HLT efficiencies for jets. The output of this step can then be used to calculate efficiency for different jet HLT paths using `JetHLT_EfficiencyGenerator.cpp`.
+<br><br>
 
 <details>
 <summary>JetHLT_SpectraGenerator_PbPb_lxplus.cpp</summary>
@@ -121,7 +122,24 @@ Below are details on each positional argument this macro expects.
 
 <h3>Generating Jet HLT Efficiencies</h3>
 
-> IN PROGRESS
+The input to this macro is the output of `JetHLT_SpectraGenerator_PbPb_lxplus.cpp`. A trigger's efficiency can be defined as the ratio of the leading jet p<sub>T</sub> for events passing a particular trigger to the leading jet p<sub>T</sub> for all events in the same sample. Requiring the minimum bias trigger in both the numberator and denominator of this ratio the sample will be unbiased or less biased than without this requirement.
+<br><br>
+To compile this C++ script and execute it as a standalone binary use the following commands in sequence.
+```
+g++ -o JetEfficiency JetHLT_EfficiencyGenerator.cpp $(root-config --cflags --libs)
+```
+```
+./JetEfficiency <input.root> <output.root>
+```
+Execute this macro using the Cling interpreter native to ROOT with the following command.
+```
+root -l -q 'JetHLT_EfficiencyGenerator.cpp("input.root","output.root")'
+```
+The arguments for this macro are simply an input and output ROOT file. The input file for this macro is the output of `JetHLT_SpectraGenerator_PbPb_lxplus.cpp`.
+| Argument | Description |
+| :-: | - |
+| `input.root` | Input file for this macro. Must be the format as the output from `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` |
+| `output.root` | ROOT file made by this macro containing jet HLT efficiencies. |
 
 </details>
 
