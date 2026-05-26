@@ -20,7 +20,7 @@ Details of each executable in this table are given as dropdowns below.
 | `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 
-<h2>General Use Executables</h2>
+<h2>General Use</h2>
 
 Some executable files in this repository can be used for general purposes. 
 <br>
@@ -92,7 +92,7 @@ The input arguments for this macro are listed in this table.
 
 </details>
 
-<h2>Object Health Executables</h2>
+<h2>Object Health</h2>
 
 Executables here can help monitor the health of jets, intended for use during the 2026 PbPb run. Object health is a necessary check to do during this data taking period, particularly due to the degraded detector conditions compared to previous years in Run 3. 
 <br><br>
@@ -131,7 +131,7 @@ The input arguments for this macro are listed in this table.
 <details>
 <summary>PlotJetHealth.cpp</summary>
 
-<h3>Plotting Object Health Checks</h3>
+<h3>Plotting Health Checks</h3>
 
 This macro will generate the same plots as `JetHealth_PbPb_lxplus.cpp`, without processing any ROOT files. The output of `JetHealth_PbPb_lxplus.cpp` is used as the input for this macro. This macro is meant to allow alternative checks to be done after processing. Changes to `JetHealthPlotting.h` for example can be quickly observed by executing this macro, without the delay of processing files or access to the HiForest files being processed.
 <br><br>
@@ -152,7 +152,7 @@ One argument is taken as an input to this macro.
 | `input.root` | Output ROOT file from `JetHealth_PbPb_lxplus.cpp` |
 </details>
 
-<h2>Jet HLT Efficiency Executables</h2>
+<h2>HLT Efficiencies</h2>
 
 Executables used to generate jet HLT efficiencies for the 2026 PbPb run are in this repository. The executables below can be run sequentially to produce jet HLT effeciciencies.
 <br><br>
