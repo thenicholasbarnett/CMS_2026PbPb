@@ -17,23 +17,10 @@
  
 #include "Binning.h"
 #include "JetEfficiency.h"
+#include "Utilities.h"
 #include "JetSpectraHistograms.h"
 #include "JetTriggers_2026PbPb_MC.h"
 // #include "JetTriggers_2025PbPb.h"
-
-struct PlotConfig{
-    TString runNumber = "";
-    TString globalTag = "";
-    TString jetAlgo   = "akCs4PF";
-    float ptmin  = 20.0;
-    float ptmax  = 200.0;
-    float effmax = 1.1;
-    // int canvasSize = 800;
-    int canvasSize = 2400;
-    float imageScaling = 1.0;
-    // float imageScaling = 3.0;
-    float legfrac = 0.2;
-};
 
 struct CanvasStruct {
     TCanvas* c = nullptr;
@@ -66,13 +53,6 @@ inline CanvasStruct MakeCanvas(const TString& name, const PlotConfig& cfg){
     cs.plotpad->Draw();
 
     return cs;
-}
-
-inline TLegend* MakeLegend(float xmin, float ymin, float xmax, float ymax) {
-    TLegend* l = new TLegend(xmin, ymin, xmax, ymax);
-    l->SetBorderSize(0);
-    l->SetFillStyle(0);
-    return l;
 }
 
 inline void DrawRefLine(float xmin, float xmax, float y = 1.0) {
@@ -133,11 +113,11 @@ inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const Bin
     clones[0]->GetXaxis()->SetTitleOffset(1.0);
     clones[0]->GetYaxis()->SetTitleOffset(1.0);
     clones[0]->SetMinimum(0.0);
-    clones[0]->SetMaximum(cfg.effmax);
-    clones[0]->GetXaxis()->SetRangeUser(cfg.ptmin, cfg.ptmax);
+    clones[0]->SetMaximum(cfg.ymax);
+    clones[0]->GetXaxis()->SetRangeUser(cfg.xmin, cfg.xmax);
 
     for(std::size_t t=1; t<nHLT; t++){clones[t]->Draw("p same");}
-    DrawRefLine(cfg.ptmin, cfg.ptmax);
+    DrawRefLine(cfg.xmin, cfg.xmax);
     
     std::vector<TString> infoEntries;
     if(!cfg.runNumber.IsNull()){infoEntries.push_back(cfg.runNumber);}
