@@ -159,7 +159,7 @@ inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinInd
 }
 
 template <Int_t MAXNREF>
-inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const BinningStruct& bins, const JetHealthPlotConfig& cfg, TFile *outFile = nullptr, const TString& run_number){
+inline void SaveJetHealthPlots(const JetHealthStruct<MAXNREF>& hists, const BinningStruct& bins, const JetHealthPlotConfig& cfg, TFile *outFile = nullptr, const TString& run_number=""){
     SetPlotStyle(cfg);
     Float_t PFptcut = 50.0;
     if(!outFile || outFile->IsZombie()){std::cout << "No output file specified or specified file is a zombie"<< std::endl;}
