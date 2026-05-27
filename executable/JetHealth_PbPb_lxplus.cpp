@@ -21,6 +21,9 @@
 // minimum pt of jets to include
 static constexpr Float_t ptcut = 50.0;
 
+// minimum pt of jets to include
+const TString& run_number = "";
+
 // more than number of jets in any event being processed
 static constexpr Int_t maxnref = 150;
 
@@ -159,10 +162,10 @@ void run(const TString& input_filelist, const TString& output, bool isMC){
     
     JetHealthPlotConfig cfg;
     cfg.jetAlgo = "akCs4PF";
-    SaveJetHealthPlots(hists, bins, cfg);
-
+    cfg.runNumber = run_number;
     // making output file and storing histograms
     TFile *fo = new TFile(output,"recreate");
+    SaveJetHealthPlots(hists, bins, cfg, fo);
     hists.Write(fo);
     fo->Close();
 }
