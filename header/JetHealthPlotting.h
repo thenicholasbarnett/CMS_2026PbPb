@@ -61,6 +61,7 @@ inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,co
     }
 
     DrawCMSLabel();
+    DrawLabel(Form(" Run %s",cfg.runNumber.Data()),0.12,0.9, 0.035);
     DrawJetAlgoLabel(cfg.jetAlgo);
     DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", bins.ptmin), 0.4, 0.97, 0.035);
     
@@ -114,6 +115,7 @@ inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins,
         }
 
         DrawCMSLabel();
+        DrawLabel(Form(" Run %s",cfg.runNumber.Data()),0.12,0.9, 0.035);
         DrawJetAlgoLabel(cfg.jetAlgo);
         DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", bins.ptmin), 0.4, 0.975, 0.035);
         DrawLabel(Form("#bf{%s}", etaBin.title.Data()), 0.7, 0.965, 0.035);
@@ -144,6 +146,7 @@ inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinInd
     h->Draw("colz");
 
     DrawCMSLabel(0.12,0.93,0.035);
+    DrawLabel(Form("Run %s",cfg.runNumber.Data()),0.12,0.97, 0.035);
     DrawJetAlgoLabel(cfg.jetAlgo, 0.75, 0.04, 0.035);
     DrawLabel(Form("#bf{p_{T} > %.0f GeV/c}", ptCut), 0.12, 0.04, 0.035);
     DrawLabel(Form("#bf{%s}", bins.hiBins.at(hiBinIndex).title.Data()), 0.5, 0.93, 0.035);
