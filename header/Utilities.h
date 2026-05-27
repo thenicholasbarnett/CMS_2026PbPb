@@ -6,6 +6,7 @@
 #include "TH1F.h"
 #include "TH1I.h"
 #include "TH1.h"
+#include "TH2D.h"
 #include "THnSparse.h"
 #include "TString.h"
 #include "TCanvas.h"
