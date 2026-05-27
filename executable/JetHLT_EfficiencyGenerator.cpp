@@ -60,9 +60,9 @@ void run(const TString& input, const TString& output){
     cfg.runNumber = "";
     cfg.globalTag = "";
     cfg.jetAlgo = "akCs4PF";
-    cfg.ptmin = 20.0;
-    cfg.ptmax = 300.0;
-    cfg.effmax = 1.4;
+    cfg.xmin  = 20.0;
+    cfg.xmax  = 300.0;
+    cfg.ymax  = 1.4;
 
     SaveEfficiencyPlots(out, bins, cfg);
 }
