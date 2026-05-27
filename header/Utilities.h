@@ -92,7 +92,7 @@ inline void NormalizeTH1(TH1* h){
 // Plotting //
 
 struct PlotConfig{
-    TString runNumber = "";
+    TString runNumber = "404337";
     TString globalTag = "";
     TString jetAlgo   = "";
     
