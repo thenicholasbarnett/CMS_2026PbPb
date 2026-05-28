@@ -40,7 +40,7 @@ inline void StyleGraph(TGraphAsymmErrors* g, std::size_t triggerIndex) {
     g->SetLineWidth(3);
 }
 
-inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clones, const std::vector<TString>& infoEntries, JetSpectraStruct::MatchType matchType, float legfrac){
+inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clones, const PlotConfig& cfg, const BinningStruct& bins, JetSpectraStruct::MatchType matchType, std::size_t etaIndex, std::size_t hiBinIndex){
     legpad->cd();
 
     const auto& etaBin = bins.etaBins[etaIndex];
@@ -54,6 +54,7 @@ inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clo
 
     // info legend
     TLegend* linfo = MakeLegend(0.65, 0.03, 0.98, 0.97);
+    AddInfoEntries(linfo, cfg);
     linfo->AddEntry((TObject*)nullptr, hiBin.title,  "");
     linfo->AddEntry((TObject*)nullptr, etaBin.title, "");
     if(matchType == JetSpectraStruct::kDR){linfo->AddEntry((TObject*)0, "#Delta R < 0.3", "");}
@@ -67,6 +68,17 @@ inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const Bin
     TString hname = "heff" + JetSpectraStruct::MatchSuffix(matchType) + "_" + JetEfficiencyOutputStruct::EfficiencyName(effType) + etaBin.shortName + hiBin.shortName;
 
     SplitCanvas cs = MakeSplitPadCanvas(hname, cfg);
+
+    std::vector<TGraphAsymmErrors*> clones(nHLT, nullptr);
+    for(std::size_t t=0; t<nHLT; t++){
+        clones[t] = (TGraphAsymmErrors*)out.jetEfficiencies[matchType][effType][etaIndex][hiBinIndex][t]->Clone();
+        StyleGraph(clones[t], t);
+    }
+
+    cs.plotpad->cd();
+    clones[0]->Draw("ap");
+    clones[0]->SetTitle("");
+    clones[0]->GetXaxis()->SetTitle("p_{T,leading jet} (GeV)");
 
     TString yTitle;
     if(effType == JetEfficiencyOutputStruct::kFull) yTitle = "HLT + MinBias / MinBias";
@@ -84,8 +96,7 @@ inline void SaveEfficiencyCanvas(const JetEfficiencyOutputStruct& out, const Bin
 
     for(std::size_t t=1; t<nHLT; t++){clones[t]->Draw("p same");}
     DrawRefLine(cfg.xmin, cfg.xmax);
-    
-    DrawLegends(cs.legpad, clones, infoEntries, matchType, cfg.legfrac);DrawLegends(cs.legpad, clones, cfg, bins, matchType, etaIndex, hiBinIndex);
+    DrawLegends(cs.legpad, clones, cfg, bins, matchType, etaIndex, hiBinIndex);
 
     cs.c->SaveAs(outDir + "/" + hname + ".png");
     delete cs.c;
