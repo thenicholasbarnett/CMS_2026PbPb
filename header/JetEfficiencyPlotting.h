@@ -48,12 +48,14 @@ inline void DrawLegends(TPad* legpad, const std::vector<TGraphAsymmErrors*>& clo
 
     // trigger legend
     TLegend* ltrig = MakeLegend(0.02, 0.03, 0.65, 0.97);
+    ltrig->SetTextSize(0);
     ltrig->SetNColumns(1);
     for(std::size_t t=0; t<nHLT; t++){ltrig->AddEntry(clones[t], sHLTrigs[t], "lp");}
     ltrig->Draw("same");
 
     // info legend
     TLegend* linfo = MakeLegend(0.65, 0.03, 0.98, 0.97);
+    linfo->SetTextSize(0);
     AddInfoEntries(linfo, cfg);
     linfo->AddEntry((TObject*)nullptr, hiBin.title,  "");
     linfo->AddEntry((TObject*)nullptr, etaBin.title, "");
