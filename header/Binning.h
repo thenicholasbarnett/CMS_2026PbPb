@@ -57,7 +57,7 @@ struct BinningStruct{
         {2.7, 5.1, "2.7 < |#eta| < 5.1", "_eta_2p7_to_5p1"}
     };
 
-    BinningStruct(Float_t ptcut = 50.0) : ptmin(ptcut), pt({50, ptcut, 1000.0, "p_{T} (GeV/c)"}){}
+    BinningStruct(Float_t ptcut = 50.0) : ptmin(ptcut), pt({190, ptcut, 1000.0, "p_{T} (GeV/c)"}){}
 };
 
 #endif
