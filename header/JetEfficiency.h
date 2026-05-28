@@ -56,12 +56,14 @@ struct JetEfficiencyOutputStruct{
     enum EfficiencyType{
         kFull = 0, // HLT+L1seed+minBias/minBias
         kRelative = 1, // HLT+L1seed+minBias/L1seed+minBias
-        kNEfficiencyTypes = 2
+        kL1 = 2, // L1seed+minBias/minBias
+        kNEfficiencyTypes = 3
     };
 
     static TString EfficiencyName(EfficiencyType effType){
         if(effType == kFull){return "full";}
         if(effType == kRelative){return "relative";}
+        if(effType == kL1){return "L1";}
         return "unknown";
     }
 
@@ -98,8 +100,9 @@ struct JetEfficiencyOutputStruct{
 
                         // looping over hiBin
                         for(std::size_t hb=0; hb<nhiBin; hb++){
-                            TH1F* denom = (effType == kFull) ? hists.ljtpt[b][hb] : hists.l1_ljtpt[b][L1SeedHLT[t]][hb];
-                            jetEfficiencies[matchType][effType][b][hb][t] = new TGraphAsymmErrors(hists.hlt_ljtpt[matchType][b][t][hb], denom, "cl=0.683 b(1,1) mode");
+                            TH1F* numer = (effType == kL1) ? hists.l1_ljtpt[b][L1SeedHLT[t]][hb] : hists.hlt_ljtpt[matchType][b][t][hb]; // kFull and kRelative both use hlt_ljtpt
+                            TH1F* denom = (effType == kRelative) ? hists.l1_ljtpt[b][L1SeedHLT[t]][hb] : hists.ljtpt[b][hb]; // kFull and kL1 both divide by minBias
+                            jetEfficiencies[matchType][effType][b][hb][t] = new TGraphAsymmErrors(numer, denom, "cl=0.683 b(1,1) mode");
                         }
                     }
                 }
