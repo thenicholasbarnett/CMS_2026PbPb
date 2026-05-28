@@ -28,7 +28,7 @@ struct BinningStruct{
 
     // histogram axes
     AxisBins vz = {40, -20.0, 20.0, "v_{z} (cm)"};
-    AxisBins pt = {200, 50.0, 1000.0, "p_{T} (GeV/c)"};
+    AxisBins pt = {200, 0.0, 1000.0, "p_{T} (GeV/c)"};
     AxisBins eta = {102, -5.1, 5.1, "#eta"};
     AxisBins abseta = {51, 0, 5.1, "|#eta|"};
     AxisBins phi = {64, -3.2, 3.2, "#phi (rad)"};
