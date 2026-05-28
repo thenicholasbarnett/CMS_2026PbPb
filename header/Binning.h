@@ -28,7 +28,7 @@ struct BinningStruct{
 
     // histogram axes
     AxisBins vz = {40, -20.0, 20.0, "v_{z} (cm)"};
-    AxisBins pt = {50, 50.0, 1000.0, "p_{T} (GeV/c)"};
+    AxisBins pt = {200, 50.0, 1000.0, "p_{T} (GeV/c)"};
     AxisBins eta = {102, -5.1, 5.1, "#eta"};
     AxisBins abseta = {51, 0, 5.1, "|#eta|"};
     AxisBins phi = {64, -3.2, 3.2, "#phi (rad)"};
@@ -51,6 +51,7 @@ struct BinningStruct{
     // eta
     std::vector<RangeBin> etaBins = {
         {0.0, 1.2, "|#eta| < 1.2", "_eta_0p0_to_1p2"},
+        {0.0, 2.0, "|#eta| < 2.0", "_eta_0p0_to_2p0"},
         {0.0, 2.4, "|#eta| < 2.4", "_eta_0p0_to_2p4"},
         {0.0, 5.1, "|#eta| < 5.1", "_eta_0p0_to_5p1"},
         {2.7, 5.1, "2.7 < |#eta| < 5.1", "_eta_2p7_to_5p1"}
