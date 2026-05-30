@@ -13,6 +13,7 @@
 #include "TDatime.h"
 #include "TLatex.h"
 #include "TLegend.h"
+#include "TLine.h"
 #include "TPad.h"
 #include "TString.h"
 #include "TStyle.h"
@@ -58,7 +59,7 @@ struct SparseRange{
 inline void SetAxisRange(THnSparse* h, Int_t axis, Double_t lo, Double_t hi){h->GetAxis(axis)->SetRangeUser(lo, hi);}
 inline void ResetAxisRange(THnSparse* h, Int_t axis){h->GetAxis(axis)->SetRange(0, 0);}
 
-inline TH1D* ProjectTHn1D(THnSparse* h, Int_t projAxis, const std::vector<SparseRange>& ranges = {}, const TString& suffix = ""){
+inline TH1D* ProjectTHnSparse1D(THnSparse* h, Int_t projAxis, const std::vector<SparseRange>& ranges = {}, const TString& suffix = ""){
     for(const auto& r : ranges){SetAxisRange(h, r.axis, r.lo, r.hi);}
     TH1D* out = h->Projection(projAxis);
     out->SetName(out->GetName() + suffix);
@@ -67,13 +68,21 @@ inline TH1D* ProjectTHn1D(THnSparse* h, Int_t projAxis, const std::vector<Sparse
     return out;
 }
 
-inline TH2D* ProjectTHn2D(THnSparse* h, Int_t xAxis, Int_t yAxis, const std::vector<SparseRange>& ranges = {}, const TString& suffix = ""){
+inline TH2D* ProjectTHnSparse2D(THnSparse* h, Int_t xAxis, Int_t yAxis, const std::vector<SparseRange>& ranges = {}, const TString& suffix = ""){
     for(const auto& r : ranges){SetAxisRange(h, r.axis, r.lo, r.hi);}
     TH2D* out = h->Projection(yAxis, xAxis);
     out->SetName(out->GetName() + suffix);
     out->SetTitle("");
     for(const auto& r : ranges){ResetAxisRange(h, r.axis);}
     return out;
+}
+
+inline void DrawRefLine(float xmin, float xmax, float y = 1.0){
+    TLine* line = new TLine(xmin, y, xmax, y);
+    line->SetLineWidth(1);
+    line->SetLineColor(kBlack);
+    line->SetLineStyle(2);
+    line->Draw("same");
 }
 
 // TH1
@@ -93,7 +102,7 @@ inline void NormalizeTH1(TH1* h){
 // Plotting //
 
 struct PlotConfig{
-    TString runNumber = "404337";
+    TString runNumber = "";
     TString globalTag = "";
     TString jetAlgo   = "";
     
@@ -144,6 +153,7 @@ inline SplitCanvas MakeSplitPadCanvas(const TString& name, const PlotConfig& cfg
     SplitCanvas sc;
     sc.c = new TCanvas(name, "", cfg.canvasSize, cfg.canvasSize);
     sc.c->cd();
+    sc.c->SetRealAspectRatio();
 
     sc.legpad = new TPad(name + "_legpad", "", 0.0, 1.0 - cfg.legfrac, 1.0, 1.0);
     sc.legpad->SetTopMargin(0.05);
@@ -225,8 +235,12 @@ inline void DrawCMSLabel(float x = 0.12, float y = 0.965, float textSize = 0.035
     DrawLabel("CMS #bf{#it{Internal}}", x, y, textSize);
 }
 
-inline void DrawJetAlgoLabel(const TString& jetAlgo, float x = 0.8, float y = 0.04, float textSize = 0.035){
+inline void DrawJetAlgoLabel(const TString& jetAlgo="akCs4PF", float x = 0.8, float y = 0.04, float textSize = 0.035){
     DrawLabel(Form("#bf{%s}", jetAlgo.Data()), x, y, textSize);
+}
+
+inline void DrawRunNumber(const TString& RunNumber="", float x = 0.14, float y = 0.9, float textSize = 0.035){
+    DrawLabel(Form("#bf{%s}", RunNumber.Data()), x, y, textSize);
 }
 
 
