@@ -1,3 +1,6 @@
+#ifndef COLORS_H
+#define COLORS_H
+
 #include "TColor.h"
 
 // "Sailing Boats Returning to Yabase", Lake Biwa, 1835, Utagawa Hiroshige https://github.com/BlakeRMills/MetBrewer?tab=readme-ov-file#hiroshige
@@ -20,3 +23,5 @@ const Color_t KlimtYellow = TColor::GetColor("#eacc62");
 const Color_t KlimtGreen = TColor::GetColor("#469d76");
 const Color_t KlimtBlue = TColor::GetColor("#3c4b99");
 const Color_t KlimtPurple = TColor::GetColor("#924099");
+
+#endif
