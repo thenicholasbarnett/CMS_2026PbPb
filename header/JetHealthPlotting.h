@@ -32,7 +32,7 @@ inline void SaveKinPlot(THnSparseF* hkin, Int_t axis,const TString& axisLabel,co
     for(std::size_t hb = nhiBin; hb-- > 0;){
         const auto& hiBin = bins.hiBins.at(hb);
         TString suf = Form("_%s_hb%zu", plotName.Data(), hb);
-        TH1D* h = ProjectTHn1D(hkin, axis, {{3, hiBin.lo, hiBin.hi}}, suf);
+        TH1D* h = ProjectTHnSparse1D(hkin, axis, {{3, hiBin.lo, hiBin.hi}}, suf);
         StyleTH1(h, hiBin.color);
         NormalizeTH1(h);
         ymax = std::max(ymax, (double)h->GetMaximum());
