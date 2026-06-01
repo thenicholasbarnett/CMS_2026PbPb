@@ -86,7 +86,7 @@ inline void SavePFPlot(THnSparseF* hpf, Int_t pfType, const BinningStruct& bins,
         for(std::size_t hb = nhiBin; hb-- > 0;){
             const auto& hiBin = bins.hiBins.at(hb);
             TString suf = Form("_%s_hb%zu", plotName.Data(), hb);
-            TH1D* h = ProjectTHn1D(hpf, 0, {{1, (double)pfType, pfType + 1.0}, {2, etaBin.lo, etaBin.hi}, {3, hiBin.lo, hiBin.hi}}, suf);
+            TH1D* h = ProjectTHnSparse1D(hpf, 0, {{1, (double)pfType, pfType + 1.0}, {2, etaBin.lo, etaBin.hi}, {3, hiBin.lo, hiBin.hi}}, suf);
             StyleTH1(h, hiBin.color);
             NormalizeTH1(h);
             ymax = std::max(ymax, (double)h->GetMaximum());
@@ -133,7 +133,7 @@ inline void SaveEtaPhiPlot(THnSparseF* hkin, Float_t ptCut, std::size_t hiBinInd
     TString plotName = Form("hetaphi_pt%.0f%s", ptCut, hiBin.shortName.Data());
     TCanvas* c = MakeColzCanvas(plotName, cfg);
 
-    TH2D* h = ProjectTHn2D(hkin, 1, 2, {{0, ptCut, 1e6}, {3, hiBin.lo, hiBin.hi}},Form("_%s", plotName.Data()));
+    TH2D* h = ProjectTHnSparse2D(hkin, 1, 2, {{0, ptCut, 1e6}, {3, hiBin.lo, hiBin.hi}},Form("_%s", plotName.Data()));
 
     h->GetXaxis()->SetTitle("#eta");
     h->GetYaxis()->SetTitle("#phi (rad)");
