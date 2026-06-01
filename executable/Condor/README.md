@@ -1,12 +1,12 @@
 <table>
 <tr>
-<td><img src="../../image/CMS_logo.png" alt="CMS logo" width="250"/></td>
+<td><img src="images/CMS_logo.png" alt="CMS logo" width="250"/></td>
 <td>This repository provides two bash scripts for simplifying HTCondor job submission within the CMS collaboration. Any and all contents of this repository are free to use for any purpose.</td>
 </tr>
   
 </table>
 <p align="center">
-  <img src="../../image/HTCondor_logo.png" alt="HTCondor logo" width="700"/>
+  <img src="images/HTCondor_logo.png" alt="HTCondor logo" width="700"/>
 </p>
 
 HTCondor (formerly Condor) is a distributed high throughput computing workload manager developed at the University of Wisconsin-Madison. Users submit jobs to an HTCondor queue, and HTCondor handles scheduling and execution across available worker nodes. HTCondor is open source and licensed under Apache 2.0, with extensive documentation available in the resources section.
@@ -47,22 +47,22 @@ Execute the following terminal command to generate (and submit) HTCondor jobs. A
 In this example a ROOT interpretable macro is generating dijet asymmetries from ten files. These input files contain hard QCD events in a Pythia sample generated for the 2024 pp reference run (5.36 TeV). This pp reference run was collected for comparisons with the PbPb collisions that followed shortly after.
 
 ```
-./make_condor.sh DijetAsymmetry_2024ppRef /afs/cern.ch/user/n/nbarnett/public/executable_files/asymmetry_generator_condor_2024ppRef_MC_5_12_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filelists/filelist_HiForest_2024ppref_MC_withPU_10files.txt .
+./make_condor.sh DijetAsymmetry_2024ppRef /afs/cern.ch/user/n/nbarnett/public/executables/asymmetry_generator_condor_2024ppRef_MC_5_12_2026.C /afs/cern.ch/user/n/nbarnett/public/txt_files/filelists/filelist_HiForest_2024ppref_MC_withPU_10files.txt . -n
 ```
 
 The filelist used in this example is shown below. This format is needed to be compatible with this Condor submission wrapper.
 
 ```
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1006.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1007.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1008.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1009.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_100.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1010.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1011.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1012.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1013.root
-/eos/cms/store/group/phys_heavyions/nbarnett/Forests/MC/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1014.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1000.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1001.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1002.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1003.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1004.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1005.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1006.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1007.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1008.root
+/eos/cms/store/group/phys_heavyions/nbarnett/HiForest/MC/2024ppref/forests_2024ppRef_MC_withPU/HiForestMiniAOD_1009.root
 ```
 
 <h3>Executable Interface</h3>
@@ -104,6 +104,9 @@ These commands can be run in a terminal to interact with HTCondor. These are the
 | `condor_q -idle` | Show only idle jobs. |
 | `condor_rm <JOB_ID>` | Remove job with specified ID from the queue. |
 | `condor_rm -all` | Remove all submitted jobs from the queue. |
+| `condor_userprio` | Show information about job priorities for users on local node. |
+| `myschedd show` | Show what schedd is assigned to you. |
+| `myschedd bump` | Change what schedd is assigned to you. |
 
 </details>
 
