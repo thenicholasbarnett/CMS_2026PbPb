@@ -13,9 +13,8 @@ Details of each executable in this table are given as dropdowns below.
 
 | Executable | Task |
 | :-: | - |
-| `JetHealth_PbPb_lxplus.cpp` | Processing and plotting object health checks |
+| `HiForestJetProcessing.cpp` | Processing jets in HiForest files for health checks and HLT efficiencies |
 | `PlotJetHealth.cpp` | Plotting object health checks |
-| `JetHLT_SpectraGenerator_PbPb_lxplus.cpp` | Make leading jet p<sub>T</sub> spectra for different triggers |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 | `batch_hadd.sh` | Merge many ROOT files |
 | `find_maxnref.cpp` | Find maximum nref in a filelist |
