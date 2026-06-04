@@ -28,13 +28,13 @@ struct BinningStruct{
 
     // histogram axes
     AxisBins vz = {40, -20.0, 20.0, "v_{z} (cm)"};
-    AxisBins pt = {100, 0.0, 500.0, "p_{T} (GeV/c)"};
+    AxisBins pt = {500, 0.0, 500.0, "p_{T} (GeV/c)"};
     AxisBins eta = {102, -5.1, 5.1, "#eta"};
     AxisBins abseta = {51, 0, 5.1, "|#eta|"};
     AxisBins phi = {64, -3.2, 3.2, "#phi (rad)"};
     AxisBins nref = {30, 0, 30, "nref"};
     AxisBins trig = {2, 0, 2, "trigger decision"};
-    AxisBins pfFrac = {20, 0.0, 1.0, "Particle FLow energy fraction"};
+    AxisBins pfFrac = {100, 0.0, 1.0, "Particle FLow energy fraction"};
     AxisBins pfMult = {50, 0, 50, "Particle Flow candidate multiplicity"};
     AxisBins hiBin = {200, 0, 200, "hiBin"};
 
