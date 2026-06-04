@@ -25,7 +25,10 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
-void find_maxnref(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, const bool isMC){run(input_filelist, output, sJetAlgorithm, isMC);}
+void find_maxnref(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, const TString& isMCArg){
+    bool isMC = (isMCArg == "true" || isMCArg == "1");
+    run(input_filelist, output, sJetAlgorithm, isMC);
+}
  
 void run(const TString& input_filelist, const TString& output, const TString& sJetAlgorithm, const bool isMC){
 
@@ -40,7 +43,7 @@ void run(const TString& input_filelist, const TString& output, const TString& sJ
 
     // getting list of root files to process
     std::ifstream filelist(input_filelist.Data());
-    if(!filelist.is_open()){throw std::runtime_error(std::string("ERROR: Could not open input file list ")+input_filelist);}
+    if(!filelist.is_open()){throw std::runtime_error("ERROR: Could not open input file list " + std::string(input_filelist.Data()));}
     
     std::string filename;
     int filenumber = 0;
