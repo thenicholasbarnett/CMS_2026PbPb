@@ -19,13 +19,19 @@ Details of each executable in this table are given as dropdowns below.
 | `batch_hadd.sh` | Merge many ROOT files |
 | `find_maxnref.cpp` | Find maximum nref in a filelist |
 
+<h2>Processing HiForest files</h2>
+
+Executables here can monitor jet health and HLT performances, but information from the events needs to be extracted first. High dimensional histograms are filled by information in HiForest files. These high dimensional histograms are sliced and projected by other macros to perform object health checks and produce jet trigger efficiency studies.
+<br><br>
+
+
 <h2>Object Health</h2>
 
 Executables here can help monitor the health of jets, intended for use during the 2026 PbPb run. Object health is a necessary check to do during this data taking period, particularly due to the degraded detector conditions compared to previous years in Run 3. 
 <br><br>
 The main tool in this repository made to monitor jet health is an executable C++ file. This tool will make a timestamped directory with portable network graphic (`.png`) files displaying kinematics (p<sub>T</sub>, η, ϕ), maps of η vs ϕ, and particle-flow (PF) energy fractions. The η-ϕ maps are displayed for different minimum p<sub>T</sub> values, the PF fractions are shown for different |η| ranges, and all of these images are made for various centrality intervals. All of this dimensionality can be easily adjusted in some of the header files, particularly in `Binning.h`.
 <br><br>
-The executable `JetHealth_PbPb_lxplus.cpp` will process HiForest files and produce these plots, as well as provide an output ROOT file. This output contains two different four dimensional histograms, which are projected with `JetHealthPlotting.h` into the various histgrams plotted. The additional executable provided, `PlotJetHealth.cpp`, will produce the same plots from this output. Changing `JetHealthPlotting.h` and executing `PlotJetHealth.cpp` can produce additional displays after processing.
+The file `JetHealthPlotting.h` makes the various histgrams plotted. The additional executable provided, `PlotJetHealth.cpp`, will produce the same plots from this output. Changing `JetHealthPlotting.h` and executing `PlotJetHealth.cpp` can produce additional displays after processing.
 
 <details>
 <summary>JetHealth_PbPb_lxplus.cpp</summary>
