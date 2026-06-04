@@ -13,7 +13,7 @@ Details of each executable in this table are given as dropdowns below.
 
 | Executable | Task |
 | :-: | - |
-| `HiForestJetProcessing.cpp` | Processing jets in HiForest files for health checks and HLT efficiencies |
+| `HiForestJetProcessing.cpp` | Processing jets in HiForest files |
 | `PlotJetHealth.cpp` | Plotting object health checks |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 | `batch_hadd.sh` | Merge many ROOT files |
