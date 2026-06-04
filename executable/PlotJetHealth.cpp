@@ -16,7 +16,8 @@ void plot(const TString& input, const TString& output = "");
 
 int main(int argc, char* argv[]){
     if(argc < 2){
-        std::cerr << "Usage: ./PlotJetHealth <input.root>" << std::endl;
+        std::cerr << "Compiled Usage: ./PlotJetHealth <input.root>" << std::endl;
+        std::cerr << "Interpreted Usage: root -l -q 'PlotJetHealth.cpp(\"input.root\")' " << std::endl;
         return 1;
     }
     plot(argv[1]);
