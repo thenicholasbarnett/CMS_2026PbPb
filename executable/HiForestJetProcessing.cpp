@@ -35,15 +35,16 @@ void run(const TString& input_file_list, const TString& output, bool isMC);
 
 int main(int argc, char* argv[]){
     if(argc < 4){
-        std::cerr << "Usage: ./JetProcessing <filelist.txt> <output.root> <isMC>" << std::endl;
+        std::cerr << "Compiled Usage: ./HiForestJetProcessing <filelist.txt> <output.root> <isMC>" << std::endl;
+        std::cerr << "Interpreted Usage: root -l -q 'HiForestJetProcessing.cpp(\"filelist.txt\",\"output.root\",\"isMC\")'" << std::endl;
         return 1;
     }
     std::string isMCArg = argv[3];
-    if(isMCArg != "true" && isMCArg != "True" && isMCArg != "false" && isMCArg != "False" && isMCArg != "1" && isMCArg != "0"){
+    if(isMCArg != "true" && isMCArg != "True" && isMCArg != "yes" && isMCArg != "Yes" && isMCArg != "false" && isMCArg != "False" && isMCArg != "no" && isMCArg != "No" && isMCArg != "1" && isMCArg != "0"){
         std::cerr << "ERROR: isMC must be true or false" << std::endl;
         return 1;
     }
-    bool isMC = (isMCArg == "true" || isMCArg == "True" || isMCArg == "1");
+    bool isMC = (isMCArg == "true" || isMCArg == "True" || isMCArg == "yes" || isMCArg == "Yes" || isMCArg == "1");
     run(argv[1], argv[2], isMC);
     return 0;
 }
