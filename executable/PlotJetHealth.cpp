@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 #include "../header/Binning.h"
-#include "../header/JetHealthHistograms.h"
+#include "../header/JetHistograms.h"
 #include "../header/JetHealthPlotting.h"
 
 static constexpr Int_t maxnref = 150;
