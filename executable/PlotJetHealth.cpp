@@ -26,8 +26,6 @@ int main(int argc, char* argv[]){
 void PlotJetHealth(const TString& input){plot(input);}
 
 void plot(const TString& input, const TString& output = ""){
-    // gROOT->SetBatch(true);
-    
     TFile* fi = TFile::Open(input, "read");
     if(!fi || fi->IsZombie()){
         std::cerr<<R"(
@@ -70,8 +68,8 @@ void plot(const TString& input, const TString& output = ""){
     if(!hists.pf) { throw std::runtime_error("ERROR: could not find hjetpf in file");  }
 
     JetHealthPlotConfig cfg;
-    cfg.jetAlgo      = "akCs4PF";
-    cfg.etaPhiPtCuts = {50.0, 100.0, 200.0};
+    //cfg.jetAlgo = "akCs4PF";
+    cfg.etaPhiPtCuts = {20.0, 50.0, 100.0};
     SaveJetHealthPlots(hists, bins, cfg, fo);
 
     fi->Close();
