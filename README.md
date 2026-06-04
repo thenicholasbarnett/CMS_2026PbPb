@@ -123,19 +123,19 @@ Using hadd on very many files may take an exceedingly long time and is more like
 <br><br>
 This bash script can be executed by launching a new bash process in a couple ways.
 ```
-bash batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+bash CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
-After giving execute permission (`chmod +x batch_hadd.sh`) this shell script can also be executed in a child process like this.
+After giving execute permission (`chmod +x CMS_2026PbPb/executable/batch_hadd.sh`) this shell script can also be executed in a child process like this.
 ```
-./batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+./CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
 This bash script can be executed with the following terminal commands in the current shell session.
 > WARNING: Executing in the current shell session is not recommended because if the argument validation fails then the current terminal session will close entirely
 ```
-source batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+source CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
 ```
-. batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+. CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
 ```
 Details on each positional argument this shell takes as an input.
 | Argument | Description |
@@ -158,7 +158,7 @@ Cling is an interactive C++ interpreter that is built in to ROOT.
 <br><br>
 This macro can be compiled into a stadalone executable with the following command.
 ```
-g++ -o mnref find_maxnref.cpp $(root-config --cflags --libs)
+g++ -o mnref CMS_2026PbPb/executable/find_maxnref.cpp $(root-config --cflags --libs)
 ```
 After compiling this binary executable can be run.
 ```
@@ -166,7 +166,7 @@ After compiling this binary executable can be run.
 ```
 This macro can also be executed using ROOT with the Cling interpreter.
 ```
-root -l -b -q 'find_maxnref.cpp("filelist.txt","output.root","JetAlgorithm",isMC)'
+root -l -b -q 'CMS_2026PbPb/executable/find_maxnref.cpp("filelist.txt","output.root","JetAlgorithm",isMC)'
 ```
 The input arguments for this macro are listed in this table.
 | Argument | Description |
