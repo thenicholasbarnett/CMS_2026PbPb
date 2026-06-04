@@ -1,5 +1,5 @@
-#ifndef JETTRIGGERS_2026PBPB_MC_H
-#define JETTRIGGERS_2026PBPB_MC_H
+#ifndef JETTRIGGERS_2026PBPB_H
+#define JETTRIGGERS_2026PBPB_H
 
 #include "TString.h"
 #include "Rtypes.h"
@@ -9,20 +9,27 @@
 #include <array>
 #include <cctype>
 
-// HLT trigger names
-const std::array sHLTrigs = {
-    TString("HLT_HIPuAK4CaloJet40Eta5p1_MinBiasHF1AND_v9"),
-    TString("HLT_HIPuAK4CaloJet60Eta5p1_MinBiasHF1AND_v9"),
-    TString("HLT_HIPuAK4CaloJet80Eta5p1_v17"),
-    TString("HLT_HIPuAK4CaloJet100Eta5p1_v17"),
-    TString("HLT_HIPuAK4CaloJet120Eta5p1_v17")
+#include "Colors.h"
+
+struct TriggerDef {
+    TString name;
+    Int_t   color;
 };
 
-// L1 trigger names
+// HLT trigger definitions
+const std::array sHLTrigs = {
+    TriggerDef{"HLT_HIPuAK4CaloJet40Eta5p1_MinBiasHF1AND_v9", KlimtPink},
+    TriggerDef{"HLT_HIPuAK4CaloJet60Eta5p1_MinBiasHF1AND_v9", KlimtRed},
+    TriggerDef{"HLT_HIPuAK4CaloJet80Eta5p1_v17", KlimtYellow},
+    TriggerDef{"HLT_HIPuAK4CaloJet100Eta5p1_v17", KlimtGreen},
+    TriggerDef{"HLT_HIPuAK4CaloJet120Eta5p1_v17", KlimtBlue}
+};
+
+// L1 trigger definitions
 const std::array sL1Trigs = {
-    TString("L1_MinimumBiasHF1_AND_BptxAND"),
-    TString("L1_SingleJet60_BptxAND"),
-    TString("L1_SingleJet80_BptxAND")
+    TriggerDef{"L1_MinimumBiasHF1_AND_BptxAND", KlimtPink},
+    TriggerDef{"L1_SingleJet60_BptxAND", KlimtBlue},
+    TriggerDef{"L1_SingleJet80_BptxAND", KlimtRed}
 };
 
 // automatically derived sizes
@@ -31,6 +38,8 @@ constexpr std::size_t nL1T = sL1Trigs.size();
 
 // L1 seed for each HLT
 const std::array<Int_t, nHLT> L1SeedHLT = {0, 0, 1, 1, 2};
+
+static constexpr Int_t maxL1Jets = 16;
 
 // getting the pt threshold of the jet trigger from the trigger name
 inline Float_t GetJetTriggerThreshold(const TString& trig){
@@ -66,8 +75,8 @@ inline TString GetL1ShortName(const TString& trig){
 const TString sHLTObjDir = "hltobject/";
 
 inline TString GetHLTObjTreeName(std::size_t i){
-    TString trig = sHLTrigs[i];
-    trig.Remove(trig.Last('v') + 1);
+    TString trig = sHLTrigs[i].name;
+    //trig.Remove(trig.Last('v') + 1);
     return sHLTObjDir + trig;
 }
 
@@ -82,6 +91,12 @@ struct TriggersStruct{
     std::vector<Double_t>* HLT_JetObj_pt[nHLT];
     std::vector<Double_t>* HLT_JetObj_eta[nHLT];
     std::vector<Double_t>* HLT_JetObj_phi[nHLT];
+ 
+    // L1 object variables
+    Int_t   L1_nJets = 0;
+    Float_t L1_jetEt [maxL1Jets] = {0};
+    Float_t L1_jetEta[maxL1Jets] = {0};
+    Float_t L1_jetPhi[maxL1Jets] = {0};
 
     // constructor
     TriggersStruct(){
@@ -95,8 +110,8 @@ struct TriggersStruct{
     // mapping trigger decisions to branches
     std::vector<std::pair<TString, void*>> BranchMap(){
         std::vector<std::pair<TString, void*>> branches;
-        for(std::size_t i=0; i<nHLT; i++){branches.push_back({sHLTrigs[i], &HLT[i]});}
-        for(std::size_t i=0; i<nL1T; i++){branches.push_back({sL1Trigs[i], &L1T[i]});}
+        for(std::size_t i=0; i<nHLT; i++){branches.push_back({sHLTrigs[i].name, &HLT[i]});}
+        for(std::size_t i=0; i<nL1T; i++){branches.push_back({sL1Trigs[i].name, &L1T[i]});}
         return branches;
     }
 
@@ -106,6 +121,16 @@ struct TriggersStruct{
             {"pt",  &HLT_JetObj_pt[iTrig]},
             {"eta", &HLT_JetObj_eta[iTrig]},
             {"phi", &HLT_JetObj_phi[iTrig]}
+        };
+    }
+ 
+    // mapping L1 object branches
+    std::vector<std::pair<TString, void*>> L1ObjBranchMap(){
+        return{
+            {"nJets",  &L1_nJets},
+            {"jetEt",  &L1_jetEt},
+            {"jetEta", &L1_jetEta},
+            {"jetPhi", &L1_jetPhi}
         };
     }
 };
