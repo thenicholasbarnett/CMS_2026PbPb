@@ -40,7 +40,7 @@ struct BinningStruct{
 
     // centrality
     std::vector<RangeBin> hiBins = {
-        {0, 200, "Inclusive", "_hiBin_0_to_200", KlimtPink},
+        {0, 200, "Inclusive", "_inclusive", KlimtPink},
         {0, 20, "0% < Centrality < 10%", "_hiBin_0_to_20", KlimtRed},
         {20, 60, "10% < Centrality < 30%", "_hiBin_20_to_60", KlimtYellow},
         {60, 100, "30% < Centrality < 50%", "_hiBin_60_to_100", KlimtGreen},
@@ -51,7 +51,7 @@ struct BinningStruct{
     // eta
     std::vector<RangeBin> etaBins = {
         {0.0, 1.2, "|#eta| < 1.2", "_eta_0p0_to_1p2"},
-        {0.0, 2.0, "|#eta| < 2.0", "_eta_0p0_to_2p0"},
+        {0.0, 1.6, "|#eta| < 1.6", "_eta_0p0_to_1p6"},
         {0.0, 2.4, "|#eta| < 2.4", "_eta_0p0_to_2p4"},
         {0.0, 5.1, "|#eta| < 5.1", "_eta_0p0_to_5p1"},
         {2.7, 5.1, "2.7 < |#eta| < 5.1", "_eta_2p7_to_5p1"}
