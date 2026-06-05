@@ -74,7 +74,7 @@ PlotJetHealth <input.root>
 One argument is taken as an input to this macro.
 | Argument | Description |
 | :-: | - |
-| `input.root` | Output ROOT file from `JetHealth_PbPb_lxplus.cpp` |
+| `input.root` | Output ROOT file from `HiForestJetProcessing.cpp` |
 | `output.root` | Optional output filename to write out projected histograms |
 
 <h2>HLT Efficiencies</h2>
@@ -100,10 +100,10 @@ Execute this macro using the Cling interpreter native to ROOT with the following
 ```
 root -l -q 'CMS_2026PbPb/executable/JetHLT_EfficiencyGenerator.cpp("input.root","output.root")'
 ```
-The arguments for this macro are simply an input and output ROOT file. The input file for this macro is the output of `JetHLT_SpectraGenerator_PbPb_lxplus.cpp`.
+The arguments for this macro are simply an input and output ROOT file. The input file for this macro is the output of `HiForestJetProcessing.cpp`.
 | Argument | Description |
 | :-: | - |
-| `input.root` | Input file for this macro. Must be the format as the output from `HiForestJetProcessing.cpp` |
+| `input.root` | Output ROOT file from `HiForestJetProcessing.cpp` |
 | `output.root` | ROOT file made by this macro containing jet HLT efficiencies. |
 
 <h2>General Use</h2>
