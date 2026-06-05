@@ -10,19 +10,22 @@
 
 #include "../header/Binning.h"
 #include "../header/JetEfficiency.h"
-#include "../header/JetEfficiencyPlotting.h"
-#include "../header/JetSpectraHistograms.h"
-#include "../header/JetTriggers_2026PbPb_MC.h"
+#include "../header/JetHistograms.h"
+#include "../header/JetTriggers_2026PbPb.h"
 // #include "../header/JetTriggers_2025PbPb.h"
+
+// more than number of jets in any event that was processed
+static constexpr Int_t maxnref = 150;
 
 void run(const TString& input, const TString& output);
 
 int main(int argc, char* argv[]){
-    if(argc < 3){
-        std::cerr << "Usage: ./JetHLT_Eff <input.root> <output.root>" << std::endl;
+    if(argc < 2){
+        std::cerr << "Compiled Usage: ./JetHLT_Eff <input.root> <output.root>" << std::endl;
+        std::cerr << "Interpreted Usage: root -l -q -b 'JetHLT_EfficiencyGenerator.cpp(\"input.root\", \"output.root\")'" << std::endl;
         return 1;
     }
-    run(argv[1], argv[2]);
+    run(argv[1], argc >= 3 ? argv[2] : "");
     return 0;
 }
 
@@ -34,35 +37,78 @@ void run(const TString& input, const TString& output){
     gStyle->SetOptStat(0);
 
     // opening input
-    TFile *fi = TFile::Open(input,"read");
-    if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
+    TFile* fi = TFile::Open(input, "read");
+    if(!fi || fi->IsZombie()){
+        std::cerr<<R"(
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⡄⠈⠀⢀⣀⡤⢄⠒⠒⡖⠒⡒⠒⡒⠒⢦⣤⡔⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢀⢄⠐⡰⢞⠡⢂⢁⠂⠌⡐⠠⠡⠐⠡⡀⢣⢇⠯⣙⢦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢉⣀⡠⢋⠠⡁⢂⡔⢦⣬⠴⠆⢃⠂⢡⠡⠐⢌⠾⣌⢣⠞⣳⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⡜⠔⠆⡈⢊⠱⠚⠓⠋⢉⠉⣉⢊⣥⣓⣲⣒⠤⡕⣣⠞⣡⢷⡐⠒⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠸⣆⣲⣸⡄⠂⠌⠤⢁⡘⢀⢢⡿⠊⠀⠀⠀⠈⠙⣵⠜⣜⣡⣞⣇⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⡔⠋⠉⠙⢻⡀⠒⡠⠐⠂⣿⠀⠀⠀⠀⣀⠀⠐⠘⡯⡔⢦⣉⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠸⠀⠀⠁⠀⢀⡇⡡⢄⢳⣣⢿⡄⠀⠀⠀⠀⠀⡐⢴⡟⡜⣢⢥⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⢱⣤⣤⣤⡾⢁⠸⠗⡈⠳⢁⠺⣦⣀⣀⣀⣠⣴⣿⣹⢒⣥⣾⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⢣⣉⣋⣐⡀⠬⡤⣤⣥⣤⣆⡙⢭⣛⢛⡻⣙⢸⢧⣿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠉⠉⠉⢀⣠⣹⣧⣀⣻⣷⣿⣦⠱⡣⠖⣍⣾⣛⢾⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⢀⣜⠛⣿⣿⣿⣿⣏⣀⣿⢃⡏⣭⣷⠟⠁⣾⣹⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠨⠌⡍⣉⢉⡉⣉⢉⠭⠯⣞⣼⣾⣆⠁⡆⣟⣯⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠪⠤⠬⠦⠥⣬⣶⡿⣻⣿⣿⠯⣤⢼⣏⢷⣻⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣏⣷⣭⣽⡟⠰⡁⣾⢎⡯⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡿⢿⣿⣿⡇⡆⢼⢏⠮⣽⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣶⣿⠁⡀⠘⣏⡞⣵⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣬⣽⣛⣻⠿⣿⡀⠁⠀⢹⡜⣷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⢿⣿⣿⣿⣿⣿⡟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣷⣶⣭⣟⡻⢿⣿⣿⣧⠀⠀⢸⣿⣿⣿⣿⡭⢙⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠦⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⢽⣿⣷⣄⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣷⣮⣽⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⡿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⢿⠿⠿⠿⣿⣿⡇⣻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡻⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠝⢠⡈⢉⢉⡱⣚⢇⠠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢀⣏⠆⠟⣶⢯⡚⡥⠃⠀⠘⠹⡻⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⠀⢿⣿⣿⣿⣿⢿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⡮⢪⣛⡟⡇⣧⢓⣎⢳⡄⡠⠆⢡⠉⡑⠒⠂⢧⢻⣿⣿⣿⣿⡇⠸⢋⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠐⢝⢖⣹⡞⠵⣎⣞⢽⡊⢌⣔⢶⡂⢡⡞⣸⡤⡟⡻⣻⣿⣿⣷⠀⠀⠉⠉⢙⠻⡟⠿⠿⠇⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠀⠛⠓⠃⠀⣎⡹⢬⠇⠀⠸⢜⢧⡬⣙⠶⢷⣿⣿⣿⣿⡄⠀⠀⠀⢸⢣⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⣓⡾⠀⠀⠑⢭⣎⡹⣾⣼⣿⣿⣿⣿⣿⣧⠀⠀⡔⢚⡰⢇⡀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣽⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀⠀⠣⠦⡍⠄⠹⣳⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣟⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⠈⢎⡐⢱⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣰⣿⡽⣿⣿⣾⣿⣿⣿⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⢲⣀⢧⣠⣄⡀⠀⣀⡀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣸⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⢠⣶⣾⣿⣷⣾⣿⣿⣿⣿⠍⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⢿⣻⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣻⣿⢿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣤⣤⣤⣄⣨⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣅⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⣿⣾⣭⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣯⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡦
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠿⢿⣿⣿⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠏⠛⠻⠟⠛⠉⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠛⠛⠻⠿⠿⣿⣿⡿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+        )" <<"\n"<< std::endl;
+        throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
+    std::cout << "opened " << input << std::endl;
     fi->cd();
     
     // making and getting histograms
     BinningStruct bins;
-    JetSpectraStruct hists(bins, false);
-    GetHistograms(fi, bins, hists);
-    std::cout<<"histograms retrieved from "<<input<<std::endl;
-
-    // generating efficiencies
-    JetEfficiencyOutputStruct out(bins);
-    out.ComputeEfficiencies(hists, bins);
-    std::cout<<"efficiencies genereated"<<std::endl;
+    JetHistogramsStruct<maxnref> hists(bins, false);
+    hists.L1T = (THnSparseF*)fi->Get("hn_L1T");
+    hists.HLT = (THnSparseF*)fi->Get("hn_HLT");
+    if(!hists.L1T){throw std::runtime_error("ERROR: Could not find hn_L1T in input file");}
+    if(!hists.HLT){throw std::runtime_error("ERROR: Could not find hn_HLT in input file");}
+    std::cout << "histograms retrieved from " << input << std::endl;
     
     // making output file
-    TFile *fo = new TFile(output,"recreate");
-    out.Write(fo);
-    std::cout<<"all histogram saved to output file"<<std::endl;
-    fi->Close();
+    TFile* fo = nullptr;
+    if(output != ""){fo = new TFile(output, "recreate");}
 
     // saving efficiency plots as .png
     PlotConfig cfg;
     cfg.runNumber = "";
     cfg.globalTag = "";
-    cfg.jetAlgo = "akCs4PF";
-    cfg.xmin  = 20.0;
-    cfg.xmax  = 300.0;
-    cfg.ymax  = 1.4;
+    cfg.jetAlgo = "";
+    cfg.xmin  = 0.0;
+    cfg.xmax  = 250.0;
+    cfg.ymax  = 1.05;
 
-    SaveEfficiencyPlots(out, bins, cfg);
+    GenerateEfficiencies<maxnref>(hists, bins, fo, cfg);
+
+    if(fo){fo->Close();}
+    fi->Close();
 }
