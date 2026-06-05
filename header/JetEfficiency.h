@@ -14,9 +14,11 @@
 
 #include "Binning.h"
 #include "Utilities.h"
-#include "JetSpectraHistograms.h"
+#include "JetHistograms.h"
 #include "JetTriggers_2026PbPb.h"
 // #include "JetTriggers_2025PbPb.h"
+
+static constexpr Int_t ptbinsize = 5;
 
 enum EffType{
     kFull = 0, // HLT+L1seed+minBias/minBias
@@ -58,22 +60,23 @@ inline void StyleGraph(TGraphAsymmErrors* g, EffType effType, std::size_t t){
     g->SetLineWidth(3);
 }
 
-inline void GenerateEfficiencies(JetSpectraStruct& hists, const BinningStruct& bins, TFile* fo, const PlotConfig& cfg){
+template <Int_t MAXNREF>
+inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const BinningStruct& bins, TFile* fo, const PlotConfig& cfg){
     SetPlotStyle(cfg);
     TString plotsBase = MakePlotDir("plots");
     std::cout << "saving plots to " << plotsBase << std::endl;
 
-    const std::size_t nEta   = bins.etaBins.size();
+    const std::size_t nEta = bins.etaBins.size();
     const std::size_t nhiBin = bins.hiBins.size();
 
     for(int e=0; e<kNEffTypes; e++){
         auto effType = static_cast<EffType>(e);
         const std::size_t nTrigs = NTrigs(effType);
 
-        for(int m=0; m<JetSpectraStruct::kNMatchTypes; m++){
-            auto matchType = static_cast<JetSpectraStruct::MatchType>(m);
+        for(int m=0; m<JetHistogramsStruct<MAXNREF>::kNMatchTypes; m++){
+            auto matchType = static_cast<typename JetHistogramsStruct<MAXNREF>::MatchType>(m);
 
-            TString matchStr = matchType == JetSpectraStruct::kDR ? "dR" : "noDR";
+            TString matchStr = matchType == JetHistogramsStruct<MAXNREF>::kDR ? "dR" : "noDR";
             TString outDir = plotsBase + "/" + EffTypeName(effType) + "_" + matchStr;
             gSystem->mkdir(outDir, true);
 
@@ -88,7 +91,8 @@ inline void GenerateEfficiencies(JetSpectraStruct& hists, const BinningStruct& b
                     const Int_t hiBinlo = hiBinRange.lo;
                     const Int_t hiBinhi = hiBinRange.hi;
 
-                    TH1D* denom_minbias = hists.ProjectL1T_pt( 0, JetSpectraStruct::kNoDR, etalo, etahi, hiBinlo, hiBinhi, Form("_denom_eta%zu_hb%zu_e%d_m%d", b, hb, e, m));
+                    TH1D* denom_minbias = hists.ProjectL1T_pt( 0, JetHistogramsStruct<MAXNREF>::kNoDR, etalo, etahi, hiBinlo, hiBinhi, Form("_denom_eta%zu_hb%zu_e%d_m%d", b, hb, e, m));
+                    denom_minbias->Rebin(ptbinsize);
 
                     TString cname = "Efficiency_" + EffTypeName(effType) + "_" + matchStr + etaBin.shortName + hiBinRange.shortName;
                     TCanvas* c = MakeSinglePadCanvas(cname, cfg, true);
@@ -104,8 +108,11 @@ inline void GenerateEfficiencies(JetSpectraStruct& hists, const BinningStruct& b
                             : hists.ProjectL1T_pt(t, matchType, etalo, etahi, hiBinlo, hiBinhi, suffix);
 
                         TH1D* denom = (effType == kRelative)
-                            ? hists.ProjectL1T_pt(L1SeedHLT[t], JetSpectraStruct::kNoDR, etalo, etahi, hiBinlo, hiBinhi, suffix + "_denom")
+                            ? hists.ProjectL1T_pt(L1SeedHLT[t], JetHistogramsStruct<MAXNREF>::kNoDR, etalo, etahi, hiBinlo, hiBinhi, suffix + "_denom")
                             : denom_minbias;
+
+                        numer->Rebin(ptbinsize);
+                        if(effType == kRelative) denom->Rebin(ptbinsize);
 
                         TGraphAsymmErrors* g = new TGraphAsymmErrors(numer, denom, "cl=0.683 b(1,1) mode");
                         StyleGraph(g, effType, t);
@@ -113,15 +120,14 @@ inline void GenerateEfficiencies(JetSpectraStruct& hists, const BinningStruct& b
                             ? GetHLTShortName(sHLTrigs[t].name)
                             : GetL1ShortName(sL1Trigs[t].name)));
 
-                        fo->cd();
-                        g->Write();
+                        if(fo && !fo->IsZombie()){fo->cd(); g->Write();}
                         c->cd();
                         if(t == 0){
                             g->Draw("ap");
                             g->SetTitle("");
                             g->GetXaxis()->SetTitle("p_{T,leading jet} (GeV)");
                             g->GetYaxis()->SetTitle(
-                                effType == kFull     ? "HLT + MinBias / MinBias" :
+                                effType == kFull ? "HLT + MinBias / MinBias" :
                                 effType == kRelative ? "HLT + MinBias / L1seed + MinBias" :
                                                        "L1 + MinBias / MinBias"
                             );
@@ -155,7 +161,7 @@ inline void GenerateEfficiencies(JetSpectraStruct& hists, const BinningStruct& b
                     linfo->AddEntry((TObject*)nullptr, hiBinRange.title, "");
                     linfo->AddEntry((TObject*)nullptr, etaBin.title, "");
                     linfo->AddEntry((TObject*)nullptr,
-                        matchType == JetSpectraStruct::kDR ? "#Delta R < 0.3" : "", "");
+                        matchType == JetHistogramsStruct<MAXNREF>::kDR ? "#Delta R < 0.3" : "", "");
                     linfo->Draw("same");
                     DrawCMSLabel();
                     DrawLabel(Form(" Run %s", cfg.runNumber.Data()), 0.12, 0.9, 0.035);
