@@ -65,7 +65,8 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
     JetSelect js;
 
     // JSON handler
-    JSON_handler dcs;
+    JSON_handler* dcs = nullptr;
+    if(!isMC){dcs = new JSON_handler();}
 
     // event objects
     EventStruct evt;
@@ -137,7 +138,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
             // getting event and event filter info from each event
             ttrees[0]->GetEntry(i);
             ttrees[1]->GetEntry(i);
-            if(!dcs.isGood(evt.run, evt.lumi)){continue;}
+            if(!isMC && !dcs->isGood(evt.run, evt.lumi)){continue;}
 
             // filling event histograms
             hists.vz_unpassed->Fill(evt.vz, evt.w);
@@ -252,7 +253,8 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         fi->Close();
     }
     std::cout << "finished processing files in " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start_time).count() << " seconds" << std::endl;
-
+    delete dcs;
+    
     // making output file and storing histograms
     TFile *fo = new TFile(output,"recreate");
     hists.Write(fo);
