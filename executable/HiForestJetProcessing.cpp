@@ -1,6 +1,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TMath.h"
+#include "TSystem.h"
 #include "TDirectory.h"
 
 #include <chrono>
@@ -65,8 +66,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
     JetSelect js;
 
     // JSON handler
-    JSON_handler* dcs = nullptr;
-    if(!isMC){dcs = new JSON_handler();}
+    JSON_handler dcs;
 
     // event objects
     EventStruct evt;
@@ -87,6 +87,10 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
     // getting list of root files to process
     std::ifstream myfile(input_file_list);
     std::string filename;
+
+    // making drop list
+    const TString& output_txt = "DropList_"+gSystem->BaseName(input_file_list);
+    std::ofstream outputFile(output_txt);
 
     // keeping track of how many files have been processed
     int filenumber = 0;
@@ -138,7 +142,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
             // getting event and event filter info from each event
             ttrees[0]->GetEntry(i);
             ttrees[1]->GetEntry(i);
-            if(!isMC && !dcs->isGood(evt.run, evt.lumi)){continue;}
+            if(!dcs.isGood(evt.run, evt.lumi)){continue;}
 
             // filling event histograms
             hists.vz_unpassed->Fill(evt.vz, evt.w);
@@ -231,7 +235,21 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
                 }
             }
             
+            int drop_flag = 0;
             for(std::size_t t=0; t<nHLT; t++){
+                
+                // writing out to text file when we have drops
+                if((trg.HLT[t]==0)&&(jt.reco.pt[lj]>(GetJetTriggerThreshold(sHLTrigs[t].name)+50.0))){
+                    if(drop_flag==0){
+                        outputFile<<"\n filename:"<< filename<<"\n";
+                        outputFile<<"run:lumi:event of drop "<< evt.run<<":"<<evt.lumi<<":"<<evt.event<<"\n";
+                        outputFile<<"hiBin:leading offline jet pt of drop "<< evt.hiBin<<":"<<jt.reco.pt[lj]<<"\n";
+                        outputFile<<"CHF:NHF:CEF:NEF:MUF for leading offline jet of drop "<<jt.reco.pf.CHF[lj]<<":"<<jt.reco.pf.NHF[lj]<<":"<<jt.reco.pf.CEF[lj]<<":"<<jt.reco.pf.NEF[lj]<<":"<<jt.reco.pf.MUF[lj]<<"\n";
+                        drop_flag=1;
+                    }
+                    outputFile<<sHLTrigs[t].name<<" didn't fire\n";
+                }
+
                 if(trg.HLT[t]==1){
                     hists.FillHLT(t, JetHistogramsStruct<maxnref>::kNoDR, jt.reco.pt[lj], abseta, evt.hiBin, evt.w);
                     if(iHltMatch[t]==1){
@@ -253,10 +271,10 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         fi->Close();
     }
     std::cout << "finished processing files in " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start_time).count() << " seconds" << std::endl;
-    delete dcs;
-    
+
     // making output file and storing histograms
     TFile *fo = new TFile(output,"recreate");
     hists.Write(fo);
     fo->Close();
+    outputFile.close();
 }
