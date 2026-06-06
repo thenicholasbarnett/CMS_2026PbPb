@@ -53,7 +53,8 @@ void run(const TString& input_filelist, const TString& output, const TString& sJ
 
         // opening input file
         TFile *fi = TFile::Open(filename.c_str(),"READ");        
-        if(!fi||fi->IsZombie()){throw std::runtime_error(std::string("ERROR: Could not open input file ")+filename);}
+        // if(!fi||fi->IsZombie()){throw std::runtime_error(std::string("ERROR: Could not open input file ")+filename);} 
+        if(!fi||fi->IsZombie()){continue;}
 
         // tracking file in list
         ++filenumber;
