@@ -27,7 +27,7 @@ const std::array sHLTrigs = {
 
 // L1 trigger definitions
 const std::array sL1Trigs = {
-    TriggerDef{"L1_MinimumBiasHF1_AND_BptxAND", KlimtPink},
+    TriggerDef{"L1_MinimumBiasZDC1n_Th1_OR_MinimumBiasHF1_AND_BptxAND", KlimtPink},
     TriggerDef{"L1_SingleJet60_BptxAND", KlimtBlue},
     TriggerDef{"L1_SingleJet80_BptxAND", KlimtRed}
 };
