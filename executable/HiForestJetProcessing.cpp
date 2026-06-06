@@ -89,7 +89,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
     std::string filename;
 
     // making drop list
-    const TString& output_txt = "DropList_"+gSystem->BaseName(input_file_list);
+    const TString output_txt = TString("DropList_") + gSystem->BaseName(input_file_list);
     std::ofstream outputFile(output_txt);
 
     // keeping track of how many files have been processed
