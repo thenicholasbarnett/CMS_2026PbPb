@@ -95,6 +95,9 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
     // keeping track of how many files have been processed
     int filenumber = 0;
 
+    // keeping track of how may dropped events there are
+    int nDrop = 0;
+
     // looping over files
     while(getline(myfile, filename)){
         filenumber+=1;
@@ -241,9 +244,10 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
                 // writing out to text file when we have drops
                 if((trg.HLT[t]==0)&&(jt.reco.pt[lj]>(GetJetTriggerThreshold(sHLTrigs[t].name)+50.0))){
                     if(drop_flag==0){
-                        outputFile<<"\n filename:"<< filename<<"\n";
-                        outputFile<<"run:lumi:event of drop "<< evt.run<<":"<<evt.lumi<<":"<<evt.event<<"\n";
-                        outputFile<<"hiBin:leading offline jet pt of drop "<< evt.hiBin<<":"<<jt.reco.pt[lj]<<"\n";
+                        nDrop+=1;
+                        outputFile<<"\n"<<"filename:"<<filename<<"\n";
+                        outputFile<<"run:lumi:event:hiBin of drop "<< evt.run<<":"<<evt.lumi<<":"<<evt.event<<":"<<evt.hiBin<<"\n";
+                        outputFile<<"pT:eta:phi for leading offline jet of drop "<< jt.reco.pt[lj]<<":"<<jt.reco.eta[lj]<<":"<<jt.reco.phi[lj]<<"\n";
                         outputFile<<"CHF:NHF:CEF:NEF:MUF for leading offline jet of drop "<<jt.reco.pf.CHF[lj]<<":"<<jt.reco.pf.NHF[lj]<<":"<<jt.reco.pf.CEF[lj]<<":"<<jt.reco.pf.NEF[lj]<<":"<<jt.reco.pf.MUF[lj]<<"\n";
                         drop_flag=1;
                     }
@@ -271,6 +275,10 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         fi->Close();
     }
     std::cout << "finished processing files in " << std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start_time).count() << " seconds" << std::endl;
+
+    outputFile << "total events: " << hists.vz_unpassed->GetEntries() << "\n";
+    outputFile << "events passing all cuts: " << hists.vz->GetEntries() << "\n";
+    outputFile << "dropped events: " << nDrop << "\n";
 
     // making output file and storing histograms
     TFile *fo = new TFile(output,"recreate");
