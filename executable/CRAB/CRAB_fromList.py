@@ -1,27 +1,48 @@
+#!/usr/bin/env python3
 from CRABClient.UserUtilities import config
-config = config()
 
-config.General.requestName = '' # name for the CRAB submission
-config.General.workArea = 'crab_projects'
-config.General.transferOutputs = True
-config.General.transferLogs = False
+DO_DRY_RUN = True  # set to True to test configuration before submission
+cfg = config()
 
-config.JobType.pluginName = 'Analysis'
-config.JobType.pyCfgParams = ['noprint']
-config.JobType.psetName = '' # name of executable
-config.JobType.allowUndistributedCMSSW = True
-#config.JobType.maxMemoryMB = 10000
-#config.JobType.numCores = 4
-#config.JobType.maxJobRuntimeMin = 720
+cfg.General.requestName = '' # name for the CRAB submission
+cfg.General.workArea = '' # name of directory to store CRAB submission info
+cfg.General.transferOutputs = True
+cfg.General.transferLogs = False
 
-inputList='' # list of files to submit CRAB jobs for
-config.Data.userInputFiles = open(inputList).readlines()
-#config.Data.lumiMask = ''
-config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 1
-config.Data.totalUnits = -1
+cfg.JobType.pluginName = 'Analysis'
+cfg.JobType.pyCfgParams = ['noprint']
+cfg.JobType.psetName = '' # name of executable
+cfg.JobType.allowUndistributedCMSSW = True
+cfg.JobType.outputFiles = [''] # name of output file (from executable)
 
-config.Data.outLFNDirBase = '' # location to store output files
-config.Data.publication = False
+# common adjustable parameters if needed
+#cfg.JobType.maxMemoryMB = 10000
+#cfg.JobType.numCores = 4
+#cfg.JobType.maxJobRuntimeMin = 720
 
-config.Site.storageSite = 'T2_CH_CERN'
+inputList='' # plain text file listing input files for executable, one input file per line
+cfg.Data.userInputFiles = open(inputList).readlines()
+cfg.Data.splitting = 'FileBased'
+cfg.Data.unitsPerJob = 1
+cfg.Data.totalUnits = -1
+
+cfg.Data.outLFNDirBase = '' # directory to store output files
+cfg.Data.publication = False
+
+cfg.Site.storageSite = 'T2_CH_CERN'
+cfg.Site.whitelist = ['T2_CH_CERN']
+
+if __name__ == '__main__':
+    from CRABAPI.RawCommand import crabCommand
+    if DO_DRY_RUN:
+        print("\n" + "="*50)
+        print("  WARNING: DOING DRY RUN ONLY. NO JOBS WILL BE SUBMITTED.")
+        print("="*50 + "\n")
+
+    print(f"---> Processing input list: {inputList}")
+    try:
+        crabCommand('submit', config=cfg, dryrun=DO_DRY_RUN)
+        if DO_DRY_RUN:
+            print("     [DRY RUN SUCCESS] Passed checks.\n")
+    except Exception as e:
+        print(f"     [ERROR] Failed to submit: {e}\n")

@@ -1,50 +1,57 @@
-from CRABAPI.RawCommand import crabCommand
-from CRABClient.ClientExceptions import ClientException
-from http.client import HTTPException
-
+#!/usr/bin/env python3
 from CRABClient.UserUtilities import config
-config = config()
 
-config.General.workArea = 'crab_projects'
-config.General.transferOutputs = True
-config.General.transferLogs = False
+DO_DRY_RUN = True  # set to True to test configuration before submission
+cfg = config()
 
-config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = '' # name of executable
-config.JobType.maxMemoryMB = 3000
-#config.JobType.numCores = 4
-config.JobType.allowUndistributedCMSSW = True
-#config.JobType.maxJobRuntimeMin = 2000
+cfg.General.workArea = '' # name of directory to store CRAB submission info
+cfg.General.transferOutputs = True
+cfg.General.transferLogs = False
 
-config.Data.inputDBS = 'https://cmsweb.cern.ch/dbs/prod/global/DBSReader' # change prod to phys03 for a privte Primary Dataset
-#config.Data.lumiMask = ''
-#config.Data.totalUnits = -1
-config.Data.splitting = 'LumiBased'
-config.Data.unitsPerJob = 5
-config.Data.allowNonValidInputDataset = True
-config.Data.publication = False
+cfg.JobType.pluginName = 'Analysis'
+cfg.JobType.psetName = '' # name of executable
 
-config.Site.storageSite = 'T2_CH_CERN'
-#config.Site.whitelist = ['T2_US_*']
+# common adjustable parameters if needed
+#cfg.JobType.maxMemoryMB = 10000
+#cfg.JobType.numCores = 4
+#cfg.JobType.maxJobRuntimeMin = 720
 
-# Multi crab part
+cfg.Data.inputDBS = 'global'
+cfg.Data.splitting = 'LumiBased' # job splitting (most granular possible here)
+cfg.Data.unitsPerJob = 1
+cfg.Data.runRange = '' # runs to process if desired (e.g. 123456-123456)
 
-def submit(config):
-    try:
-        crabCommand('submit', config = config, dryrun=False)
-    except HTTPException as hte:
-        print('Failed submitting task: %s' % (hte.headers))
-    except ClientException as cle:
-        print('Failed submitting task: %s' % (cle))
+cfg.Data.lumiMask = '' # JSON file with certified luminosity sections (e.g. from DCS)
+cfg.Data.publication = False
 
-config.Data.outLFNDirBase = '' # location to store output files
+cfg.Data.outLFNDirBase = '' # directory to store output files
+cfg.Site.storageSite = 'T2_CH_CERN' 
 
-for i in range(5):
+dataset_indices = [1, 2] # list of primary dataset indicies to process (e.g. for /HIPhysicsRawPrime1, /HIPhysicsRawPrime2, etc.)
 
-    config.General.requestName = f'name_of_request_{i}'
-    #config.Data.inputDataset = f'/PPRefHardProbes{i}/Run2024J-PromptReco-v1/MINIAOD'
-    config.Data.inputDataset = f'/{i}//' # names of PDs with iterator i, example above
-    config.Data.outputDatasetTag = config.General.requestName
+if __name__ == '__main__':
+    from CRABAPI.RawCommand import crabCommand    
+    if cfg.Data.lumiMask:
+        print(f"Using JSON mask: {cfg.Data.lumiMask}")
+    if DO_DRY_RUN:
+        print("\n" + "="*50)
+        print("  WARNING: DOING DRY RUN ONLY. NO JOBS WILL BE SUBMITTED.")
+        print("="*50 + "\n")
+    
+    for i in dataset_indices:
+        cfg.Data.inputDataset = f'/HIPhysicsRawPrime{i}/HIRun2026A-PromptReco-v1/MINIAOD'
+        if cfg.Data.runRange:
+            cfg.General.requestName = f'HiForest_RawPrime{i}_Run{cfg.Data.runRange}'
+        else:
+            cfg.General.requestName = f'HiForest_RawPrime{i}'
 
-    print('Submitting CRAB job for: '+ config.Data.inputDataset)
-    submit(config)
+        print(f"---> Processing dataset: {cfg.Data.inputDataset}")
+        try:
+            # The dryrun parameter handles the safety check
+            crabCommand('submit', config=cfg, dryrun=DO_DRY_RUN)
+            
+            if DO_DRY_RUN:
+                print(f"     [DRY RUN SUCCESS] Passed checks for stream {i}.\n")
+                
+        except Exception as e:
+            print(f"     [ERROR] Failed to process stream {i}: {e}\n")
