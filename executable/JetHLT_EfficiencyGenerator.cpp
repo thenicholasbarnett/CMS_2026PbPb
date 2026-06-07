@@ -6,6 +6,7 @@
 #include "TString.h"
 #include "Rtypes.h"
 
+#include <chrono>
 #include <vector>
 
 #include "../header/Binning.h"
@@ -29,14 +30,13 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
-void JetHLT_EfficiencyGenerator(const TString& input, const TString& output){run(input, output);}
+void JetHLT_EfficiencyGenerator(const TString& input, const TString& output=""){run(input, output);}
  
 void run(const TString& input, const TString& output){
-    
-    // no preset legends in histograms
+    auto start_time = std::chrono::high_resolution_clock::now();
     gStyle->SetOptStat(0);
 
-    // opening input
+    // input file
     TFile* fi = TFile::Open(input, "read");
     if(!fi || fi->IsZombie()){
         std::cerr<<R"(
@@ -85,7 +85,7 @@ void run(const TString& input, const TString& output){
     std::cout << "opened " << input << std::endl;
     fi->cd();
     
-    // making and getting histograms
+    // getting histograms
     BinningStruct bins;
     JetHistogramsStruct<maxnref> hists(bins, false);
     hists.L1T = (THnSparseF*)fi->Get("hn_L1T");
@@ -94,20 +94,30 @@ void run(const TString& input, const TString& output){
     if(!hists.HLT){throw std::runtime_error("ERROR: Could not find hn_HLT in input file");}
     std::cout << "histograms retrieved from " << input << std::endl;
     
-    // making output file
+    // output file
     TFile* fo = nullptr;
     if(output != ""){fo = new TFile(output, "recreate");}
 
     // saving efficiency plots as .png
     PlotConfig cfg;
-    cfg.runNumber = "";
-    cfg.globalTag = "";
-    cfg.jetAlgo = "";
-    cfg.xmin  = 0.0;
+    cfg.runNumber = "404469";
+    cfg.globalTag = "PromptReco";
+    cfg.jetAlgo = "akCs4PF";
+    cfg.xmin  = 15.0;
     cfg.xmax  = 250.0;
     cfg.ymax  = 1.05;
 
     GenerateEfficiencies<maxnref>(hists, bins, fo, cfg);
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - start_time).count();
+    int hours   = elapsed / 3600;
+    int minutes = (elapsed % 3600) / 60;
+    int seconds = elapsed % 60;
+    if (hours > 0)
+        std::cout << "finished generating efficiencies in " << hours << "h " << minutes << "m " << seconds << "s" << std::endl;
+    else if (minutes > 0)
+        std::cout << "finished generating efficiencies in " << minutes << "m " << seconds << "s" << std::endl;
+    else
+        std::cout << "finished generating efficiencies in " << seconds << "s" << std::endl;
 
     if(fo){fo->Close();}
     fi->Close();
