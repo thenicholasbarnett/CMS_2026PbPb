@@ -135,7 +135,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
             ttrees[2]->GetEntry(i);
             ttrees[3]->GetEntry(i);
             for(std::size_t t=0; t<nHLT; t++){HLTObjTTrees[t]->GetEntry(i);}
-            L1ObjTTree->GetEntry(i);
+            ttrees[4]->GetEntry(i);
 
             // terminal will yell at me if the leading jet index isn't zero (it never yells at me)
             Int_t lj=0;
@@ -167,7 +167,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
                 if(trg.HLT[t]==0){continue;}
                 if(!trg.HLT_JetObj_pt[t] || !trg.HLT_JetObj_eta[t] || !trg.HLT_JetObj_phi[t]){continue;}
 
-                for(std::size_t tj=0; tj<obj_pt->size(); tj++){
+                for(std::size_t tj=0; tj<trg.HLT_JetObj_pt[t]->size(); tj++){
                     Double_t deta = TMath::Abs(trg.HLT_JetObj_eta[t]->at(tj) - jt.reco.eta[lj]);
                     Double_t dphi = TMath::ACos(TMath::Cos(trg.HLT_JetObj_phi[t]->at(tj) - jt.reco.phi[lj]));
                     Double_t dR = TMath::Sqrt(deta*deta + dphi*dphi);
