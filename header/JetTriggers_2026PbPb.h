@@ -93,7 +93,7 @@ struct TriggersStruct{
     std::vector<Double_t>* HLT_JetObj_phi[nHLT];
  
     // L1 object variables
-    Int_t   L1_nJets = 0;
+    Int_t L1_nJets = 0;
     Float_t L1_jetEt [maxL1Jets] = {0};
     Float_t L1_jetEta[maxL1Jets] = {0};
     Float_t L1_jetPhi[maxL1Jets] = {0};
