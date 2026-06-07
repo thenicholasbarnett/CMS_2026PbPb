@@ -107,8 +107,8 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         TFile *fi = TFile::Open(input,"read");
         //if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data());}
         if(!fi || fi->IsZombie()){
-            std::cerr("ERROR: Could not open input file " + std::string(input.Data()));
-            outputFile<<"ERROR: Could not open input file "<<input.Data()<<"\n";
+            std::cerr << "ERROR: Could not open input file " << input.Data() << std::endl;
+            outputFile << "ERROR: Could not open input file " << input.Data() << "\n";
             continue;
         }
         fi->cd();
