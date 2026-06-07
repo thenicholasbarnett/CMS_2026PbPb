@@ -105,7 +105,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         // reading and staging input file
         TString input = filename;
         TFile *fi = TFile::Open(input,"read");
-        //if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
+        //if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data());}
         if(!fi || fi->IsZombie()){
             std::cerr("ERROR: Could not open input file " + std::string(input.Data()));
             outputFile<<"ERROR: Could not open input file "<<input.Data()<<"\n";
