@@ -18,8 +18,8 @@ struct TriggerDef {
 
 // HLT trigger definitions
 const std::array sHLTrigs = {
-    TriggerDef{"HLT_HIPuAK4CaloJet40Eta5p1_MinBiasHF1AND_v9", KlimtPink},
-    TriggerDef{"HLT_HIPuAK4CaloJet60Eta5p1_MinBiasHF1AND_v9", KlimtRed},
+    TriggerDef{"HLT_HIPuAK4CaloJet40Eta5p1_MinBiasHF1AND_ZDC1nOR_v8", KlimtPink},
+    TriggerDef{"HLT_HIPuAK4CaloJet60Eta5p1_MinBiasHF1AND_ZDC1nOR_v8", KlimtRed},
     TriggerDef{"HLT_HIPuAK4CaloJet80Eta5p1_v17", KlimtYellow},
     TriggerDef{"HLT_HIPuAK4CaloJet100Eta5p1_v17", KlimtGreen},
     TriggerDef{"HLT_HIPuAK4CaloJet120Eta5p1_v17", KlimtBlue}
