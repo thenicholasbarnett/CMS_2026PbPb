@@ -243,7 +243,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         std::cout << "finished processing files in " << seconds << "s" << std::endl;
 
     // output files
-    outputFile << "total events: " << hists.vz_unpassed->GetEntries() << "\n";
+    outputFile << "\n" << "total events: " << hists.vz_unpassed->GetEntries() << "\n";
     outputFile << "events passing all cuts: " << hists.vz->GetEntries() << "\n";
     outputFile << "dropped events: " << nDrop << "\n";
     outputFile.close();
