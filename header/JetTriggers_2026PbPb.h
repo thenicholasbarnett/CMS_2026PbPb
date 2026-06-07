@@ -76,7 +76,7 @@ const TString sHLTObjDir = "hltobject/";
 
 inline TString GetHLTObjTreeName(std::size_t i){
     TString trig = sHLTrigs[i].name;
-    //trig.Remove(trig.Last('v') + 1);
+    trig.Remove(trig.Last('v') + 1);
     return sHLTObjDir + trig;
 }
 
