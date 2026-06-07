@@ -105,7 +105,12 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         // reading and staging input file
         TString input = filename;
         TFile *fi = TFile::Open(input,"read");
-        if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
+        //if(!fi || fi->IsZombie()){throw std::runtime_error("ERROR: Could not open input file " + std::string(input.Data()));}
+        if(!fi || fi->IsZombie()){
+            std::cerr("ERROR: Could not open input file " + std::string(input.Data()));
+            outputFile<<"ERROR: Could not open input file "<<input.Data()<<"\n";
+            continue;
+        }
         fi->cd();
 
         // showing the file being processed in the terminal
@@ -243,6 +248,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
                 
                 // writing out to text file when we have drops
                 if((trg.HLT[t]==0)&&(jt.reco.pt[lj]>(GetJetTriggerThreshold(sHLTrigs[t].name)+50.0))){
+                    if(t<2){continue;}
                     if(drop_flag==0){
                         nDrop+=1;
                         outputFile<<"\n"<<"filename:"<<filename<<"\n";
