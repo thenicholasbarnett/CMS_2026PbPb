@@ -55,15 +55,15 @@ inline void StyleGraph(TGraphAsymmErrors* g, EffType effType, std::size_t t){
         : sL1Trigs[t].color;
     g->SetMarkerColor(color);
     g->SetLineColor(color);
-    g->SetMarkerStyle(20);
+    g->SetMarkerStyle(0);
     g->SetMarkerSize(1.5);
-    g->SetLineWidth(3);
+    g->SetLineWidth(5);
 }
 
 template <Int_t MAXNREF>
 inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const BinningStruct& bins, TFile* fo, const PlotConfig& cfg){
     SetPlotStyle(cfg);
-    TString plotsBase = MakePlotDir("plots");
+    TString plotsBase = MakePlotDir("Trigger_plots");
     std::cout << "saving plots to " << plotsBase << std::endl;
 
     const std::size_t nEta = bins.etaBins.size();
@@ -91,13 +91,13 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                     const Int_t hiBinlo = hiBinRange.lo;
                     const Int_t hiBinhi = hiBinRange.hi;
 
-                    TH1D* denom_minbias = hists.ProjectL1T_pt( 0, JetHistogramsStruct<MAXNREF>::kNoDR, etalo, etahi, hiBinlo, hiBinhi, Form("_denom_eta%zu_hb%zu_e%d_m%d", b, hb, e, m));
+                    TH1D* denom_minbias = hists.ProjectL1T_pt(0, JetHistogramsStruct<MAXNREF>::kNoDR, etalo, etahi, hiBinlo, hiBinhi, Form("_denom_eta%zu_hb%zu_e%d_m%d", b, hb, e, m));
                     denom_minbias->Rebin(ptbinsize);
 
                     TString cname = "Efficiency_" + EffTypeName(effType) + "_" + matchStr + etaBin.shortName + hiBinRange.shortName;
                     TCanvas* c = MakeSinglePadCanvas(cname, cfg, true);
 
-                    TLegend* ltrig = MakeLegend(0.45, 0.15, 0.93, 0.45);
+                    TLegend* ltrig = MakeLegend(0.12, 0.15, 0.45, 0.45);
                     ltrig->SetTextSize(0);
 
                     for(std::size_t t=0; t<nTrigs; t++){
@@ -114,7 +114,10 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                         numer->Rebin(ptbinsize);
                         if(effType == kRelative) denom->Rebin(ptbinsize);
 
+                        gErrorIgnoreLevel = kError;
                         TGraphAsymmErrors* g = new TGraphAsymmErrors(numer, denom, "cl=0.683 b(1,1) mode");
+                        gErrorIgnoreLevel = kInfo;
+
                         StyleGraph(g, effType, t);
                         g->SetName(cname + (effType == kFull || effType == kRelative
                             ? GetHLTShortName(sHLTrigs[t].name)
@@ -125,7 +128,7 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                         if(t == 0){
                             g->Draw("ap");
                             g->SetTitle("");
-                            g->GetXaxis()->SetTitle("p_{T,leading jet} (GeV)");
+                            g->GetXaxis()->SetTitle("p_{T,leading jet} [GeV]");
                             g->GetYaxis()->SetTitle(
                                 effType == kFull ? "HLT + MinBias / MinBias" :
                                 effType == kRelative ? "HLT + MinBias / L1seed + MinBias" :
@@ -154,17 +157,17 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                     }
 
                     DrawRefLine(cfg.xmin, cfg.xmax);
-                    ltrig->Draw("same");
-                    TLegend* linfo = MakeLegend(0.45, 0.50, 0.93, 0.75);
-                    linfo->SetTextSize(0);
+                    //ltrig->Draw("same");
+                    TLegend* linfo = MakeLegend(0.75, 0.12, 0.95, 0.35);
                     AddInfoEntries(linfo, cfg);
                     linfo->AddEntry((TObject*)nullptr, hiBinRange.title, "");
                     linfo->AddEntry((TObject*)nullptr, etaBin.title, "");
                     linfo->AddEntry((TObject*)nullptr,
                         matchType == JetHistogramsStruct<MAXNREF>::kDR ? "#Delta R < 0.3" : "", "");
                     linfo->Draw("same");
-                    DrawCMSLabel();
-                    DrawLabel(Form(" Run %s", cfg.runNumber.Data()), 0.12, 0.9, 0.035);
+                    DrawCMSLabel("Internal");
+                    //DrawLabel(Form("#bf{Run %s}", cfg.runNumber.Data()), 0.425, 0.965, 0.035);
+                    DrawLabel("#bf{2026 PbPb (5.36 TeV)}", 0.65, 0.965, 0.035);
 
                     c->Update();
                     c->SaveAs(outDir + "/" + cname + ".png");

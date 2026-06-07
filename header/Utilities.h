@@ -106,7 +106,7 @@ struct PlotConfig{
     TString globalTag = "";
     TString jetAlgo   = "";
     
-    float xmin  = 20.0;
+    float xmin  = 15.0;
     float xmax  = 200.0;
     float ymax = 1.1;
     float ymin = 0.0;
@@ -179,14 +179,18 @@ inline SplitCanvas MakeSplitPadCanvas(const TString& name, const PlotConfig& cfg
 
 inline TLegend* MakeLegend(float xmin = 0.575, float ymin = 0.75, float xmax = 0.8, float ymax = 0.95){
     TLegend* l = new TLegend(xmin, ymin, xmax, ymax);
-    l->SetBorderSize(0);
-    l->SetFillStyle(0);
-    l->SetTextSize(0.030);
+    l->SetTextSize(0);
+    l->SetTextAlign(22);
+    l->SetMargin(0);
+    l->SetFillColor(kWhite);
+    l->SetFillStyle(1001);
+    l->SetLineColor(kBlack);
+    l->SetLineWidth(3);
     return l;
 }
 
 inline void AddInfoEntries(TLegend* l, const PlotConfig& cfg){
-    if(!cfg.runNumber.IsNull()){l->AddEntry((TObject*)nullptr, cfg.runNumber,  "");}
+    if(!cfg.runNumber.IsNull()){l->AddEntry((TObject*)nullptr, "Run " + cfg.runNumber,  "");}
     if(!cfg.globalTag.IsNull()){l->AddEntry((TObject*)nullptr, cfg.globalTag,  "");}
     if(!cfg.jetAlgo.IsNull()){l->AddEntry((TObject*)nullptr, cfg.jetAlgo,    "");}
 }
@@ -231,8 +235,8 @@ inline void DrawLabel(const TString& text, float x, float y, float textSize = 0.
     tex->Draw();
 }
 
-inline void DrawCMSLabel(float x = 0.12, float y = 0.965, float textSize = 0.035) {
-    DrawLabel("CMS #bf{#it{Internal}}", x, y, textSize);
+inline void DrawCMSLabel(const TString& cms_type="",float x = 0.13, float y = 0.965, float textSize = 0.035) {
+    DrawLabel(Form("CMS #bf{#it{%s}}", cms_type.Data()), x, y, textSize);
 }
 
 inline void DrawJetAlgoLabel(const TString& jetAlgo="akCs4PF", float x = 0.8, float y = 0.04, float textSize = 0.035){
