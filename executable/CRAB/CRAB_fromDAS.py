@@ -39,7 +39,7 @@ if __name__ == '__main__':
         print("="*50 + "\n")
     
     for i in dataset_indices:
-        cfg.Data.inputDataset = f'/HIPhysicsRawPrime{i}/HIRun2026A-PromptReco-v1/MINIAOD'
+        cfg.Data.inputDataset = f'/HIPhysicsRawPrime{i}/HIRun2026A-PromptReco-v1/MINIAOD' # name of primary datasets being processed
         if cfg.Data.runRange:
             cfg.General.requestName = f'HiForest_RawPrime{i}_Run{cfg.Data.runRange}'
         else:
