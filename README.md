@@ -9,7 +9,7 @@
 
 Each executable file in this repository is documented in this table.
 <br>
-Details of each executable in this table are given as dropdowns below.
+Details of each executable in this table are given below.
 
 | Executable | Task |
 | :-: | - |
@@ -56,7 +56,7 @@ The file `JetHealthPlotting.h` makes the various histgrams plotted. The executab
 
 <h3> <em>PlotJetHealth.cpp</em> </h3>
 
-This macro should be used to provide insight into the performance of jets. Comparing plots produced with this macro from jets collected during this data taking period to jets previously collected in Run 3, or generated in MC samples, will help display the health of jets being collected. This executable processes input HiForest files, stores jet information into an output ROOT file, and generates the plots described above. Additional plots can be made from the information stored in the output file from this macro using `PlotJetHealth.cpp`.
+This macro should be used to provide insight into the performance of jets. Comparing plots produced with this macro from jets collected during this data taking period to jets previously collected in Run 3, or generated in MC samples, will help display the health of jets being collected. This executable processes input HiForest files, stores jet information into an output ROOT file, and generates the plots described above. Additional plots can be made from the information stored in an optional output file from this macro using `PlotJetHealth.cpp`.
 <br><br>
 An output file name can be specified to this macro if desired, which will store all projected histograms. If the input file given to this macro is corrupt or not present then an ASCII zombie will show up in the terminal, and a standard runtime error will occur. 
 <br><br>
@@ -64,12 +64,14 @@ As with all C++ macros in this repository this executable can be interpreted or 
 ```
 root -l -q 'CMS_2026PbPb/executable/PlotJetHealth.cpp("input.root")'
 ```
+> NOTE: An output file can also be provides as an argument e.g. ("input.root", "output.root")
+
 This macro can also be compiled to be ran as a standalone binary. Any changes to the plotting composition here will require this macro to be compiled again.
 ```
 g++ -o PlotJetHealth CMS_2026PbPb/executable/JetHealth_PbPb_lxplus.cpp $(root-config --cflags --libs)
 ```
 ```
-PlotJetHealth <input.root>
+PlotJetHealth <input.root> [output.root]
 ```
 One argument is taken as an input to this macro.
 | Argument | Description |
@@ -87,19 +89,23 @@ In this workflow executing `HiForestJetProcessing.cpp` on a list of ROOT files w
 
 <h3> <em>JetHLT_EfficiencyGenerator.cpp</em> </h3>
 
-The input to this macro is the output of `HiForestJetProcessing.cpp`. A trigger's efficiency can be defined as the ratio of the leading jet p<sub>T</sub> for events passing a particular trigger to the leading jet p<sub>T</sub> for all events in the same sample. Requiring the minimum bias trigger in both the numberator and denominator of this ratio the sample will be unbiased or less biased than without this requirement.
+The input to this macro is the output of `HiForestJetProcessing.cpp`. A trigger's efficiency can be defined as the ratio of the leading jet p<sub>T</sub> for events passing a particular trigger to the leading jet p<sub>T</sub> for all events in the same sample. Requiring the minimum bias trigger in both the numberator and denominator of this ratio will make the sample used to produce the efficiencies minimally biased.
+<br><br>
+An output file name can be specified to this macro if desired, which will store all projected histograms. If the input file given to this macro is corrupt or not present then an ASCII zombie will show up in the terminal, and a standard runtime error will occur. 
 <br><br>
 To compile this C++ script and execute it as a standalone binary use the following commands in sequence.
 ```
 g++ -o JetEfficiency CMS_2026PbPb/executable/JetHLT_EfficiencyGenerator.cpp $(root-config --cflags --libs)
 ```
 ```
-./JetEfficiency <input.root> <output.root>
+./JetEfficiency <input.root> [output.root]
 ```
 Execute this macro using the Cling interpreter native to ROOT with the following command.
 ```
-root -l -q 'CMS_2026PbPb/executable/JetHLT_EfficiencyGenerator.cpp("input.root","output.root")'
+root -l -q 'CMS_2026PbPb/executable/JetHLT_EfficiencyGenerator.cpp("input.root")'
 ```
+> NOTE: An output file can also be provides as an argument e.g. ("input.root", "output.root")
+
 The arguments for this macro are simply an input and output ROOT file. The input file for this macro is the output of `HiForestJetProcessing.cpp`.
 | Argument | Description |
 | :-: | - |
@@ -178,9 +184,10 @@ The input arguments for this macro are listed in this table.
 
 </details>
 
-<h2>Submitting Condor Jobs</h2>
+<h2>Submitting Processing Jobs</h2>
 
-An HTCondor wrapper for easy (and fun!) Condor job submission on LXPLUS lives in this repo and [a separate one](https://github.com/thenicholasbarnett/cms-condor-wrapper) — see executable/Condor for the full README.
+- An HTCondor wrapper for easy (and fun!) Condor job submission on LXPLUS lives in this repo and [a separate one](https://github.com/thenicholasbarnett/cms-condor-wrapper) — see executable/Condor for the full README.
+- Templates for CRAB3 submissions are also available in this repository, in executable/CRAB. There are two templates there, which allow for submissions to CRAB on a user provided list of input files as well as for one or multiple primary dataset(s) on the Data Aggregation System (DAS).
 ___
 
 <h3>Glossary</h3>
