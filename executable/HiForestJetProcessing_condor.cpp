@@ -49,7 +49,14 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
-void HiForestJetProcessing_condor(const TString& input, const TString& output, const TString& output_txt, bool isMC){run(input, output, output_txt, isMC);}
+void HiForestJetProcessing_condor(const TString& input, const TString& output, const TString& output_txt, const TString& isMCArg){
+    if(isMCArg != "true" && isMCArg != "True" && isMCArg != "yes" && isMCArg != "Yes" && isMCArg != "false" && isMCArg != "False" && isMCArg != "no" && isMCArg != "No" && isMCArg != "1" && isMCArg != "0"){
+        std::cerr << "ERROR: isMC must be true or false" << std::endl;
+        return;
+    }
+    bool isMC = (isMCArg == "true" || isMCArg == "True" || isMCArg == "yes" || isMCArg == "Yes" || isMCArg == "1");
+    run(input, output, output_txt, isMC);
+}
  
 void run(const TString& input, const TString& output, const TString& output_txt, bool isMC){
     
