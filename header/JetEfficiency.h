@@ -44,7 +44,7 @@ inline TString TrigLabel(EffType effType, std::size_t t){
 }
 
 inline TString YAxisTitle(EffType effType){
-    if(effType == kFull)     return "HLT + MinBias / MinBias";
+    if(effType == kFull) return "HLT + MinBias / MinBias";
     if(effType == kRelative) return "HLT + MinBias / L1seed + MinBias";
     return "L1 + MinBias / MinBias";
 }
@@ -97,9 +97,6 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                     TString cname = "Efficiency_" + EffTypeName(effType) + "_" + matchStr + etaBin.shortName + hiBinRange.shortName;
                     TCanvas* c = MakeSinglePadCanvas(cname, cfg, true);
 
-                    TLegend* ltrig = MakeLegend(0.12, 0.15, 0.45, 0.45);
-                    ltrig->SetTextSize(0);
-
                     for(std::size_t t=0; t<nTrigs; t++){
                         TString suffix = Form("_eta%zu_hb%zu_t%zu_e%d_m%d", b, hb, t, e, m);
 
@@ -145,28 +142,18 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                             g->Draw("p same");
                         }
 
-                        ltrig->AddEntry(g,
-                            effType == kFull || effType == kRelative
-                                ? GetHLTShortName(sHLTrigs[t].name)
-                                : GetL1ShortName(sL1Trigs[t].name),
-                            "lp"
-                        );
-
                         delete numer;
                         if(effType == kRelative) delete denom;
                     }
 
                     DrawRefLine(cfg.xmin, cfg.xmax);
-                    //ltrig->Draw("same");
                     TLegend* linfo = MakeLegend(0.75, 0.12, 0.95, 0.35);
                     AddInfoEntries(linfo, cfg);
                     linfo->AddEntry((TObject*)nullptr, hiBinRange.title, "");
                     linfo->AddEntry((TObject*)nullptr, etaBin.title, "");
-                    linfo->AddEntry((TObject*)nullptr,
-                        matchType == JetHistogramsStruct<MAXNREF>::kDR ? "#Delta R < 0.3" : "", "");
+                    linfo->AddEntry((TObject*)nullptr, matchType == JetHistogramsStruct<MAXNREF>::kDR ? "#Delta R < 0.3" : "", "");
                     linfo->Draw("same");
                     DrawCMSLabel("Internal");
-                    //DrawLabel(Form("#bf{Run %s}", cfg.runNumber.Data()), 0.425, 0.965, 0.035);
                     DrawLabel("#bf{2026 PbPb (5.36 TeV)}", 0.65, 0.965, 0.035);
 
                     c->Update();
@@ -178,6 +165,27 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
         }
     }
     std::cout << "all efficiency plots saved to " << plotsBase << std::endl;
+
+    TCanvas* cleg = new TCanvas("cleg", "legend", 2400, 2000);
+    cleg->cd();
+
+    TLegend* lstand = new TLegend(0.05, 0.05, 0.95, 0.95);
+    lstand->SetTextSize(0);
+    lstand->SetBorderSize(0);
+    lstand->SetFillStyle(0);
+
+    for(std::size_t t=0; t<nHLT; t++){
+        TH1F* dummy = new TH1F("", "", 1, 0, 1);
+        dummy->SetLineColor(sHLTrigs[t].color);
+        dummy->SetMarkerColor(sHLTrigs[t].color);
+        dummy->SetMarkerStyle(0);
+        dummy->SetLineWidth(5);
+        lstand->AddEntry(dummy, sHLTrigs[t].name, "lp");
+    }
+
+    lstand->Draw();
+    cleg->SaveAs(plotsBase + "/legend.png");
+    delete cleg;
 }
 
 #endif
