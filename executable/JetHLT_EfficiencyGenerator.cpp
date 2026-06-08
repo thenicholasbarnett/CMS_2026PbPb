@@ -22,8 +22,8 @@ void run(const TString& input, const TString& output);
 
 int main(int argc, char* argv[]){
     if(argc < 2){
-        std::cerr << "Compiled Usage: ./JetHLT_Eff <input.root> <output.root>" << std::endl;
-        std::cerr << "Interpreted Usage: root -l -q -b 'JetHLT_EfficiencyGenerator.cpp(\"input.root\", \"output.root\")'" << std::endl;
+        std::cerr << "Compiled Usage: ./JetHLT_Eff <input.root> [output.root]" << std::endl;
+        std::cerr << "Interpreted Usage: root -l -q -b 'JetHLT_EfficiencyGenerator.cpp(\"input.root\")'" << std::endl;
         return 1;
     }
     run(argv[1], argc >= 3 ? argv[2] : "");
