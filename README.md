@@ -68,7 +68,7 @@ root -l -q 'CMS_2026PbPb/executable/PlotJetHealth.cpp("input.root")'
 
 This macro can also be compiled to be ran as a standalone binary. Any changes to the plotting composition here will require this macro to be compiled again.
 ```
-g++ -o PlotJetHealth CMS_2026PbPb/executable/JetHealth_PbPb_lxplus.cpp $(root-config --cflags --libs)
+g++ -o PlotJetHealth CMS_2026PbPb/executable/PlotJetHealth.cpp $(root-config --cflags --libs)
 ```
 ```
 PlotJetHealth <input.root> [output.root]
