@@ -9,18 +9,18 @@
 #include <string>
 #include <stdexcept>
 
-#include "../header/JetSelection_PbPb.h"
-#include "../header/JSON_handler.h"
+#include "header/JetSelection_PbPb.h"
+#include "header/JSON_handler.h"
 
-#include "../header/Binning.h"
-#include "../header/BranchMapping.h"
+#include "header/Binning.h"
+#include "header/BranchMapping.h"
 
-#include "../header/EventStructs_PbPb.h"
-#include "../header/JetStruct.h"
-#include "../header/JetHistograms.h"
+#include "header/EventStructs_PbPb.h"
+#include "header/JetStruct.h"
+#include "header/JetHistograms.h"
 
-#include "../header/JetTriggers_2026PbPb.h"
-// #include "../header/JetTriggers_2025PbPb.h"
+#include "header/JetTriggers_2026PbPb.h"
+// #include "header/JetTriggers_2025PbPb.h"
 
 // number of the run being processed
 const TString& run_number = "";
