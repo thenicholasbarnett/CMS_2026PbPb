@@ -37,7 +37,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC);
 int main(int argc, char* argv[]){
     if(argc < 4){
         std::cerr << "Compiled Usage: ./HiForestJetProcessing <filelist.txt> <output.root> <isMC>" << std::endl;
-        std::cerr << "Interpreted Usage: root -l -q 'HiForestJetProcessing.cpp(\"filelist.txt\",\"output.root\",\"isMC\")'" << std::endl;
+        std::cerr << "Interpreted Usage: root -l -q 'HiForestJetProcessing_lxplus.cpp(\"filelist.txt\",\"output.root\",\"isMC\")'" << std::endl;
         return 1;
     }
     std::string isMCArg = argv[3];
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
     return 0;
 }
 
-void HiForestJetProcessing(const TString& input_file_list, const TString& output, bool isMC){run(input_file_list, output, isMC);}
+void HiForestJetProcessing_lxplus(const TString& input_file_list, const TString& output, bool isMC){run(input_file_list, output, isMC);}
  
 void run(const TString& input_file_list, const TString& output, bool isMC){
     auto start_time = std::chrono::high_resolution_clock::now();
@@ -243,7 +243,7 @@ void run(const TString& input_file_list, const TString& output, bool isMC){
         std::cout << "finished processing files in " << seconds << "s" << std::endl;
 
     // output files
-    outputFile << "\n" << "total events: " << hists.vz_unpassed->GetEntries() << "\n";
+    outputFile << "total events: " << hists.vz_unpassed->GetEntries() << "\n";
     outputFile << "events passing all cuts: " << hists.vz->GetEntries() << "\n";
     outputFile << "dropped events: " << nDrop << "\n";
     outputFile.close();
