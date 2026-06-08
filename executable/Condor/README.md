@@ -21,6 +21,8 @@ These two bash scripts act as a simple wrapper for submitting HTCondor jobs on a
 | :-: | - |
 | `make_condor.sh` | Entry point called by the user. Generates a working directory, an HTCondor submission file, and submits the jobs (skippable with either `-n` or `--no-submit`). |
 | `runtime_wrapper.sh` | Sets up CMSSW runtime environment and executes the user-provided executable based on its type (compatible with `.C`, `.cpp`, `.cc`, `.cxx`, `.py`, and `.sh`). |
+| `make_condor_JetHists.sh` | Version of `make_condor.sh` particularly for `HiForestJetProcessing_condor.cpp` from this repository. |
+| `runtime_wrapper_JetHists.sh` | Version of `runtime_wrapper.sh` particularly for `HiForestJetProcessing_condor.cpp` from this repository. |
 
 <h2>Usage</h2>
 
