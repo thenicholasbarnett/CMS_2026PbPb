@@ -13,7 +13,8 @@ Details of each executable in this table are given below.
 
 | Executable | Task |
 | :-: | - |
-| `HiForestJetProcessing.cpp` | Processing jets in HiForest files |
+| `HiForestJetProcessing_lxplus.cpp` | Processing jets in HiForest files on LXPLUS |
+| `HiForestJetProcessing_condor.cpp` | Processing jets in HiForest files with HTCondor |
 | `PlotJetHealth.cpp` | Plotting object health checks |
 | `JetHLT_EfficiencyGenerator.cpp` | Make jet trigger efficiencies |
 | `batch_hadd.sh` | Merge many ROOT files |
@@ -22,14 +23,16 @@ Details of each executable in this table are given below.
 <h2>Processing HiForest files</h2>
 
 Executables here can monitor jet health and HLT performances, but information from the events needs to be extracted first. High dimensional histograms are filled by information in HiForest files. These high dimensional histograms are sliced, rebinned, and projected by other macros to perform object health checks and produce jet trigger efficiency studies.
+<br><br>
+There are two ways to get information from the HiForest files with these executables, directly on LXPLUS or with the aide of HTCondor. One macro here can be run on an LXPLUS node to iterate over a list of HiForest files, which is recommended when processing less files. A different macro can be used to process HiForest files individually on an HTCondor worker node, which is more appropriate for processing more files.
 
-<h3> <em>HiForestJetProcessing.cpp</em> </h3>
+<h3> <em>HiForestJetProcessing_lxplus.cpp</em> </h3>
 
 This C++ macro can be compiled with `g++` into a standalone executable or interpreted directly with ROOT.
 <br><br>
 This macro can be compiled into a binary executable with the following line.
 ```
-g++ -o JetProcessing CMS_2026PbPb/executable/HiForestJetProcessing.cpp $(root-config --cflags --libs)
+g++ -o JetProcessing CMS_2026PbPb/executable/HiForestJetProcessing_lxplus.cpp $(root-config --cflags --libs)
 ```
 After compiling, this standalone executable can be run with the following command.
 ```
@@ -37,13 +40,22 @@ After compiling, this standalone executable can be run with the following comman
 ```
 This macro can also be executed with ROOT by using its built-in Cling interpreter. 
 ```
-root -l -b -q 'CMS_2026PbPb/executable/HiForestJetProcessing.cpp("filelist.txt","output.root",isMC)'
+root -l -b -q 'CMS_2026PbPb/executable/HiForestJetProcessing_lxplus.cpp("filelist.txt","output.root",isMC)'
 ```
 Below are details on each positional argument this macro expects.
 | Argument | Description |
 | :-: | - |
 | `filelist.txt` | Plain text file containing one input file, including its path, on each line. |
 | `output.root` | ROOT file made by this macro. |
+| `isMC` | Bool specifying to use weights or not. Can be `true`, `false`, `1`, or `0`. |
+
+<h3> <em>HiForestJetProcessing_condor.cpp</em> </h3>
+
+| Argument | Description |
+| :-: | - |
+| `input.root` | Input HiForest file. |
+| `output.root` | ROOT file made by this macro. |
+| `output.txt` | Plain text file made by this macro including efficiency drops. |
 | `isMC` | Bool specifying to use weights or not. Can be `true`, `false`, `1`, or `0`. |
 
 <h2>Object Health</h2>
