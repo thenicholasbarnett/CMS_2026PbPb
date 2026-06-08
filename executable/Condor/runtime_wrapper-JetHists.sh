@@ -25,4 +25,4 @@ cd "${CMSSW_SRC}"
 eval "$(scramv1 runtime -sh)"
 cd "${START_DIR}"
 
-root -l -b -q "${EXECUTABLE}(\"${INPUT}\", \"${OUTPUT}\", \"${OUTPUT_TXT}\", "false")"
+root -l -b -q "${EXECUTABLE}(\"${INPUT}\", \"${OUTPUT}\", \"${OUTPUT_TXT}\", \"false\")"
