@@ -23,7 +23,7 @@ TODAY=$(date +"%Y-%m-%d_%H-%M-%S")
 WORKDIR="condor_${JOBNAME}_${TODAY}"
 WRAPPER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HEADER_DIR="$(realpath "$(dirname "${EXECUTABLE}")/../header")"
-chmod +x runtime_wrapper.sh
+chmod +x runtime_wrapper-JetHists.sh
 
 echo "Making working directory: ${WORKDIR}"
 
@@ -55,7 +55,7 @@ mkdir -p "${WORKDIR}"
 
     cat > "${SUBMISSION_FILE}" <<EOF
 Universe                = vanilla
-Executable              = ${WRAPPER_DIR}/runtime_wrapper.sh
+Executable              = ${WRAPPER_DIR}/runtime_wrapper-JetHists.sh
 
 +JobFlavour             = "longlunch"
 
@@ -64,7 +64,7 @@ when_to_transfer_output = ON_EXIT
 
 request_cpus            = 4
 
-Transfer_Input_Files    = ${WRAPPER_DIR}/runtime_wrapper.sh,$(pwd)/${EXE_NAME},$(pwd)/header
+Transfer_Input_Files    = ${WRAPPER_DIR}/runtime_wrapper-JetHists.sh,$(pwd)/${EXE_NAME},$(pwd)/header
 EOF
 
     COUNT=0
