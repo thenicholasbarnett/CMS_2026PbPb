@@ -31,18 +31,30 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# progress bar function: draw_bar LABEL CURRENT TOTAL BAR_WIDTH
+# draw_bar COLOR LABEL CURRENT TOTAL
+# COLOR: 'green' or 'blue'
 draw_bar() {
-    local label="$1"
-    local current="$2"
-    local total="$3"
-    local width="${4:-40}"
-    local filled=$(( current * width / total ))
+    local color="$1"
+    local label="$2"
+    local current="$3"
+    local total="$4"
+    local width=40
+    local filled=$(( current >= total ? width : current * width / total ))
     local empty=$(( width - filled ))
-    local pct=$(( current * 100 / total ))
-    local bar
-    bar="$(printf '%0.s█' $(seq 1 $filled) 2>/dev/null)$(printf '%0.s░' $(seq 1 $empty) 2>/dev/null)"
-    printf "\r  %-20s [%s] %d/%d (%d%%)" "$label" "$bar" "$current" "$total" "$pct"
+    local pct=$(( current >= total ? 100 : current * 100 / total ))
+    local ansi_color
+    case "$color" in
+        green) ansi_color='\033[32m' ;;
+        blue)  ansi_color='\033[34m' ;;
+        *)     ansi_color='\033[0m'  ;;
+    esac
+    local reset='\033[0m'
+    local grey='\033[90m'
+    local filled_str empty_str
+    filled_str="$(printf '%0.s█' $(seq 1 $filled) 2>/dev/null)"
+    empty_str="$(printf '%0.s░' $(seq 1 $empty) 2>/dev/null)"
+    printf "\r  %-20s [${ansi_color}%s${reset}${grey}%s${reset}] %d/%d (%d%%)" \
+        "$label" "$filled_str" "$empty_str" "$current" "$total" "$pct"
 }
 
 # normalise IN_FILES to a directory + filename pattern
@@ -75,7 +87,7 @@ pids=()
 tmpdir_check=$(mktemp -d)
 checked=0
 
-draw_bar "Zombie check:" 0 "$TOTAL_INPUT"
+draw_bar green "Zombie check:" 0 "$TOTAL_INPUT"
 
 for f in "${FILES[@]}"; do
     while (( $(jobs -rp | wc -l) >= CHECK_JOBS )); do
@@ -101,7 +113,7 @@ for f in "${FILES[@]}"; do
             fi
             rm -f "${tmpdir_check}/${p}"
             checked=$(( checked + 1 ))
-            draw_bar "Zombie check:" "$checked" "$TOTAL_INPUT"
+            draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
         fi
     done
 done
@@ -117,7 +129,7 @@ for pid in "${pids[@]}"; do
         fi
         rm -f "${tmpdir_check}/${pid}"
         checked=$(( checked + 1 ))
-        draw_bar "Zombie check:" "$checked" "$TOTAL_INPUT"
+        draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
     fi
 done
 
@@ -156,35 +168,59 @@ while (( ${#current_files[@]} > 1 )); do
 
     next_files=()
     batch=0
-    pids=()
     completed=0
+    pids=()
+    tmpdir_hadd=$(mktemp -d)
 
-    draw_bar "Level ${level}:" 0 "$n_batches"
+    draw_bar blue "Level ${level}:" 0 "$n_batches"
 
     for ((i=0; i<${#current_files[@]}; i+=BATCH_SIZE)); do
+        # throttle to NJOBS concurrent hadd processes
+        while (( $(jobs -rp | wc -l) >= NJOBS )); do
+            # collect any finished batches while waiting
+            for p in "${pids[@]}"; do
+                if [[ -f "${tmpdir_hadd}/${p}" ]]; then
+                    if [[ $(< "${tmpdir_hadd}/${p}") != "0" ]]; then
+                        printf "\n"
+                        echo "A hadd batch failed at level ${level} — check ${LOG_FILE}" >&2
+                        exit 1
+                    fi
+                    rm -f "${tmpdir_hadd}/${p}"
+                    completed=$(( completed + 1 ))
+                    draw_bar blue "Level ${level}:" "$completed" "$n_batches"
+                fi
+            done
+            sleep 0.5
+        done
+
         chunk=("${current_files[@]:i:BATCH_SIZE}")
         partial="${MY_TMPDIR}/level${level}_batch${batch}.root"
         next_files+=("$partial")
 
-        hadd "$partial" "${chunk[@]}" >>"$LOG_FILE" 2>&1 &
+        (
+            hadd "$partial" "${chunk[@]}" >>"$LOG_FILE" 2>&1
+            echo $? > "${tmpdir_hadd}/$BASHPID"
+        ) &
         pids+=($!)
         batch=$(( batch + 1 ))
-
-        while (( $(jobs -rp | wc -l) >= NJOBS )); do
-            sleep 0.5
-        done
     done
 
+    # drain remaining jobs
     for pid in "${pids[@]}"; do
-        if ! wait "$pid"; then
-            printf "\n"
-            echo "A hadd batch failed at level ${level} — check ${LOG_FILE}" >&2
-            exit 1
+        wait "$pid"
+        if [[ -f "${tmpdir_hadd}/${pid}" ]]; then
+            if [[ $(< "${tmpdir_hadd}/${pid}") != "0" ]]; then
+                printf "\n"
+                echo "A hadd batch failed at level ${level} — check ${LOG_FILE}" >&2
+                exit 1
+            fi
+            rm -f "${tmpdir_hadd}/${pid}"
+            completed=$(( completed + 1 ))
+            draw_bar blue "Level ${level}:" "$completed" "$n_batches"
         fi
-        completed=$(( completed + 1 ))
-        draw_bar "Level ${level}:" "$completed" "$n_batches"
     done
 
+    rm -rf "$tmpdir_hadd"
     printf "\n"
     level_summary+=("level ${level}: ${batch} batches of up to ${BATCH_SIZE}")
     current_files=("${next_files[@]}")
