@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ $# -ne 4 ]; then
-    echo "Usage: $0 OUT_FILE \"IN_FILES\" BATCH_SIZE NJOBS" >&2
-    echo "Note: IN_FILES must be quoted to prevent shell expansion" >&2
+usage() {
+    echo "Usage: $0 OUT_FILE \"IN_FILES\" BATCH_SIZE NJOBS [-z|--zombie-check]" >&2
+    echo "  -z, --zombie-check   Run zombie check before merging (slow but thorough)" >&2
+    echo "  Note: IN_FILES must be quoted to prevent shell expansion" >&2
     exit 1
+}
+
+if [[ $# -lt 4 || $# -gt 5 ]]; then
+    usage
 fi
 
 OUT_FILE="$1"
 IN_FILES="$2"
 BATCH_SIZE="${3:-10}"
 NJOBS="${4:-4}"
+
+ZOMBIE_CHECK=false
+if [[ $# -eq 5 ]]; then
+    if [[ "$5" == "-z" || "$5" == "--zombie-check" ]]; then
+        ZOMBIE_CHECK=true
+    else
+        usage
+    fi
+fi
 
 echo "Started: $(date '+%Y-%m-%d %H:%M:%S')"
 
@@ -64,9 +78,9 @@ draw_bar() {
     esac
     local reset='\033[0m'
     local grey='\033[90m'
-    local filled_str empty_str
-    filled_str="$(printf '%0.s█' $(seq 1 $filled) 2>/dev/null)"
-    empty_str="$(printf '%0.s░' $(seq 1 $empty) 2>/dev/null)"
+    local filled_str="" empty_str=""
+    (( filled > 0 )) && filled_str="$(printf '%0.s█' $(seq 1 $filled))"
+    (( empty > 0 ))  && empty_str="$(printf '%0.s░' $(seq 1 $empty))"
     printf "\r  %-20s [${ansi_color}%s${reset}${grey}%s${reset}] %d/%d (%d%%)" \
         "$label" "$filled_str" "$empty_str" "$current" "$total" "$pct"
 }
@@ -90,86 +104,93 @@ if (( ${#FILES[@]} == 0 )); then
     exit 1
 fi
 
-CHECK_JOBS=$(( NJOBS > 4 ? NJOBS : 4 ))
 TOTAL_INPUT=${#FILES[@]}
-echo "Found ${TOTAL_INPUT} files — checking for zombies..."
-ZOMBIE_START=$(date +%s)
+echo "Found ${TOTAL_INPUT} files"
 
-valid_files=()
 zombie_files=()
-pids=()
-tmpdir_check=$(mktemp -d)
-checked=0
-declare -A collected   # track which PIDs have already been collected
 
-draw_bar green "Zombie check:" 0 "$TOTAL_INPUT"
+if $ZOMBIE_CHECK; then
+    CHECK_JOBS=$(( NJOBS > 4 ? NJOBS : 4 ))
+    echo "Checking for zombies (${CHECK_JOBS} parallel)..."
+    ZOMBIE_START=$(date +%s)
 
-collect_check_results() {
-    for p in "${pids[@]}"; do
-        if [[ -z "${collected[$p]+x}" ]] && [[ -f "${tmpdir_check}/${p}" ]]; then
-            local r
-            r=$(< "${tmpdir_check}/${p}")
-            if [[ "$r" == valid:* ]]; then
-                valid_files+=("${r#valid:}")
-            else
-                zombie_files+=("${r#zombie:}")
+    valid_files=()
+    pids=()
+    tmpdir_check=$(mktemp -d)
+    checked=0
+    declare -A collected
+
+    draw_bar green "Zombie check:" 0 "$TOTAL_INPUT"
+
+    collect_check_results() {
+        for p in "${pids[@]}"; do
+            if [[ -z "${collected[$p]+x}" ]] && [[ -f "${tmpdir_check}/${p}" ]]; then
+                local r
+                r=$(< "${tmpdir_check}/${p}")
+                if [[ "$r" == valid:* ]]; then
+                    valid_files+=("${r#valid:}")
+                else
+                    zombie_files+=("${r#zombie:}")
+                fi
+                rm -f "${tmpdir_check}/${p}"
+                collected[$p]=1
+                checked=$(( checked + 1 ))
+                draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
             fi
-            rm -f "${tmpdir_check}/${p}"
-            collected[$p]=1
-            checked=$(( checked + 1 ))
-            draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
-        fi
-    done
-}
+        done
+    }
 
-for f in "${FILES[@]}"; do
-    while (( $(jobs -rp | wc -l) >= CHECK_JOBS )); do
+    for f in "${FILES[@]}"; do
+        while (( $(jobs -rp | wc -l) >= CHECK_JOBS )); do
+            collect_check_results
+            sleep 0.1
+        done
+
+        (
+            if rootls "$f" &>/dev/null; then
+                echo "valid:$f" > "${tmpdir_check}/$BASHPID"
+            else
+                echo "zombie:$f" > "${tmpdir_check}/$BASHPID"
+            fi
+        ) &
+        pids+=($!)
+
         collect_check_results
-        sleep 0.1
     done
 
-    (
-        if rootls "$f" &>/dev/null; then
-            echo "valid:$f" > "${tmpdir_check}/$BASHPID"
-        else
-            echo "zombie:$f" > "${tmpdir_check}/$BASHPID"
-        fi
-    ) &
-    pids+=($!)
-
-    collect_check_results
-done
-
-# drain any remaining
-for pid in "${pids[@]}"; do
-    wait "$pid"
-    collect_check_results
-done
-
-rm -rf "$tmpdir_check"
-draw_bar green "Zombie check:" "$TOTAL_INPUT" "$TOTAL_INPUT"
-printf "\n"
-
-ZOMBIE_END=$(date +%s)
-ZOMBIE_ELAPSED=$(( ZOMBIE_END - ZOMBIE_START ))
-
-if (( ${#zombie_files[@]} > 0 )); then
-    for zf in "${zombie_files[@]}"; do
-        echo "  [ZOMBIE] $zf"
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+        collect_check_results
     done
-    echo "Warning: skipping ${#zombie_files[@]} zombie/corrupt file(s)" >&2
+
+    rm -rf "$tmpdir_check"
+    draw_bar green "Zombie check:" "$TOTAL_INPUT" "$TOTAL_INPUT"
+    printf "\n"
+
+    ZOMBIE_END=$(date +%s)
+    ZOMBIE_ELAPSED=$(( ZOMBIE_END - ZOMBIE_START ))
+
+    if (( ${#zombie_files[@]} > 0 )); then
+        for zf in "${zombie_files[@]}"; do
+            echo "  [ZOMBIE] $zf"
+        done
+        echo "Warning: skipping ${#zombie_files[@]} zombie/corrupt file(s)" >&2
+    fi
+
+    echo "Zombie check complete in $(format_elapsed $ZOMBIE_ELAPSED)"
+
+    if (( ${#valid_files[@]} == 0 )); then
+        echo "No valid ROOT files remain after zombie check." >&2
+        exit 1
+    fi
+
+    FILES=("${valid_files[@]}")
+    echo "Proceeding with ${#FILES[@]} valid files"
+else
+    echo "Skipping zombie check — using hadd -k to skip bad files during merge"
 fi
 
-echo "Zombie check complete in $(format_elapsed $ZOMBIE_ELAPSED)"
-
-if (( ${#valid_files[@]} == 0 )); then
-    echo "No valid ROOT files remain after zombie check." >&2
-    exit 1
-fi
-
-TOTAL_FILES=$(( ${#valid_files[@]} + ${#zombie_files[@]} ))
-FILES=("${valid_files[@]}")
-echo "Proceeding with ${#FILES[@]} valid files"
+TOTAL_FILES=${#FILES[@]}
 echo "Temporary directory: ${MY_TMPDIR}"
 
 level=0
@@ -217,7 +238,7 @@ while (( ${#current_files[@]} > 1 )); do
         next_files+=("$partial")
 
         (
-            hadd "$partial" "${chunk[@]}" >>"$LOG_FILE" 2>&1
+            hadd -k "$partial" "${chunk[@]}" >>"$LOG_FILE" 2>&1
             echo $? > "${tmpdir_hadd}/$BASHPID"
         ) &
         pids+=($!)
@@ -238,7 +259,7 @@ while (( ${#current_files[@]} > 1 )); do
 
     rm -rf "$tmpdir_hadd"
     unset collected_hadd
-    level_summary+=("level ${level}: ${batch} batches of up to ${BATCH_SIZE} in $(format_elapsed $LEVEL_ELAPSED)")
+    level_summary+=("level ${level}: ${batch} batches in $(format_elapsed $LEVEL_ELAPSED)")
     current_files=("${next_files[@]}")
     level=$(( level + 1 ))
 done
@@ -248,9 +269,10 @@ mv "${current_files[0]}" "$OUT_FILE"
 
 echo ""
 echo "=== Merge Summary ==="
-echo "Input files found:  ${TOTAL_FILES}"
+echo "Input files found:  ${TOTAL_INPUT}"
 echo "Zombies skipped:    ${#zombie_files[@]}"
-echo "Files merged:       ${#FILES[@]}"
+echo "Files merged:       ${TOTAL_FILES}"
+echo "Max batch size:     ${BATCH_SIZE}"
 echo "Total levels:       ${level}"
 for entry in "${level_summary[@]}"; do
     echo "  ${entry}"
