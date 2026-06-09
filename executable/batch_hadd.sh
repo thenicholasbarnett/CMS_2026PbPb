@@ -31,8 +31,22 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# format_elapsed SECONDS → "Xh Ym Zs" (omits leading zero components)
+format_elapsed() {
+    local secs="$1"
+    local h=$(( secs / 3600 ))
+    local m=$(( (secs % 3600) / 60 ))
+    local s=$(( secs % 60 ))
+    if (( h > 0 )); then
+        printf "%dh %dm %ds" "$h" "$m" "$s"
+    elif (( m > 0 )); then
+        printf "%dm %ds" "$m" "$s"
+    else
+        printf "%ds" "$s"
+    fi
+}
+
 # draw_bar COLOR LABEL CURRENT TOTAL
-# COLOR: 'green' or 'blue'
 draw_bar() {
     local color="$1"
     local label="$2"
@@ -86,11 +100,31 @@ zombie_files=()
 pids=()
 tmpdir_check=$(mktemp -d)
 checked=0
+declare -A collected   # track which PIDs have already been collected
 
 draw_bar green "Zombie check:" 0 "$TOTAL_INPUT"
 
+collect_check_results() {
+    for p in "${pids[@]}"; do
+        if [[ -z "${collected[$p]+x}" ]] && [[ -f "${tmpdir_check}/${p}" ]]; then
+            local r
+            r=$(< "${tmpdir_check}/${p}")
+            if [[ "$r" == valid:* ]]; then
+                valid_files+=("${r#valid:}")
+            else
+                zombie_files+=("${r#zombie:}")
+            fi
+            rm -f "${tmpdir_check}/${p}"
+            collected[$p]=1
+            checked=$(( checked + 1 ))
+            draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
+        fi
+    done
+}
+
 for f in "${FILES[@]}"; do
     while (( $(jobs -rp | wc -l) >= CHECK_JOBS )); do
+        collect_check_results
         sleep 0.1
     done
 
@@ -103,37 +137,17 @@ for f in "${FILES[@]}"; do
     ) &
     pids+=($!)
 
-    for p in "${pids[@]}"; do
-        if [[ -f "${tmpdir_check}/${p}" ]]; then
-            r=$(< "${tmpdir_check}/${p}")
-            if [[ "$r" == valid:* ]]; then
-                valid_files+=("${r#valid:}")
-            else
-                zombie_files+=("${r#zombie:}")
-            fi
-            rm -f "${tmpdir_check}/${p}"
-            checked=$(( checked + 1 ))
-            draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
-        fi
-    done
+    collect_check_results
 done
 
+# drain any remaining
 for pid in "${pids[@]}"; do
     wait "$pid"
-    if [[ -f "${tmpdir_check}/${pid}" ]]; then
-        r=$(< "${tmpdir_check}/${pid}")
-        if [[ "$r" == valid:* ]]; then
-            valid_files+=("${r#valid:}")
-        else
-            zombie_files+=("${r#zombie:}")
-        fi
-        rm -f "${tmpdir_check}/${pid}"
-        checked=$(( checked + 1 ))
-        draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
-    fi
+    collect_check_results
 done
 
 rm -rf "$tmpdir_check"
+draw_bar green "Zombie check:" "$TOTAL_INPUT" "$TOTAL_INPUT"
 printf "\n"
 
 ZOMBIE_END=$(date +%s)
@@ -146,7 +160,7 @@ if (( ${#zombie_files[@]} > 0 )); then
     echo "Warning: skipping ${#zombie_files[@]} zombie/corrupt file(s)" >&2
 fi
 
-echo "Zombie check complete in ${ZOMBIE_ELAPSED}s"
+echo "Zombie check complete in $(format_elapsed $ZOMBIE_ELAPSED)"
 
 if (( ${#valid_files[@]} == 0 )); then
     echo "No valid ROOT files remain after zombie check." >&2
@@ -165,31 +179,36 @@ declare -a level_summary
 while (( ${#current_files[@]} > 1 )); do
     n_batches=$(( (${#current_files[@]} + BATCH_SIZE - 1) / BATCH_SIZE ))
     echo "Level ${level}: ${#current_files[@]} files → ${n_batches} batches"
+    LEVEL_START=$(date +%s)
 
     next_files=()
     batch=0
     completed=0
     pids=()
     tmpdir_hadd=$(mktemp -d)
+    declare -A collected_hadd
 
     draw_bar blue "Level ${level}:" 0 "$n_batches"
 
-    for ((i=0; i<${#current_files[@]}; i+=BATCH_SIZE)); do
-        # throttle to NJOBS concurrent hadd processes
-        while (( $(jobs -rp | wc -l) >= NJOBS )); do
-            # collect any finished batches while waiting
-            for p in "${pids[@]}"; do
-                if [[ -f "${tmpdir_hadd}/${p}" ]]; then
-                    if [[ $(< "${tmpdir_hadd}/${p}") != "0" ]]; then
-                        printf "\n"
-                        echo "A hadd batch failed at level ${level} — check ${LOG_FILE}" >&2
-                        exit 1
-                    fi
-                    rm -f "${tmpdir_hadd}/${p}"
-                    completed=$(( completed + 1 ))
-                    draw_bar blue "Level ${level}:" "$completed" "$n_batches"
+    collect_hadd_results() {
+        for p in "${pids[@]}"; do
+            if [[ -z "${collected_hadd[$p]+x}" ]] && [[ -f "${tmpdir_hadd}/${p}" ]]; then
+                if [[ $(< "${tmpdir_hadd}/${p}") != "0" ]]; then
+                    printf "\n"
+                    echo "A hadd batch failed at level ${level} — check ${LOG_FILE}" >&2
+                    exit 1
                 fi
-            done
+                rm -f "${tmpdir_hadd}/${p}"
+                collected_hadd[$p]=1
+                completed=$(( completed + 1 ))
+                draw_bar blue "Level ${level}:" "$completed" "$n_batches"
+            fi
+        done
+    }
+
+    for ((i=0; i<${#current_files[@]}; i+=BATCH_SIZE)); do
+        while (( $(jobs -rp | wc -l) >= NJOBS )); do
+            collect_hadd_results
             sleep 0.5
         done
 
@@ -205,24 +224,21 @@ while (( ${#current_files[@]} > 1 )); do
         batch=$(( batch + 1 ))
     done
 
-    # drain remaining jobs
     for pid in "${pids[@]}"; do
         wait "$pid"
-        if [[ -f "${tmpdir_hadd}/${pid}" ]]; then
-            if [[ $(< "${tmpdir_hadd}/${pid}") != "0" ]]; then
-                printf "\n"
-                echo "A hadd batch failed at level ${level} — check ${LOG_FILE}" >&2
-                exit 1
-            fi
-            rm -f "${tmpdir_hadd}/${pid}"
-            completed=$(( completed + 1 ))
-            draw_bar blue "Level ${level}:" "$completed" "$n_batches"
-        fi
+        collect_hadd_results
     done
 
-    rm -rf "$tmpdir_hadd"
+    draw_bar blue "Level ${level}:" "$n_batches" "$n_batches"
     printf "\n"
-    level_summary+=("level ${level}: ${batch} batches of up to ${BATCH_SIZE}")
+
+    LEVEL_END=$(date +%s)
+    LEVEL_ELAPSED=$(( LEVEL_END - LEVEL_START ))
+    echo "Level ${level} complete in $(format_elapsed $LEVEL_ELAPSED)"
+
+    rm -rf "$tmpdir_hadd"
+    unset collected_hadd
+    level_summary+=("level ${level}: ${batch} batches of up to ${BATCH_SIZE} in $(format_elapsed $LEVEL_ELAPSED)")
     current_files=("${next_files[@]}")
     level=$(( level + 1 ))
 done
