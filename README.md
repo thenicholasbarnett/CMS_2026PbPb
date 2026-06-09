@@ -143,19 +143,19 @@ There's an optional flag that can be used in this bash script to do a zombie che
 <br><br>
 This bash script can be executed by launching a new bash process in a couple ways.
 ```
-bash CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+bash CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS [-z|--zombie-check]
 ```
 After giving execute permission (`chmod +x CMS_2026PbPb/executable/batch_hadd.sh`) this shell script can also be executed in a child process like this.
 ```
-./CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+./CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS [-z|--zombie-check]
 ```
 This bash script can be executed with the following terminal commands in the current shell session.
 > WARNING: Executing in the current shell session is not recommended because if the argument validation fails then the current terminal session will close entirely
 ```
-source CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+source CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS [-z|--zombie-check]
 ```
 ```
-. CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS
+. CMS_2026PbPb/executable/batch_hadd.sh OUT_FILE "IN_FILES" BATCH_SIZE NJOBS [-z|--zombie-check]
 ```
 Details on each positional argument this shell takes as an input.
 | Argument | Description |
