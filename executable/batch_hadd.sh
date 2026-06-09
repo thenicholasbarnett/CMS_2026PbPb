@@ -21,13 +21,15 @@ cleanup() {
         eos rm -r "$MY_TMPDIR"
         rm -f "$LOG_FILE"
     else
-        echo "Failure — log written to ${LOG_FILE}" >&2
+        if [[ -s "$LOG_FILE" ]]; then
+            echo "Failure — log written to ${LOG_FILE}" >&2
+        fi
         echo "Leaving ${MY_TMPDIR} intact for inspection" >&2
     fi
 }
 trap cleanup EXIT
 
-mapfile -t FILES < <(find "$IN_FILES" -type f -name "*.root" | sort)
+mapfile -t FILES < <(find "$(dirname "$IN_FILES")" -type f -name "$(basename "$IN_FILES")" | sort)
 
 if (( ${#FILES[@]} == 0 )); then
     echo "No files matched: $IN_FILES" >&2
