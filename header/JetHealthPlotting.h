@@ -15,7 +15,7 @@
 #include "Binning.h"
 #include "Utilities.h"
 
-#include "JetHealthHistograms.h"
+#include "JetHistograms.h"
 
 struct JetHealthPlotConfig : PlotConfig {std::vector<Float_t> etaPhiPtCuts = {50.0, 100.0, 200.0};};
 inline bool PFTypeLogY(Int_t pfType){return pfType == CEF || pfType == NHF || pfType == MUF;}
