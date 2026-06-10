@@ -3,7 +3,6 @@ set -euo pipefail
 
 usage() {
     echo "Usage: $0 OUT_FILE \"IN_FILES\" BATCH_SIZE NJOBS [-z|--zombie-check]" >&2
-    echo "  -z, --zombie-check   Run zombie check before merging (slow but thorough)" >&2
     echo "  Note: IN_FILES must be quoted to prevent shell expansion" >&2
     exit 1
 }
