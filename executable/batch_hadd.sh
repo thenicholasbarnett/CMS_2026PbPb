@@ -186,8 +186,6 @@ if $ZOMBIE_CHECK; then
 
     FILES=("${valid_files[@]}")
     echo "Proceeding with ${#FILES[@]} valid files"
-else
-    echo "Skipping zombie check — using hadd -k to skip bad files during merge"
 fi
 
 TOTAL_FILES=${#FILES[@]}
