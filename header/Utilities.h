@@ -125,7 +125,7 @@ inline TCanvas* MakeSinglePadCanvas(const TString& name, const PlotConfig& cfg, 
     c->SetBottomMargin(0.12);
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.05);
-    c->SetRealAspectRatio();
+    //c->SetRealAspectRatio();
     if(grid) {
         c->SetGridx();
         c->SetGridy();
@@ -139,7 +139,7 @@ inline TCanvas* MakeColzCanvas(const TString& name, const PlotConfig& cfg){
     c->SetBottomMargin(0.12);
     c->SetLeftMargin(0.12);
     c->SetRightMargin(0.15);
-    c->SetRealAspectRatio();
+    //c->SetRealAspectRatio();
     return c;
 }
 
@@ -153,7 +153,7 @@ inline SplitCanvas MakeSplitPadCanvas(const TString& name, const PlotConfig& cfg
     SplitCanvas sc;
     sc.c = new TCanvas(name, "", cfg.canvasSize, cfg.canvasSize);
     sc.c->cd();
-    sc.c->SetRealAspectRatio();
+    //sc.c->SetRealAspectRatio();
 
     sc.legpad = new TPad(name + "_legpad", "", 0.0, 1.0 - cfg.legfrac, 1.0, 1.0);
     sc.legpad->SetTopMargin(0.05);
