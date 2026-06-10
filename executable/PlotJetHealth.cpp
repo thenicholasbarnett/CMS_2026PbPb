@@ -61,12 +61,9 @@ void plot(const TString& input, const TString& output = ""){
     if(output!=""){fo = new TFile(output, "recreate");}
 
     BinningStruct bins;
-    JetHealthStruct<maxnref> hists(bins);
-    
-    hists.kin = (THnSparseF*)fi->Get("hjetkin");
-    hists.pf  = (THnSparseF*)fi->Get("hjetpf");
-    if(!hists.kin){ throw std::runtime_error("ERROR: could not find hjetkin in file"); }
-    if(!hists.pf) { throw std::runtime_error("ERROR: could not find hjetpf in file");  }
+    JetHistogramsStruct<maxnref> hists(bins, false);
+    hists.kin = (THnSparseF*)fi->Get("kin");
+    if(!hists.kin){ throw std::runtime_error("ERROR: could not find kin in file"); }
 
     JetHealthPlotConfig cfg;
     //cfg.jetAlgo = "akCs4PF";
