@@ -100,8 +100,8 @@ void run(const TString& input, const TString& output){
 
     // saving efficiency plots as .png
     PlotConfig cfg;
-    cfg.runNumber = "404469";
-    cfg.globalTag = "PromptReco";
+    cfg.runNumber = "404576";
+    cfg.globalTag = "161X_dataRun3_Prompt_v1";
     cfg.jetAlgo = "akCs4PF";
     cfg.xmin  = 15.0;
     cfg.xmax  = 250.0;

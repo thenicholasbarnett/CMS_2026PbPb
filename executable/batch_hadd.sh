@@ -27,6 +27,10 @@ fi
 
 echo "Started: $(date '+%Y-%m-%d %H:%M:%S')"
 
+# Pick a random bar color once per run (mirrors ProgressBar.h kRandom logic)
+_BAR_COLORS=(green blue cyan magenta yellow)
+BAR_COLOR="${_BAR_COLORS[$(( RANDOM % ${#_BAR_COLORS[@]} ))]}"
+
 MY_TMPDIR="$(dirname "$OUT_FILE")/hadd_tmp_$$"
 LOG_FILE="$(dirname "$OUT_FILE")/hadd_$$.log"
 eos mkdir -p "$MY_TMPDIR"
@@ -59,7 +63,6 @@ format_elapsed() {
     fi
 }
 
-# draw_bar COLOR LABEL CURRENT TOTAL
 draw_bar() {
     local color="$1"
     local label="$2"
@@ -71,9 +74,12 @@ draw_bar() {
     local pct=$(( current >= total ? 100 : current * 100 / total ))
     local ansi_color
     case "$color" in
-        green) ansi_color='\033[32m' ;;
-        blue)  ansi_color='\033[34m' ;;
-        *)     ansi_color='\033[0m'  ;;
+        green)   ansi_color='\033[32m'  ;;
+        blue)    ansi_color='\033[34m'  ;;
+        cyan)    ansi_color='\033[96m'  ;;
+        magenta) ansi_color='\033[95m'  ;;
+        yellow)  ansi_color='\033[93m'  ;;
+        *)       ansi_color='\033[0m'   ;;
     esac
     local reset='\033[0m'
     local grey='\033[90m'
@@ -119,7 +125,7 @@ if $ZOMBIE_CHECK; then
     checked=0
     declare -A collected
 
-    draw_bar green "Zombie check:" 0 "$TOTAL_INPUT"
+    draw_bar "$BAR_COLOR" "Zombie check:" 0 "$TOTAL_INPUT"
 
     collect_check_results() {
         for p in "${pids[@]}"; do
@@ -134,7 +140,7 @@ if $ZOMBIE_CHECK; then
                 rm -f "${tmpdir_check}/${p}"
                 collected[$p]=1
                 checked=$(( checked + 1 ))
-                draw_bar green "Zombie check:" "$checked" "$TOTAL_INPUT"
+                draw_bar "$BAR_COLOR" "Zombie check:" "$checked" "$TOTAL_INPUT"
             fi
         done
     }
@@ -163,7 +169,7 @@ if $ZOMBIE_CHECK; then
     done
 
     rm -rf "$tmpdir_check"
-    draw_bar green "Zombie check:" "$TOTAL_INPUT" "$TOTAL_INPUT"
+    draw_bar "$BAR_COLOR" "Zombie check:" "$TOTAL_INPUT" "$TOTAL_INPUT"
     printf "\n"
 
     ZOMBIE_END=$(date +%s)
@@ -206,7 +212,7 @@ while (( ${#current_files[@]} > 1 )); do
     tmpdir_hadd=$(mktemp -d)
     declare -A collected_hadd
 
-    draw_bar blue "Level ${level}:" 0 "$n_batches"
+    draw_bar "$BAR_COLOR" "Level ${level}:" 0 "$n_batches"
 
     collect_hadd_results() {
         for p in "${pids[@]}"; do
@@ -219,7 +225,7 @@ while (( ${#current_files[@]} > 1 )); do
                 rm -f "${tmpdir_hadd}/${p}"
                 collected_hadd[$p]=1
                 completed=$(( completed + 1 ))
-                draw_bar blue "Level ${level}:" "$completed" "$n_batches"
+                draw_bar "$BAR_COLOR" "Level ${level}:" "$completed" "$n_batches"
             fi
         done
     }
@@ -247,7 +253,7 @@ while (( ${#current_files[@]} > 1 )); do
         collect_hadd_results
     done
 
-    draw_bar blue "Level ${level}:" "$n_batches" "$n_batches"
+    draw_bar "$BAR_COLOR" "Level ${level}:" "$n_batches" "$n_batches"
     printf "\n"
 
     LEVEL_END=$(date +%s)

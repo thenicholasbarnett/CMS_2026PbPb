@@ -10,23 +10,23 @@
 #include "../header/JetHistograms.h"
 #include "../header/JetHealthPlotting.h"
 
-static constexpr Int_t maxnref = 150;
+static constexpr Int_t maxnref = 100;
 
-void plot(const TString& input, const TString& output = "");
+void plot(const TString& input, const TString& output);
 
 int main(int argc, char* argv[]){
     if(argc < 2){
-        std::cerr << "Compiled Usage: ./PlotJetHealth <input.root>" << std::endl;
+        std::cerr << "Compiled Usage: ./PlotJetHealth <input.root> [output.root]" << std::endl;
         std::cerr << "Interpreted Usage: root -l -q 'PlotJetHealth.cpp(\"input.root\")' " << std::endl;
         return 1;
     }
-    plot(argv[1]);
+    plot(argv[1], argc >= 3 ? argv[2] : "");
     return 0;
 }
 
-void PlotJetHealth(const TString& input){plot(input);}
+void PlotJetHealth(const TString& input, const TString& output=""){plot(input, output);}
 
-void plot(const TString& input, const TString& output = ""){
+void plot(const TString& input, const TString& output){
     TFile* fi = TFile::Open(input, "read");
     if(!fi || fi->IsZombie()){
         std::cerr<<R"(
@@ -62,11 +62,14 @@ void plot(const TString& input, const TString& output = ""){
 
     BinningStruct bins;
     JetHistogramsStruct<maxnref> hists(bins, false);
+    
     hists.kin = (THnSparseF*)fi->Get("kin");
-    if(!hists.kin){ throw std::runtime_error("ERROR: could not find kin in file"); }
+    if(!hists.kin){throw std::runtime_error("ERROR: could not find hjetkin in file");}
 
     JetHealthPlotConfig cfg;
-    //cfg.jetAlgo = "akCs4PF";
+    cfg.runNumber = "404469";
+    cfg.jetAlgo = "akCs4PF";
+    cfg.globalTag = "PromptReco";
     cfg.etaPhiPtCuts = {20.0, 50.0, 100.0};
     SaveJetHealthPlots(hists, bins, cfg, fo);
 
