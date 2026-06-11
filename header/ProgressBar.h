@@ -35,7 +35,7 @@ struct ProgressBar {
     int width = 40;
     Color color;
 
-    ProgressBar(const std::string& label, int total, Color color = kBlack)
+    ProgressBar(const std::string& label, int total, Color color = kRandom)
         : label(label), total(total), color(color)
     {
         if(this->color == kRandom){
