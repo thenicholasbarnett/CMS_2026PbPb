@@ -1,12 +1,15 @@
 #ifndef JETEFFICIENCY_H
 #define JETEFFICIENCY_H
- 
+
+#include "TCanvas.h"
 #include "TFile.h"
-#include "TH1F.h"
-#include "TH1D.h"
 #include "TGraphAsymmErrors.h"
+#include "TH1D.h"
+#include "TH1F.h"
+#include "TLegend.h"
 #include "THnSparse.h"
 #include "TString.h"
+#include "TSystem.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -14,11 +17,12 @@
 
 #include "Binning.h"
 #include "Utilities.h"
+#include "ProgressBar.h"
 #include "JetHistograms.h"
 #include "JetTriggers_2026PbPb.h"
 // #include "JetTriggers_2025PbPb.h"
 
-static constexpr Int_t ptbinsize = 5;
+static constexpr Int_t ptbinsize = 5; 
 
 enum EffType{
     kFull = 0, // HLT+L1seed+minBias/minBias
@@ -60,77 +64,104 @@ inline void StyleGraph(TGraphAsymmErrors* g, EffType effType, std::size_t t){
     g->SetLineWidth(5);
 }
 
+inline void SaveLegendCanvas(const TString& outDir) {
+    TCanvas* cleg = new TCanvas("cleg", "legend", 2400, 1000);
+    cleg->cd();
+
+    TLegend* lstand = new TLegend(0.05, 0.05, 0.95, 0.95);
+    lstand->SetTextSize(0);
+    lstand->SetBorderSize(0);
+    lstand->SetFillStyle(0);
+
+    for (std::size_t t = 0; t < nHLT; t++) {
+        TH1F* dummy = new TH1F("", "", 1, 0, 1);
+        dummy->SetLineColor(sHLTrigs[t].color);
+        dummy->SetMarkerColor(sHLTrigs[t].color);
+        dummy->SetMarkerStyle(0);
+        dummy->SetLineWidth(5);
+        lstand->AddEntry(dummy, sHLTrigs[t].name, "lp");
+    }
+
+    lstand->Draw();
+    gErrorIgnoreLevel = kWarning;
+    cleg->SaveAs(outDir + "/legend.png");
+    gErrorIgnoreLevel = kInfo;
+    delete cleg;
+}
+
 template <Int_t MAXNREF>
 inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const BinningStruct& bins, TFile* fo, const PlotConfig& cfg){
-    SetPlotStyle(cfg);
-    TString plotsBase = MakePlotDir("Trigger_plots");
-    std::cout << "saving plots to " << plotsBase << std::endl;
+    using HS = JetHistogramsStruct<MAXNREF>;
 
-    const std::size_t nEta = bins.etaBins.size();
+    const std::size_t nEta   = bins.etaBins.size();
     const std::size_t nhiBin = bins.hiBins.size();
 
-    for(int e=0; e<kNEffTypes; e++){
-        auto effType = static_cast<EffType>(e);
+    const int totalCanvases = kNEffTypes * HS::kNMatchTypes * (int)nEta * (int)nhiBin;
+    ProgressBar pb("Efficiency plots:", totalCanvases, ProgressBar::kRandom);
+
+    SetPlotStyle(cfg);
+    TString plotsBase = MakePlotDir("Efficiencies_run"+cfg.runNumber);
+    std::cout << "saving efficiency plots to " << plotsBase << std::endl;
+
+    SaveLegendCanvas(plotsBase);
+    
+    for (int e = 0; e < kNEffTypes; e++){
+        auto effType          = static_cast<EffType>(e);
         const std::size_t nTrigs = NTrigs(effType);
 
-        for(int m=0; m<JetHistogramsStruct<MAXNREF>::kNMatchTypes; m++){
-            auto matchType = static_cast<typename JetHistogramsStruct<MAXNREF>::MatchType>(m);
+        for (int m = 0; m < HS::kNMatchTypes; m++){
+            auto matchType = static_cast<typename HS::MatchType>(m);
+            TString matchStr = (matchType == HS::kDR) ? "dR" : "noDR";
 
-            TString matchStr = matchType == JetHistogramsStruct<MAXNREF>::kDR ? "dR" : "noDR";
             TString outDir = plotsBase + "/" + EffTypeName(effType) + "_" + matchStr;
             gSystem->mkdir(outDir, true);
 
-            for(std::size_t b=0; b<nEta; b++){
+            for (std::size_t b = 0; b < nEta; b++) {
                 const auto& etaBin = bins.etaBins[b];
 
-                for(std::size_t hb=0; hb<nhiBin; hb++){
+                for (std::size_t hb = 0; hb < nhiBin; hb++) {
                     const auto& hiBinRange = bins.hiBins[hb];
 
                     const Double_t etalo = etaBin.lo;
                     const Double_t etahi = etaBin.hi;
                     const Int_t hiBinlo = hiBinRange.lo;
                     const Int_t hiBinhi = hiBinRange.hi;
-
-                    TH1D* denom_minbias = hists.ProjectL1T_pt(0, JetHistogramsStruct<MAXNREF>::kNoDR, etalo, etahi, hiBinlo, hiBinhi, Form("_denom_eta%zu_hb%zu_e%d_m%d", b, hb, e, m));
+                    
+                    TH1D* denom_minbias = hists.ProjectL1T_pt(0, HS::kNoDR, etalo, etahi, hiBinlo, hiBinhi, Form("_denom_eta%zu_hb%zu_e%d_m%d", b, hb, e, m));
                     denom_minbias->Rebin(ptbinsize);
 
                     TString cname = "Efficiency_" + EffTypeName(effType) + "_" + matchStr + etaBin.shortName + hiBinRange.shortName;
                     TCanvas* c = MakeSinglePadCanvas(cname, cfg, true);
 
-                    for(std::size_t t=0; t<nTrigs; t++){
+                    for (std::size_t t = 0; t < nTrigs; t++) {
                         TString suffix = Form("_eta%zu_hb%zu_t%zu_e%d_m%d", b, hb, t, e, m);
-
+                        
                         TH1D* numer = (effType == kFull || effType == kRelative)
                             ? hists.ProjectHLT_pt(t, matchType, etalo, etahi, hiBinlo, hiBinhi, suffix)
                             : hists.ProjectL1T_pt(t, matchType, etalo, etahi, hiBinlo, hiBinhi, suffix);
-
+                            
                         TH1D* denom = (effType == kRelative)
-                            ? hists.ProjectL1T_pt(L1SeedHLT[t], JetHistogramsStruct<MAXNREF>::kNoDR, etalo, etahi, hiBinlo, hiBinhi, suffix + "_denom")
+                            ? hists.ProjectL1T_pt(L1SeedHLT[t], HS::kNoDR, etalo, etahi, hiBinlo, hiBinhi, suffix + "_denom")
                             : denom_minbias;
 
                         numer->Rebin(ptbinsize);
-                        if(effType == kRelative) denom->Rebin(ptbinsize);
+                        if (effType == kRelative) denom->Rebin(ptbinsize);
 
                         gErrorIgnoreLevel = kError;
                         TGraphAsymmErrors* g = new TGraphAsymmErrors(numer, denom, "cl=0.683 b(1,1) mode");
                         gErrorIgnoreLevel = kInfo;
 
                         StyleGraph(g, effType, t);
-                        g->SetName(cname + (effType == kFull || effType == kRelative
-                            ? GetHLTShortName(sHLTrigs[t].name)
-                            : GetL1ShortName(sL1Trigs[t].name)));
+                        g->SetName(cname + TrigLabel(effType, t));
 
-                        if(fo && !fo->IsZombie()){fo->cd(); g->Write();}
+                        if (fo && !fo->IsZombie()){fo->cd(); g->Write();}
+
                         c->cd();
-                        if(t == 0){
+                        if (t == 0) {
                             g->Draw("ap");
                             g->SetTitle("");
                             g->GetXaxis()->SetTitle("p_{T,leading jet} [GeV]");
-                            g->GetYaxis()->SetTitle(
-                                effType == kFull ? "HLT + MinBias / MinBias" :
-                                effType == kRelative ? "HLT + MinBias / L1seed + MinBias" :
-                                                       "L1 + MinBias / MinBias"
-                            );
+                            g->GetYaxis()->SetTitle(YAxisTitle(effType));
                             g->GetXaxis()->CenterTitle(true);
                             g->GetYaxis()->CenterTitle(true);
                             g->GetXaxis()->SetTitleOffset(1.3);
@@ -143,49 +174,34 @@ inline void GenerateEfficiencies(JetHistogramsStruct<MAXNREF>& hists, const Binn
                         }
 
                         delete numer;
-                        if(effType == kRelative) delete denom;
+                        if (effType == kRelative) delete denom;
                     }
 
                     DrawRefLine(cfg.xmin, cfg.xmax);
+
                     TLegend* linfo = MakeLegend(0.75, 0.12, 0.95, 0.35);
                     AddInfoEntries(linfo, cfg);
                     linfo->AddEntry((TObject*)nullptr, hiBinRange.title, "");
                     linfo->AddEntry((TObject*)nullptr, etaBin.title, "");
-                    linfo->AddEntry((TObject*)nullptr, matchType == JetHistogramsStruct<MAXNREF>::kDR ? "#Delta R < 0.3" : "", "");
+                    linfo->AddEntry((TObject*)nullptr, matchType == HS::kDR ? "#Delta R < 0.3" : "", "");
                     linfo->Draw("same");
+
                     DrawCMSLabel("Internal");
                     DrawLabel("#bf{2026 PbPb (5.36 TeV)}", 0.65, 0.965, 0.035);
 
                     c->Update();
+                    gErrorIgnoreLevel = kWarning;
                     c->SaveAs(outDir + "/" + cname + ".png");
+                    gErrorIgnoreLevel = kInfo;
+                    pb.Update();
                     delete c;
                     delete denom_minbias;
                 }
             }
         }
     }
+    pb.Finish();
     std::cout << "all efficiency plots saved to " << plotsBase << std::endl;
-
-    TCanvas* cleg = new TCanvas("cleg", "legend", 2400, 2000);
-    cleg->cd();
-
-    TLegend* lstand = new TLegend(0.05, 0.05, 0.95, 0.95);
-    lstand->SetTextSize(0);
-    lstand->SetBorderSize(0);
-    lstand->SetFillStyle(0);
-
-    for(std::size_t t=0; t<nHLT; t++){
-        TH1F* dummy = new TH1F("", "", 1, 0, 1);
-        dummy->SetLineColor(sHLTrigs[t].color);
-        dummy->SetMarkerColor(sHLTrigs[t].color);
-        dummy->SetMarkerStyle(0);
-        dummy->SetLineWidth(5);
-        lstand->AddEntry(dummy, sHLTrigs[t].name, "lp");
-    }
-
-    lstand->Draw();
-    cleg->SaveAs(plotsBase + "/legend.png");
-    delete cleg;
 }
 
 #endif
