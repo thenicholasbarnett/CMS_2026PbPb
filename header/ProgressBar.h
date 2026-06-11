@@ -30,10 +30,10 @@ struct ProgressBar {
     };
 
     std::string label;
-    int         total;
-    int         current = 0;
-    int         width   = 40;
-    Color       color;
+    int total;
+    int current = 0;
+    int width = 40;
+    Color color;
 
     ProgressBar(const std::string& label, int total, Color color = kBlack)
         : label(label), total(total), color(color)
@@ -46,31 +46,30 @@ struct ProgressBar {
         }
     }
 
-    void Update() { current++; Draw(); }
-
-    void Finish() { current = total; Draw(); printf("\n"); fflush(stdout); }
+    void Update(){current++; Draw();}
+    void Finish(){current = total; Draw(); printf("\n"); fflush(stdout);}
 
 private:
     const char* AnsiColor() const {
         switch(color){
-            case kGreen:  return "\033[32m";
-            case kBlue:   return "\033[34m";
-            case kRed:    return "\033[31m";
-            case kPink:   return "\033[35m";
+            case kGreen: return "\033[32m";
+            case kBlue: return "\033[34m";
+            case kRed: return "\033[31m";
+            case kPink: return "\033[35m";
             case kPurple: return "\033[95m";
             case kOrange: return "\033[33m";  // standard terminals render dim yellow as orange
             case kYellow: return "\033[93m";  // bright yellow
-            case kCyan:   return "\033[96m";  // bright cyan
-            case kWhite:  return "\033[97m";
+            case kCyan: return "\033[96m";  // bright cyan
+            case kWhite: return "\033[97m";
             case kBlack:
-            default:      return "\033[30m";
+            default: return "\033[30m";
         }
     }
 
     void Draw() const {
         int filled = (total > 0 && current >= total) ? width : (current * width / total);
-        int empty  = width - filled;
-        int pct    = (total > 0 && current >= total) ? 100 : (current * 100 / total);
+        int empty = width - filled;
+        int pct = (total > 0 && current >= total) ? 100 : (current * 100 / total);
 
         std::string bar, gap;
         for(int i = 0; i < filled; i++) bar += "\xe2\x96\x88";  // █
