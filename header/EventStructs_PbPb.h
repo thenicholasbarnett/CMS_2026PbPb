@@ -56,7 +56,7 @@ struct FiltersStruct{
         return{
             {"pclusterCompatibilityFilter", &pclustF},
             {"pprimaryVertexFilter", &ppvF},
-            {"pphfCoincFilterPF2Th4", &pphfF}
+            {"pphfCoincFilterPF3Th5", &pphfF}
         };
     }
 };
